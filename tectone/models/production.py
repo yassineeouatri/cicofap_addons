@@ -138,7 +138,7 @@ class production_document(models.Model):
     file = fields.Binary('Fichier', readonly=True)
     filename = fields.Char('Nom du fichier')
     numero = fields.Char('N° Document', default='001', required=True,  readonly=True, states={'draft': [('readonly', False)], 'wait': [('readonly', False)]}, size=3)
-    indice = fields.Char('Indice', default='01', required=True, readonly=True, sie=2)
+    indice = fields.Char('Indice', default='00', required=True, readonly=True, sie=2)
     date = fields.Date('Date création', default=datetime.today(), required=True, readonly=True)
     employee_id = fields.Many2one('production.employee', 'Nom et Prénom', default=_default_employee, required=True, readonly=True)
     affaire_id = fields.Many2one('production.affaire', 'Affaire', required=True, readonly=True,
@@ -218,7 +218,7 @@ class production_document(models.Model):
             numero = zone.from_indice
         self.numero = "{:03d}".format(numero)
 
-    @api.depends('emetteur_id', 'zone_id', 'phase_id', 'ouvrage_id', 'type_id', 'numero')
+    @api.depends('emetteur_id', 'zone_id', 'phase_id', 'ouvrage_id', 'type_id', 'numero', 'indice')
     def _compute_full_name(self):
         for record in self:
             full_name = ''
@@ -234,6 +234,8 @@ class production_document(models.Model):
                 full_name += f"-{record.type_id.name}"
             if record.numero:
                 full_name += f"-{record.numero}"
+            if record.indice:
+                full_name += f"-{record.indice}"
             record.full_name = full_name
 
     @api.model
@@ -515,10 +517,10 @@ class production_document_indice(models.Model):
     _name = 'production.document.indice'
 
     document_id = fields.Many2one('production.document', 'Document', required=True, ondelete='cascade')
-    date = fields.Date('Date', default=datetime.today(), required=True)
-    indice = fields.Char('Indice', required=True, size=2)
+    date = fields.Date('Date', default=datetime.today(), required=True, readonly=True)
+    indice = fields.Char('Indice', required=True, size=2, readonly=True)
     nature = fields.Char('Description', required=True)
-    actif = fields.Boolean('Actif', default=False)
+    actif = fields.Boolean('Actif', default=False, readonly=True)
     is_send = fields.Boolean('Envoyé à CRT', default=False)
     date_crt = fields.Date('Date envoi CRT')
     date_client = fields.Date('Date envoi Client')
@@ -557,8 +559,8 @@ class production_document_file(models.Model):
 
     document_id = fields.Many2one('production.document', 'Document', required=True, ondelete='cascade')
     date = fields.Date('Date', default=datetime.today(), required=True, readonly=True)
-    file = fields.Binary('Fichier', required=True, attachment=False)
-    filename = fields.Char('File Name', required=True)
+    file = fields.Binary('Fichier', required=True, attachment=False, readonly=True)
+    filename = fields.Char('File Name', required=True, readonly=True)
 
     def unlink(self):
         records_to_delete = []

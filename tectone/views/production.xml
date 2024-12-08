@@ -546,11 +546,11 @@
                                         <legend style="color: #7c7bad;width:inherit;padding:0 2px; border-bottom:none;font-weight: bold ! important;font-size: 14px ! important;margin-bottom: 0px ! important;" >Liste des indices :</legend>
                                         <button class="btn btn-primary" string="Ajouter des indices" type="object" name="action_add_indices" attrs="{'invisible': [('state', 'not in', ('draft', 'wait', 'return'))]}"/>
                                         <field name="indice_ids" style="overflow-y: auto;max-height: 200px;" colspan="4" nolabel="1" mode="tree" context="{'default_document_id': active_id}" editable="top">
-                                            <tree string="Indices" limit="10000" editable="bottom" create="false">
+                                            <tree string="Indices" limit="100" editable="bottom" create="false" delete="false">
                                                 <field name="document_id" invisible="1"/>
                                                 <field name="indice"/>
-                                                <field name="date" attrs="{'readonly': ['|', ('is_send', '=', True), ('state', 'in', ('ready', 'sent'))]}"/>
-                                                <field name="nature" attrs="{'readonly': ['|', ('is_send', '=', True), ('state', 'in', ('ready', 'sent'))]}"/>
+                                                <field name="date"/>
+                                                <field name="nature" attrs="{'readonly': ['|', '|', ('actif', '==', False), ('is_send', '=', True), ('state', 'in', ('ready', 'sent'))]}"/>
                                                 <field name="actif"/>
                                                 <field name="is_send" invisible="1"/>
                                                 <field name="state" invisible="1"/>
@@ -565,11 +565,11 @@
                                         <legend style="color: #7c7bad;width:inherit;padding:0 2px; border-bottom:none;font-weight: bold ! important;font-size: 14px ! important;margin-bottom: 0px ! important;" >Liste des fichiers :</legend>
                                         <button class="btn btn-primary" string="Ajouter des fichiers" type="object" name="action_add_files" attrs="{'invisible': [('state', 'not in', ('draft', 'wait', 'return'))]}"/>
                                         <field name="file_ids" style="overflow-y: auto;max-height: 200px;" colspan="4" nolabel="1" mode="tree" context="{'default_document_id': active_id}" editable="top">
-                                            <tree string="Indices" limit="10000" editable="bottom" create="false">
+                                            <tree string="Fichiers" limit="100" editable="bottom" create="false" delete="false">
                                                 <field name="document_id" invisible="1"/>
+                                                <field name="date"/>
                                                 <field name="filename" string="Nom du fichier"/>
                                                 <field name="file" filename="filename" invisible="1"/>
-                                                <field name="date"/>
                                             </tree>
                                             <form>
                                                 <sheet>
@@ -591,7 +591,7 @@
                                 <legend style="color: #7c7bad;width:inherit;padding:0 2px; border-bottom:none;font-weight: bold ! important;font-size: 14px ! important;margin-bottom: 0px ! important;" >Liste des remarques :</legend>
                                 <button class="btn btn-primary" string="Ajouter des indices" type="object" name="action_add_indices" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                                 <field name="note_ids" style="overflow-y: auto;max-height: 200px;" colspan="4" nolabel="1" mode="tree" context="{'default_document_id': active_id}" editable="top">
-                                    <tree string="Indices" limit="10000" editable="bottom" create="false">
+                                    <tree string="Indices" limit="10000" editable="bottom" create="false" delete="false" >
                                         <field name="document_id" invisible="1"/>
                                         <field name="date" />
                                         <field name="user_id"/>
@@ -917,7 +917,7 @@
             <field name="model">production.pointage</field>
             <field name="arch" type="xml">
                 <tree string="Pointages" decoration-info="state == 'draft'"
-                                          decoration-bf="state == 'sent'">
+                      decoration-bf="state == 'sent'">
                     <field name="name"/>
                     <field name="date"/>
                     <field name="employee_id"/>
