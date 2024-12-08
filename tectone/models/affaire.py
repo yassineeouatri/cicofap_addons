@@ -10,7 +10,7 @@ class production_affaire(models.Model):
     _name = 'production.affaire'
     _description = 'Affaires'
     _rec_name = 'full_name'
-    _order = 'full_name'
+    _order = 'number desc'
 
     def _default_number(self):
         number = 1
@@ -23,10 +23,10 @@ class production_affaire(models.Model):
     no_affaire = fields.Char('N° Affaire')
     name = fields.Char('Désignation')
     number = fields.Integer("N° Affaire", default=_default_number)
-    year = fields.Char('Année', size=4, default=datetime.today().year)
+    year = fields.Char('Année', size=4, default=datetime.today().year, required=True)
     directeur_travaux = fields.Char('Référent client')
     type = fields.Selection([('contract', 'Contrat'),('marche', 'Marché'), ('bc', 'Bon de commande')], 'Type')
-    partner_id = fields.Many2one('res.partner', 'Client', domain=[('company_type', '=', 'company')])
+    partner_id = fields.Many2one('res.partner', 'Client', domain=[('is_company', '=', True)])
     no_contract = fields.Char('N° Contrat')
     amount_contract = fields.Float('Montant Affaire', currency_field='currency_id')
     amount_avenant = fields.Float('Montant Avenant', currency_field='currency_id')
@@ -38,11 +38,12 @@ class production_affaire(models.Model):
     invoice_ids = fields.One2many("production.affaire.invoice", "affaire_id", string="Factures", copy=False)
     payment_ids = fields.One2many("production.affaire.payment", "affaire_id", string="Paiements", copy=False)
     email_ids = fields.One2many("production.affaire.email", "affaire_id", string="Emails", copy=False)
+    email_cc_ids = fields.One2many("production.affaire.email.cc", "affaire_id", string="Emails", copy=False)
     plan_ids = fields.One2many("production.document", "affaire_id", string="Documents", copy=False)
     zone_ids = fields.One2many("production.zone", "affaire_id", string="Zones", copy=False)
     document_type_ids = fields.One2many("production.affaire.document.type", "affaire_id", string="Types Documents", copy=True)
     production_document_ids = fields.One2many("production.document", "affaire_id", string="Documents")
-    currency_id = fields.Many2one('res.currency', string='Devise')
+    currency_id = fields.Many2one('res.currency', string='Devise', required=True)
     phase_id = fields.Many2one('production.phase', 'Type de marché')
     phase_ids = fields.Many2many('production.phase', 'rel_affaire_phase', 'phase_id', 'affaire_id', 'Phases')
     zone_id_required = fields.Boolean('Zone required', default=True)
@@ -87,14 +88,18 @@ class production_affaire(models.Model):
         for record in self:
             full_name = ''
             if record.year and len(record.year)==4:
-                year = record.year[2:]
-            if record.phase_id:
-                phase = record.phase_id.name
+                full_name = record.year[2:]
+            if record.number:
+                full_name += f'-{record.number}'
             if record.partner_id.ref:
-                code = record.partner_id.ref
+                full_name += f'-{record.partner_id.ref}'
             else:
-                code = record.partner_id.name
-            record.full_name = f"{year}-{record.number}-{code}-{phase}-{record.name}"
+                full_name += f'-{record.partner_id.name}'
+            if record.phase_ids:
+                for phase in record.phase_ids:
+                    full_name += f'-{phase.name}'
+            full_name += f'-{record.name}'
+            record.full_name = full_name
 
     @api.depends('invoice_ids', 'payment_ids', 'amount_contract')
     def _compute_percentage(self):
@@ -190,15 +195,47 @@ class production_affaire_email(models.Model):
     def create(self, values):
         email = values.get('name', None)
         if email and not self.is_valid_email(email):
-            raise UserError(_(f"La veleur saisie <{email}> ne correspond pas à un email"))
+            raise UserError(_(f"La valeur saisie <{email}> ne correspond pas à une adresse email valide."))
         record = super(production_affaire_email, self).create(values)
         return record
 
     def write(self, values):
         email = values.get('name', None)
         if email and not self.is_valid_email(email):
-            raise UserError(_(f"La veleur saisie <{email}> ne correspond pas à un email"))
+            raise UserError(_(f"La valeur saisie <{email}> ne correspond pas à une adresse email valide."))
         res = super(production_affaire_email, self).write(values)
+        return res
+
+
+class production_affaire_email_cc(models.Model):
+    _name = "production.affaire.email.cc"
+    _description = "Emails"
+
+    affaire_id = fields.Many2one("production.affaire", "Affaire")
+    name = fields.Char("Email", required=True)
+
+    _sql_constraints = [
+        ('name_uniq', 'UNIQUE (affaire_id,name)', 'Le couple [affaire,email] est unique!'),
+    ]
+
+    def is_valid_email(self, email):
+        # Définition de l'expression régulière pour une adresse e-mail
+        email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        return re.match(email_regex, email) is not None
+
+    @api.model
+    def create(self, values):
+        email = values.get('name', None)
+        if email and not self.is_valid_email(email):
+            raise UserError(_(f"La valeur saisie <{email}> ne correspond pas à une adresse email valide."))
+        record = super(production_affaire_email_cc, self).create(values)
+        return record
+
+    def write(self, values):
+        email = values.get('name', None)
+        if email and not self.is_valid_email(email):
+            raise UserError(_(f"La valeur saisie <{email}> ne correspond pas à une adresse email valide."))
+        res = super(production_affaire_email_cc, self).write(values)
         return res
 
 
@@ -226,16 +263,21 @@ class production_zone(models.Model):
         name = values.get('name')
         if from_indice > to_indice:
             raise UserError(_("L'indice 'A' doit être supérieur ou égal à l'indice 'B"))
-        #records = self.env['production.zone'].search(
-        #    [('to_indice', '>=', from_indice), ('from_indice', '<=', from_indice),
-        #     ('affaire_id', '=', affaire_id), ('name', '!=', name)])
-        #if records:
-        #    raise UserError(_('Vous ne pouvez pas avoir 2 zones dont les indices de début et de fin se chevauchent!'))
         res = super(production_zone, self).create(values)
         return res
 
     def write(self, values):
         res = super(production_zone, self).write(values)
         return res
+
+    def unlink(self):
+        for record in self:
+            if record.name == 'TZO':
+                raise UserError("La zone <TZO> ne peut être supprimée")
+        return super(production_zone, self).unlink()
+
+    def action_delete(self):
+        return self.unlink()
+
 
 

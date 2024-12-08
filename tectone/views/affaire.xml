@@ -253,12 +253,13 @@
                                 <fieldset style="border: 1px solid #ddd !important;padding: 0 0.5em 0em 0.5em !important;margin: 0 0 1em 0 !important;">
                                     <legend style="color: #7c7bad;width:inherit;padding:0 2px; border-bottom:none;font-weight: bold ! important;font-size: 14px ! important;margin-bottom: 0px ! important;" >Liste des zones :</legend>
                                     <field name="zone_ids" style="overflow-y: auto;max-height: 200px;" colspan="4" nolabel="1" mode="tree" context="{'default_affaire_id': active_id}">
-                                        <tree string="Zones" limit="10000" editable="bottom">
+                                        <tree string="Zones" limit="10000" editable="bottom" delete="false">
                                             <field name="affaire_id" invisible="1"/>
                                             <field name="name"/>
                                             <field name="need_plage"/>
                                             <field name="from_indice"/>
                                             <field name="to_indice"/>
+                                            <button name="action_delete" class="fa fa-trash" attrs="{'invisible': [('name', '==', 'TZO')]}" string=" Supprimer" type="object" groups="tectone.group_production_admin"/>
                                         </tree>
                                     </field>
                                 </fieldset>
@@ -267,8 +268,25 @@
                         <page name="emails" string="Destinataires">
                             <group>
                                 <fieldset style="border: 1px solid #ddd !important;padding: 0 0.5em 0em 0.5em !important;margin: 0 0 1em 0 !important;">
-                                    <legend style="color: #7c7bad;width:inherit;padding:0 2px; border-bottom:none;font-weight: bold ! important;font-size: 14px ! important;margin-bottom: 0px ! important;" >Liste des destinataires :</legend>
+                                    <legend style="color: #7c7bad;width:inherit;padding:0 2px; border-bottom:none;font-weight: bold ! important;font-size: 14px ! important;margin-bottom: 0px ! important;" >Liste des destinataires principales:</legend>
                                     <field name="email_ids" style="overflow-y: auto;max-height: 200px;" colspan="4" nolabel="1" mode="tree" context="{'default_affaire_id': active_id}">
+                                        <tree string="Documents" limit="10000" editable="bottom">
+                                            <field name="affaire_id" invisible="1"/>
+                                            <field name="name"/>
+                                        </tree>
+                                        <form>
+                                            <sheet>
+                                                <group>
+                                                    <field name="affaire_id" invisible="1"/>
+                                                    <field name="name"/>
+                                                </group>
+                                            </sheet>
+                                        </form>
+                                    </field>
+                                </fieldset>
+                                <fieldset style="border: 1px solid #ddd !important;padding: 0 0.5em 0em 0.5em !important;margin: 0 0 1em 0 !important;">
+                                    <legend style="color: #7c7bad;width:inherit;padding:0 2px; border-bottom:none;font-weight: bold ! important;font-size: 14px ! important;margin-bottom: 0px ! important;" >Liste des destinataires en copie:</legend>
+                                    <field name="email_cc_ids" style="overflow-y: auto;max-height: 200px;" colspan="4" nolabel="1" mode="tree" context="{'default_affaire_id': active_id}">
                                         <tree string="Documents" limit="10000" editable="bottom">
                                             <field name="affaire_id" invisible="1"/>
                                             <field name="name"/>
