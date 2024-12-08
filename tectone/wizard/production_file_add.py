@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from odoo import api, models, fields
+import os
 from datetime import datetime
+from odoo import api, models, fields
+from odoo.exceptions import UserError
 
 
 class production_document_file_add(models.Model):
@@ -14,8 +16,11 @@ class production_document_file_add(models.Model):
     def action_done(self):
         document_obj = self.env['production.document'].search([('id', '=', self.document_id.id)],order='indice desc', limit=1)
         if document_obj:
-            document_obj.write({'file': self.file, 'filename': self.filename})
+            document_name = os.path.splitext(self.filename)[0]
+            if document_name != self.document_id.full_name:
+                raise UserError(f"La nom du document ajouté <{document_name}> doit correspondre à la codification actuelle du document <{self.document_id.full_name}>!")
 
+            document_obj.write({'file': self.file, 'filename': self.filename})
             self.env['production.document.file'].create({'document_id': self.document_id.id,
                                                          'date': datetime.today(),
                                                          'file': self.file,
