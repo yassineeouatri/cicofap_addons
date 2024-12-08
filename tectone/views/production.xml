@@ -1,0 +1,1021 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Customers -->
+        <record id="res_partner_action_customer" model="ir.actions.act_window">
+        <field name="name">Clients</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="context">{'search_default_customer': 1,'default_customer': 1, 'default_is_company': True}</field>
+        <field name="domain">[('customer', '=', True)]</field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+              Créer des clients
+          </p>
+        </field>
+    </record>
+     <!-- TBD -->
+        <record id="production_tbd_form_view" model="ir.ui.view">
+            <field name="name">production.tbd.form</field>
+            <field name="model">production.tbd</field>
+            <field name="arch" type="xml">
+                <form string="Emetteurs">
+                    <sheet>
+                        <group>
+                            <field name="affaire_id" options="{'no_open': True, 'no_create': True}"></field>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <table style="width:100%;table-layout: fixed;">
+                            <tbody>
+                                <tr><td style="border: 2px solid;text-align: center;background-color: beige;" colspan="8"><strong>DONNEES DIRECTION FINANCIERE</strong></td></tr>
+                                <tr><td style="border: 2px solid;text-align: center;" colspan="8"></td></tr>
+                                <tr>
+                                    <td style="border: 2px solid;text-align: center;" colspan="4"><strong>CONTRAT</strong></td>
+                                    <td style="border: 2px solid;text-align: center;" colspan="4"><strong>FACTURATION</strong></td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 2px solid;text-align: center;" colspan="2"><strong>MONTANT CONTRAT</strong></td>
+                                    <td style="border: 2px solid;text-align: center;" colspan="2"><strong>MONTANT AVENANT</strong></td>
+                                    <td style="border: 2px solid;text-align: center;" colspan="2"><strong>MONTANT FACTURE</strong></td>
+                                    <td style="border: 2px solid;text-align: center;" colspan="2"><strong>MONTANT PAYE</strong></td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 2px solid;text-align: center;" colspan="2"><field name="amount_contract" nolabel="1" widget='monetary'/></td>
+                                    <td style="border: 2px solid;text-align: center;" colspan="2"><field name="amount_avenant" nolabel="1" widget='monetary'/></td>
+                                    <td style="border: 2px solid;text-align: center;" colspan="2"><field name="amount_billed" nolabel="1" widget='monetary'/></td>
+                                    <td style="border: 2px solid;text-align: center;" colspan="2"><field name="amount_payed" nolabel="1" widget='monetary'/></td>
+                                </tr>
+                                <tr><td style="border: 2px solid;text-align: center;" colspan="8"></td></tr>
+                                <tr>
+                                    <td style="border: 2px solid;text-align: center;" colspan="8"><strong>RECAPITULATIF</strong></td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 2px solid;text-align: center;" colspan="2"><strong>% MF / (MC + AV)</strong></td>
+                                    <td style="border: 2px solid;text-align: center;" colspan="2"><strong>% MP/MF</strong></td>
+                                    <td style="border: 2px solid;text-align: center;" colspan="4"><strong>DOCUMENTS</strong></td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 2px solid;text-align: center;" colspan="2"><field name="percentage_billed" nolabel="1" widget="percentage"/></td>
+                                    <td style="border: 2px solid;text-align: center;" colspan="2"><field name="percentage_payed" nolabel="1" widget="percentage"/></td>
+                                    <td style="border: 2px solid;text-align: center;" colspan="4">
+                                        <field name="document_ids" mode="tree" context="{'default_tbd_id': active_id}">
+                                            <tree limit="10000" editable="bottom">
+                                                <field name="tbd_id" invisible="1"/>
+                                                <field name="filename" string="Fichier"/>
+                                                <field name="file" invisible="1"/>
+                                            </tree>
+                                            <form>
+                                                <group>
+                                                    <field name="tbd_id" invisible="1"/>
+                                                    <field name="filename" string="Fichier" invisible="1"/>
+                                                    <field name="file" filename="filename"/>
+                                                </group>
+                                            </form>
+                                        </field>
+                                    </td>
+                                </tr>
+                                <tr><td style="border: 2px solid;text-align: center;" colspan="8"></td></tr>
+                                <tr>
+                                    <td style="border: 2px solid;text-align: center;background-color: grey;" colspan="6"><strong>DONNEES COMPTAGE CRT</strong></td>
+                                    <td style="border: 2px solid;text-align: center;background-color: orange;" colspan="2"><strong>DONNEES PRODUCTION</strong></td>
+                                </tr>
+                                <tr><td style="border: 2px solid;text-align: center;" colspan="8"></td></tr>
+                                <tr>
+                                    <td style="border: 2px solid;text-align: center;" colspan="6"><strong>LIVRABLES</strong></td>
+                                    <td style="border: 2px solid;text-align: center;" colspan="2"><strong>TEMPS PASSES</strong></td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 2px solid;text-align: center;" colspan="6">
+                                        <field name="livrable_ids" mode="tree" context="{'default_tbd_id': active_id}">
+                                            <tree limit="10000" editable="bottom" create="false" colspan="8">
+                                                <field name="tbd_id" invisible="1"/>
+                                                <field name="modele"/>
+                                                <field name="prev" sum="PREV"/>
+                                                <field name="exe" sum="EXE"/>
+                                                <field name="indice" sum="IND"/>
+                                                <field name="percentage"/>
+                                            </tree>
+                                        </field>
+                                    </td>
+                                    <td style="border: 2px solid;text-align: center;" colspan="2">
+                                        <field name="livrable_time_ids" mode="tree" context="{'default_tbd_id': active_id}">
+                                            <tree limit="10000" editable="bottom" create="false" colspan="8">
+                                                <field name="tbd_id" invisible="1"/>
+                                                <field name="h_ing" sum="H.ING"/>
+                                                <field name="h_proj" sum="H.PROJ"/>
+                                            </tree>
+                                        </field>
+                                    </td>
+                                </tr>
+                                <tr><td style="border: 2px solid;text-align: center;" colspan="8"></td></tr>
+                                <tr>
+                                    <td style="border: 2px solid;text-align: center;" colspan="6"><strong>AUTRES</strong></td>
+                                    <td style="border: 2px solid;text-align: center;" colspan="2"><strong>TEMPS PASSES</strong></td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 2px solid;text-align: center;" colspan="6">
+                                        <field name="other_ids" mode="tree" context="{'default_tbd_id': active_id}">
+                                            <tree limit="10000" editable="bottom" create="false" colspan="8">
+                                                <field name="tbd_id" invisible="1"/>
+                                                <field name="modele"/>
+                                                <field name="prev" sum="PREV"/>
+                                                <field name="exe" sum="EXE"/>
+                                                <field name="indice" sum="IND"/>
+                                                <field name="percentage"/>
+                                            </tree>
+                                        </field>
+                                    </td>
+                                    <td style="border: 2px solid;text-align: center;" colspan="2">
+                                        <field name="other_time_ids" mode="tree" context="{'default_tbd_id': active_id}">
+                                            <tree limit="10000" editable="bottom" create="false" colspan="8">
+                                                <field name="tbd_id" invisible="1"/>
+                                                <field name="h_ing" sum="H.ING"/>
+                                                <field name="h_proj" sum="H.PROJ"/>
+                                            </tree>
+                                        </field>
+                                    </td>
+                                </tr>
+                                <tr><td style="border: 2px solid;text-align: center;" colspan="8"></td></tr>
+                                <tr><td style="border: 2px solid;text-align: center;background-color: green;" colspan="8"><strong>RATIOS PRODUCTION</strong></td></tr>
+                                <tr><td style="border: 2px solid;text-align: center;" colspan="8"></td></tr>
+                                <tr><td style="border: 2px solid;text-align: center;" colspan="8"><strong>RATIOS PAR TRAITANT</strong></td></tr>
+                                <tr>
+                                    <td style="border: 2px solid;text-align: center;" colspan="8">
+                                        <field name="ratio_ids" mode="tree" context="{'default_tbd_id': active_id}">
+                                            <tree limit="10000" editable="bottom" create="false" colspan="8">
+                                                <field name="tbd_id" invisible="1"/>
+                                                <field name="employee_id" options="{'no_create': True, 'no_open': True}"/>
+                                                <field name="h_prod" sum="H.Prod"/>
+                                            </tree>
+                                        </field>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="production_tbd_action" model="ir.actions.act_window">
+            <field name="name">Tableau suivi Affaire</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">production.tbd</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="production_tbd_form_view"/>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Créer un nouveau enregistement
+                </p>
+            </field>
+        </record>
+
+    <!-- Employees -->
+        <record id="production_employee_search_view" model="ir.ui.view">
+            <field name="name">production.employee.search</field>
+            <field name="model">production.employee</field>
+            <field name="arch" type="xml">
+                <search string="Employees">
+                    <field name="name"/>
+                </search>
+            </field>
+        </record>
+        <record id="production_employee_tree_view" model="ir.ui.view">
+            <field name="name">production.employee.tree</field>
+            <field name="model">production.employee</field>
+            <field name="arch" type="xml">
+                <tree string="Employees" editable="top">
+                    <field name="name"/>
+                    <field name="email"/>
+                    <field name="job_id" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="is_manager"/>
+                    <field name="user_id" options="{'no_create': True, 'no_open': True}"/>
+                </tree>
+            </field>
+        </record>
+        <record id="production_employee_action" model="ir.actions.act_window">
+            <field name="name">Employés</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">production.employee</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="production_employee_tree_view"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Créer un nouveau enregistement
+                </p>
+            </field>
+        </record>
+
+    <!-- Postes -->
+        <record id="production_job_search_view" model="ir.ui.view">
+            <field name="name">production.job.search</field>
+            <field name="model">production.job</field>
+            <field name="arch" type="xml">
+                <search string="Postes">
+                    <field name="name"/>
+                </search>
+            </field>
+        </record>
+        <record id="production_job_tree_view" model="ir.ui.view">
+            <field name="name">production.job.tree</field>
+            <field name="model">production.job</field>
+            <field name="arch" type="xml">
+                <tree string="Postes" editable="top">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <record id="production_job_action" model="ir.actions.act_window">
+            <field name="name">Postes</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">production.job</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="production_job_tree_view"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Créer un nouveau enregistement
+                </p>
+            </field>
+        </record>
+
+    <!-- Emetteurs -->
+        <record id="production_emetteur_search_view" model="ir.ui.view">
+            <field name="name">production.emetteur.search</field>
+            <field name="model">production.emetteur</field>
+            <field name="arch" type="xml">
+                <search string="Emetteurs">
+                    <field name="name"/>
+                    <field name="description"/>
+                </search>
+            </field>
+        </record>
+        <record id="production_emetteur_tree_view" model="ir.ui.view">
+            <field name="name">production.emetteur.tree</field>
+            <field name="model">production.emetteur</field>
+            <field name="arch" type="xml">
+                <tree string="Emetteurs" editable="top">
+                    <field name="name"/>
+                    <field name="description"/>
+                </tree>
+            </field>
+        </record>
+        <record id="production_emetteur_action" model="ir.actions.act_window">
+            <field name="name">Emetteurs</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">production.emetteur</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="production_emetteur_tree_view"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Créer un nouveau enregistement
+                </p>
+            </field>
+        </record>
+
+    <!-- Scopes -->
+        <record id="production_scope_search_view" model="ir.ui.view">
+            <field name="name">production.scope.search</field>
+            <field name="model">production.scope</field>
+            <field name="arch" type="xml">
+                <search string="Emetteurs">
+                    <field name="name"/>
+                </search>
+            </field>
+        </record>
+        <record id="production_scope_tree_view" model="ir.ui.view">
+            <field name="name">production.scope.tree</field>
+            <field name="model">production.scope</field>
+            <field name="arch" type="xml">
+                <tree string="Scopes" editable="top">
+                    <field name="name"/>
+                    <field name="designation"/>
+                </tree>
+            </field>
+        </record>
+        <record id="production_scope_action" model="ir.actions.act_window">
+            <field name="name">Scopes</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">production.scope</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="production_scope_tree_view"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Créer un nouveau enregistement
+                </p>
+            </field>
+        </record>
+
+    <!-- Type d'ouvrage -->
+        <record id="production_ouvrage_search_view" model="ir.ui.view">
+            <field name="name">production.ouvrage.search</field>
+            <field name="model">production.ouvrage</field>
+            <field name="arch" type="xml">
+                <search string="Ouvrage">
+                    <field name="name"/>
+                </search>
+            </field>
+        </record>
+        <record id="production_ouvrage_tree_view" model="ir.ui.view">
+            <field name="name">production.ouvrage.tree</field>
+            <field name="model">production.ouvrage</field>
+            <field name="arch" type="xml">
+                <tree string="Ouvrage" editable="top">
+                    <field name="name"/>
+                    <field name="description"/>
+                </tree>
+            </field>
+        </record>
+        <record id="production_ouvrage_action" model="ir.actions.act_window">
+            <field name="name">Ouvrage</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">production.ouvrage</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="production_ouvrage_tree_view"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Créer un nouveau enregistement
+                </p>
+            </field>
+        </record>
+
+    <!-- Phases -->
+        <record id="production_phase_search_view" model="ir.ui.view">
+            <field name="name">production.phase.search</field>
+            <field name="model">production.phase</field>
+            <field name="arch" type="xml">
+                <search string="Phases">
+                    <field name="name"/>
+                    <field name="description"/>
+                </search>
+            </field>
+        </record>
+        <record id="production_phase_tree_view" model="ir.ui.view">
+            <field name="name">production.phase.tree</field>
+            <field name="model">production.phase</field>
+            <field name="arch" type="xml">
+                <tree string="Phase" editable="top">
+                    <field name="name"/>
+                    <field name="description"/>
+                </tree>
+            </field>
+        </record>
+        <record id="production_phase_action" model="ir.actions.act_window">
+            <field name="name">Phases</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">production.phase</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="production_phase_tree_view"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Créer un nouveau enregistement
+                </p>
+            </field>
+        </record>
+
+    <!-- Réunions -->
+        <record id="production_reunion_search_view" model="ir.ui.view">
+            <field name="name">production.reunion.search</field>
+            <field name="model">production.reunion</field>
+            <field name="arch" type="xml">
+                <search string="Réunion">
+                    <field name="name"/>
+                </search>
+            </field>
+        </record>
+        <record id="production_reunion_tree_view" model="ir.ui.view">
+            <field name="name">production.reunion.tree</field>
+            <field name="model">production.reunion</field>
+            <field name="arch" type="xml">
+                <tree string="Réunion" editable="top">
+                    <field name="name"/>
+                    <field name="sequence"/>
+                </tree>
+            </field>
+        </record>
+        <record id="production_reunion_action" model="ir.actions.act_window">
+            <field name="name">Réunion</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">production.reunion</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="production_reunion_tree_view"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Créer un nouveau enregistement
+                </p>
+            </field>
+        </record>
+
+    <!-- Identifiant document -->
+        <record id="production_document_type_search_view" model="ir.ui.view">
+            <field name="name">production.document.type.search</field>
+            <field name="model">production.document.type</field>
+            <field name="arch" type="xml">
+                <search string="Identifiants documents">
+                    <field name="name"/>
+                </search>
+            </field>
+        </record>
+        <record id="production_document_type_tree_view" model="ir.ui.view">
+            <field name="name">production.document.type.tree</field>
+            <field name="model">production.document.type</field>
+            <field name="arch" type="xml">
+                <tree string="Identifiants documents" editable="top">
+                    <field name="type"/>
+                    <field name="name"/>
+                    <field name="description"/>
+                    <field name="sequence"/>
+                </tree>
+            </field>
+        </record>
+        <record id="production_document_type_action" model="ir.actions.act_window">
+            <field name="name">Identifiant document</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">production.document.type</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="production_document_type_tree_view"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Créer un nouveau enregistement
+                </p>
+            </field>
+        </record>
+
+    <!-- document -->
+        <record id="production_document_search_view" model="ir.ui.view">
+            <field name="name">production.document.search</field>
+            <field name="model">production.document</field>
+            <field name="arch" type="xml">
+                <search string="Emetteurs">
+                    <field name="name"/>
+                    <field name="affaire_id"/>
+                    <field name="employee_id"/>
+                    <filter string="Brouillon" name="draft" domain="[('state', '=', 'draft')]"/>
+                    <filter string="Envoyé" name="sent" domain="[('state', '=', 'sent')]"/>
+                    <separator/>
+                    <filter string="Mes documents" name="my_document" domain="[('employee_id.user_id', '=', uid)]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Affaire" name="groupby_affaire" context="{'group_by': 'affaire_id'}"/>
+                        <filter string="Employé" name="groupby_employee" context="{'group_by': 'employee_id'}"/>
+                        <filter string="Emetteur" name="groupby_emetteur" context="{'group_by': 'emetteur_id'}"/>
+                        <filter string="Bordereau" name="groupby_bordereau" context="{'group_by': 'bordereau_id'}"/>
+                        <filter string="Phase" name="groupby_type" context="{'group_by': 'phase_id'}"/>
+                        <filter string="Type" name="groupby_type" context="{'group_by': 'type_id'}"/>
+                        <filter string="Zone" name="groupby_zone" context="{'group_by': 'zone_id'}"/>
+                        <filter string="Etat" name="groupby_state" context="{'group_by': 'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        <record id="production_document_tree_view" model="ir.ui.view">
+            <field name="name">production.document.tree</field>
+            <field name="model">production.document</field>
+            <field name="arch" type="xml">
+                <tree string="Documents" decoration-info="state == 'draft'"
+                                          decoration-bf="state == 'sent_crt'"
+                                          decoration-warning="state == 'wait'"
+                                          decoration-danger="state == 'return'"
+                                          decoration-success="state == 'validate'"
+                                          decoration-primary="state == 'sent_client'">
+                    <field name="date"/>
+                    <field name="full_name" string="Document"/>
+                    <field name="employee_id" string="Créer par"/>
+                    <field name="name"/>
+                    <field name="affaire_id"/>
+                    <field name="bordereau_id"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+        <record id="production_document_form_view" model="ir.ui.view">
+            <field name="name">production.document.form</field>
+            <field name="model">production.document</field>
+            <field name="arch" type="xml">
+                <form string="Documents">
+                    <header>
+                        <button name="action_draft" attrs="{'invisible': [('state', '!=', 'ready')]}" string="Mettre en brouillon" type="object"/>
+                        <button name="action_send" attrs="{'invisible': [('state', 'not in', ('draft'))]}" class="oe_highlight fa fa-check" string=" Mettre sur le bordereau" type="object"/>
+                        <button name="action_wait" attrs="{'invisible': [('state', 'not in', ('wait'))]}" class="oe_highlight" string="Renvoyer au bordereau" type="object"/>
+                        <button name="action_return" attrs="{'invisible': [('state', 'not in', ('return'))]}" class="oe_highlight" string="Renvoyer au bordereau" type="object"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,ready,sent_crt,sent_client"/>
+                    </header>
+                    <sheet>
+                        <group col="2" colspan="4">
+                            <field name="affaire_id"  options="{'no_create': True}" colspan="4" context="{'default_id': affaire_id, 'form_view_ref':'tectone.production_affaire_production_view_form'}"/>
+                            <field name="emetteur_id" widget="selection" attrs="{'invisible': [('affaire_id', '==', False)]}"/>
+                            <field name="zone_id" widget="selection" domain="[('affaire_id','=', affaire_id)]" attrs="{'invisible': [('affaire_id', '==', False)], 'required': [('zone_id_visible','==',True)]}"/>
+                            <field name="phase_id" widget="selection" attrs="{'invisible': [('affaire_id', '==', False)], 'required': [('phase_id_visible','==',True)]}"/>
+                            <field name="ouvrage_id" widget="selection" attrs="{'invisible': [('affaire_id', '==', False)], 'required': [('ouvrage_id_visible','==',True)]}" colspan="2"/>
+                            <field name="type_id" widget="selection" attrs="{'invisible': [('affaire_id', '==', False)], 'required': [('type_id_visible','==',True)]}"/>
+                            <field name="numero" attrs="{'invisible': [('affaire_id', '==', False)]}" placeholder="001"/>
+                            <field name="available_phase_ids" invisible="1"/>
+                            <field name="zone_id_visible" invisible="1"/>
+                            <field name="phase_id_visible" invisible="1"/>
+                            <field name="type_id_visible" invisible="1"/>
+                            <field name="ouvrage_id_visible" invisible="1"/>
+                            <field name="name" attrs="{'invisible': [('affaire_id', '==', False)]}"/>
+                            <field name="filename" string="Nom du fichier" invisible="1"/>
+                            <field name="file" filename="filename" attrs="{'invisible': [('filename', '==', False)]}"/>
+                        </group>
+                        <notebook>
+                            <page string="Informations générales">
+                                <group>
+                                    <group>
+                                        <field name="employee_id" options="{'no_create': True, 'no_open': True}"/>
+                                        <field name="date"/>
+                                        <field name="indice"/>
+                                    </group>
+                                    <group>
+                                        <field name="date_bordereau"/>
+                                        <field name="date_crt"/>
+                                        <field name="date_client"/>
+                                        <field name="bordereau_id" readonly="1" invisible="1"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Indices">
+                                <group>
+                                    <fieldset style="border: 1px solid #ddd !important;padding: 0 0.5em 0em 0.5em !important;margin: 0 0 1em 0 !important;">
+                                        <legend style="color: #7c7bad;width:inherit;padding:0 2px; border-bottom:none;font-weight: bold ! important;font-size: 14px ! important;margin-bottom: 0px ! important;" >Liste des indices :</legend>
+                                        <button class="btn btn-primary" string="Ajouter des indices" type="object" name="action_add_indices" attrs="{'invisible': [('state', 'not in', ('draft', 'wait', 'return'))]}"/>
+                                        <field name="indice_ids" style="overflow-y: auto;max-height: 200px;" colspan="4" nolabel="1" mode="tree" context="{'default_document_id': active_id}" editable="top">
+                                            <tree string="Indices" limit="10000" editable="bottom" create="false">
+                                                <field name="document_id" invisible="1"/>
+                                                <field name="indice"/>
+                                                <field name="date" attrs="{'readonly': ['|', ('is_send', '=', True), ('state', 'in', ('ready', 'sent'))]}"/>
+                                                <field name="nature" attrs="{'readonly': ['|', ('is_send', '=', True), ('state', 'in', ('ready', 'sent'))]}"/>
+                                                <field name="actif"/>
+                                                <field name="is_send" invisible="1"/>
+                                                <field name="state" invisible="1"/>
+                                            </tree>
+                                        </field>
+                                    </fieldset>
+                                </group>
+                            </page>
+                            <page string="Fichiers">
+                                <group>
+                                    <fieldset style="border: 1px solid #ddd !important;padding: 0 0.5em 0em 0.5em !important;margin: 0 0 1em 0 !important;">
+                                        <legend style="color: #7c7bad;width:inherit;padding:0 2px; border-bottom:none;font-weight: bold ! important;font-size: 14px ! important;margin-bottom: 0px ! important;" >Liste des fichiers :</legend>
+                                        <button class="btn btn-primary" string="Ajouter des fichiers" type="object" name="action_add_files" attrs="{'invisible': [('state', 'not in', ('draft', 'wait', 'return'))]}"/>
+                                        <field name="file_ids" style="overflow-y: auto;max-height: 200px;" colspan="4" nolabel="1" mode="tree" context="{'default_document_id': active_id}" editable="top">
+                                            <tree string="Indices" limit="10000" editable="bottom" create="false">
+                                                <field name="document_id" invisible="1"/>
+                                                <field name="filename" string="Nom du fichier"/>
+                                                <field name="file" filename="filename" invisible="1"/>
+                                                <field name="date"/>
+                                            </tree>
+                                            <form>
+                                                <sheet>
+                                                    <group>
+                                                        <field name="filename" string="Nom du fichier" invisible="1"/>
+                                                        <field name="file" filename="filename" />
+                                                        <field name="date"/>
+                                                    </group>
+                                                </sheet>
+                                            </form>
+                                        </field>
+                                    </fieldset>
+                                </group>
+                            </page>
+                        </notebook>
+
+                        <group attrs="{'invisible': [('state', 'not in', ('return', 'wait'))]}">
+                            <fieldset style="border: 1px solid #ddd !important;padding: 0 0.5em 0em 0.5em !important;margin: 0 0 1em 0 !important;">
+                                <legend style="color: #7c7bad;width:inherit;padding:0 2px; border-bottom:none;font-weight: bold ! important;font-size: 14px ! important;margin-bottom: 0px ! important;" >Liste des remarques :</legend>
+                                <button class="btn btn-primary" string="Ajouter des indices" type="object" name="action_add_indices" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                                <field name="note_ids" style="overflow-y: auto;max-height: 200px;" colspan="4" nolabel="1" mode="tree" context="{'default_document_id': active_id}" editable="top">
+                                    <tree string="Indices" limit="10000" editable="bottom" create="false">
+                                        <field name="document_id" invisible="1"/>
+                                        <field name="date" />
+                                        <field name="user_id"/>
+                                        <field name="note"/>
+                                    </tree>
+                                </field>
+                            </fieldset>
+                        </group>
+                    </sheet>
+                    <!--
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>-->
+                </form>
+            </field>
+        </record>
+        <record id="production_document_action" model="ir.actions.act_window">
+            <field name="name">Documents</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">production.document</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Créer un nouveau enregistement
+                </p>
+            </field>
+        </record>
+        <record model="ir.actions.act_window.view" id="production_document_action_tree">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="production_document_tree_view"/>
+            <field name="act_window_id" ref="production_document_action"/>
+        </record>
+        <record model="ir.actions.act_window.view" id="production_document_action_form">
+            <field name="sequence" eval="2"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="production_document_form_view"/>
+            <field name="act_window_id" ref="production_document_action"/>
+        </record>
+        <record id="production_document_crt_tree_view" model="ir.ui.view">
+            <field name="name">production.document.crt.tree</field>
+            <field name="model">production.document</field>
+            <field name="arch" type="xml">
+                <tree string="Documents" decoration-info="state == 'draft'"
+                                          decoration-bf="state == 'sent_crt'"
+                                          decoration-warning="state == 'wait'"
+                                          decoration-danger="state == 'return'"
+                                          decoration-success="state == 'validate'"
+                                          decoration-primary="state == 'sent_client'">
+                    <field name="date"/>
+                    <field name="employee_id" string="Nom et Prénom"/>
+                    <field name="full_name"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+        <record id="production_document_crt_form_view" model="ir.ui.view">
+            <field name="name">production.document.crt.form</field>
+            <field name="model">production.document</field>
+            <field name="arch" type="xml">
+                <form string="Documents">
+                    <header>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,ready,sent_crt,sent_client"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="date" readonly="1"/>
+                                <field name="employee_id" readonly="1" widget="selection"/>
+                            </group>
+                            <group>
+                                <field name="numero" readonly="1"/>
+                                <field name="indice" readonly="1"/>
+                                <field name="filename" string="Nom du fichier" invisible="1"/>
+                                <field name="file" filename="filename" readonly="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="production_document_crt_action" model="ir.actions.act_window">
+            <field name="name">Documents</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">production.document</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Créer un nouveau enregistement
+                </p>
+            </field>
+        </record>
+        <record model="ir.actions.act_window.view" id="production_document_crt_action_tree">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="production_document_crt_tree_view"/>
+            <field name="act_window_id" ref="production_document_crt_action"/>
+        </record>
+        <record model="ir.actions.act_window.view" id="production_document_crt_action_form">
+            <field name="sequence" eval="2"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="production_document_crt_form_view"/>
+            <field name="act_window_id" ref="production_document_crt_action"/>
+        </record>
+
+    <!-- Bordereau -->
+        <record id="production_bordereau_search_view" model="ir.ui.view">
+            <field name="name">production.bordereau.search</field>
+            <field name="model">production.bordereau</field>
+            <field name="arch" type="xml">
+                <search string="Bordereau">
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="employee_id"/>
+                    <field name="manager_id"/>
+                    <field name="affaire_id"/>
+                    <field name="zones"/>
+                    <filter string="Brouillon" name="draft" domain="[('state', '=', 'draft')]"/>
+                    <filter string="Envoyé à la CRT" name="sent_crt" domain="[('state', '=', 'sent_crt')]"/>
+                    <filter string="Envoyé au client" name="sent_client" domain="[('state', '=', 'sent_client')]"/>
+                    <separator/>
+                    <filter string="Mes bordereaux" name="my_bordereau" domain="[('employee_id.user_id', '=', uid)]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Affaire" name="groupby_affaire" context="{'group_by': 'affaire_id'}"/>
+                        <filter string="Responsable" name="groupby_manager" context="{'group_by': 'manager_id'}"/>
+                        <filter string="Employé" name="groupby_employee" context="{'group_by': 'employee_id'}"/>
+                        <filter string="Etat" name="groupby_state" context="{'group_by': 'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        <record id="production_bordereau_tree_view" model="ir.ui.view">
+            <field name="name">production.bordereau.tree</field>
+            <field name="model">production.bordereau</field>
+            <field name="arch" type="xml">
+                <tree string="Bordereaux" decoration-info="state == 'draft'" decoration-primary="state == 'sent_crt'" decoration-success="state == 'sent_client'">
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="employee_id" string="Nom et Prénom"/>
+                    <field name="manager_id"/>
+                    <field name="affaire_id"/>
+                    <field name="zones"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+        <record id="production_bordereau_form_view" model="ir.ui.view">
+            <field name="name">production.bordereau.form</field>
+            <field name="model">production.bordereau</field>
+            <field name="arch" type="xml">
+                <form string="Bordereaux">
+                    <header>
+                        <button name="action_sent_crt" attrs="{'invisible': [('state', '!=', 'draft')]}" class="oe_highlight" string="Envoyer pour validation CRT/Responsable" type="object" groups="tectone.group_production_ingenieur,tectone.group_production_projeteur,tectone.group_production_admin"/>
+                        <button name="action_sent_client" attrs="{'invisible': [('state', '!=', 'sent_crt')]}" class="oe_highlight" string="Envoyer au client" groups="tectone.group_production_transmission,tectone.group_production_admin" type="object" />
+                        <!--button name="action_sent_crt" class="oe_highlight" string="Envoyer à la CRT" type="object" groups="tectone.group_production_ingenieur,tectone.group_production_projeteur,tectone.group_production_admin"/-->
+                        <!--button name="action_sent_client" class="oe_highlight" string="Envoyer au client" groups="tectone.group_production_transmission,tectone.group_production_admin" type="object" /-->
+                        <button name="action_print" class="fa fa-print" attrs="{'invisible': [('state', 'not in', ['sent_client'])]}" string=" Imprimer" type="object" groups="tectone.group_production_ingenieur,tectone.group_production_transmission,tectone.group_production_admin"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,sent_crt,sent_client"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" string="N° Bordereau"/>
+                                <field name="affaire_id" widget="selection"/>
+                            </group>
+                            <group>
+                                <field name="date"/>
+                                <field name="employee_id" widget="selection"/>
+                                <field name="manager_id" widget="selection"/>
+                            </group>
+                        </group>
+                        <group colspan="4">
+                            <fieldset style="border: 1px solid #ddd !important;padding: 0 0.5em 0em 0.5em !important;margin: 0 0 1em 0 !important;">
+                                <legend style="color: #7c7bad;width:inherit;padding:0 2px; border-bottom:none;font-weight: bold ! important;font-size: 14px ! important;margin-bottom: 0px ! important;" >Liste des documents :</legend>
+                                <field name="line_ids" style="overflow-y: auto;max-height: 200px;" colspan="4" nolabel="1" mode="tree" context="{'default_bordereau_id': active_id}" editable="top">
+                                    <tree string="Indices" limit="10000" create="false" editable="top"
+                                          decoration-bf="state == 'sent_crt'"
+                                          decoration-warning="state == 'wait'"
+                                          decoration-danger="state == 'return'"
+                                          decoration-success="state == 'validate'"
+                                          decoration-primary="state == 'sent_client'">
+                                        <field name="bordereau_id" invisible="1"/>
+                                        <field name="document_id" widget="many2one" context="{ 'form_view_ref':'tectone.production_document_form_view'}"/>
+                                        <field name="validate_ing"/>
+                                        <field name="validate_crt"/>
+                                        <field name="state" invisible="1"/>
+                                        <button name="action_draft" class="fa fa-trash" attrs="{'invisible': [('state', '!=', 'draft')]}" string=" Enlever du bordereau" type="object" groups="tectone.group_production_projeteur,tectone.group_production_ingenieur,tectone.group_production_admin"/>
+                                        <button name="action_ing" class="fa fa-check blue_color_button" attrs="{'invisible': ['|', ('state', '!=', 'sent_crt'), ('validate_ing', '=', True)]}" string=" Validation de l'ingénieur" type="object" groups="tectone.group_production_ingenieur,tectone.group_production_admin"/>
+                                        <button name="action_crt" class="fa fa-check green_color_button" attrs="{'invisible': ['|', ('state', '!=', 'sent_crt'), ('validate_crt', '=', True)]}" string=" Validation de la CRT" type="object" groups="tectone.group_production_transmission,tectone.group_production_admin"/>
+                                    </tree>
+                                    <form>
+                                        <header>
+                                            <button name="action_ing" icon="fa-check" attrs="{'invisible': ['|', ('state', '!=', 'sent_crt'), ('validate_ing', '=', True)]}" string=" Validation de l'ingénieur" type="object" groups="tectone.group_production_ingenieur,tectone.group_production_admin"/>
+                                            <button name="action_crt" icon="fa-check" attrs="{'invisible': ['|', ('state', '!=', 'sent_crt'), ('validate_crt', '=', True)]}" string=" Validation de la CRT" type="object" groups="tectone.group_production_transmission,tectone.group_production_admin"/>
+                                            <field name="state" widget="statusbar" statusbar_visible="draft,sent"/>
+                                        </header>
+                                        <sheet>
+                                            <group>
+                                                <field name="document_id" options="{'no_create': True}" context="{ 'form_view_ref':'tectone.production_document_form_view'}" optional="show"/>
+                                                <field name="bordereau_id" invisible="1"/>
+                                                <field name="validate_ing" invisible="1"/>
+                                                <field name="validate_crt" invisible="1"/>
+                                            </group>
+                                        </sheet>
+                                    </form>
+                                </field>
+                            </fieldset>
+                        </group>
+                    </sheet>
+                    <!--<div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>-->
+                </form>
+            </field>
+        </record>
+        <record id="production_bordereau_action" model="ir.actions.act_window">
+            <field name="name">Bordereaux d'envoi</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">production.bordereau</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'create': 0}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Créer un nouveau enregistement
+                </p>
+            </field>
+        </record>
+        <record model="ir.actions.act_window.view" id="production_bordereau_action_tree">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="production_bordereau_tree_view"/>
+            <field name="act_window_id" ref="production_bordereau_action"/>
+        </record>
+		<record model="ir.actions.act_window.view" id="production_bordereau_action_form">
+            <field name="sequence" eval="2"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="production_bordereau_form_view"/>
+            <field name="act_window_id" ref="production_bordereau_action"/>
+        </record>
+        <record id="production_bordereau_line_ing_form_view" model="ir.ui.view">
+            <field name="name">production.bordereau.line.ing</field>
+            <field name="model">production.bordereau.line</field>
+            <field name="arch" type="xml">
+                <form string='Bordereau'  create="false" delete="false">
+                    <sheet>
+                    	<group>
+                            <h3>Voulez-vous valider de document?</h3>
+                        </group>
+                    	<group>
+                    		 <fieldset style="border: 1px solid #ddd !important;padding: 0 0.5em 0em 0.5em !important;margin: 0 0 1em 0 !important;">
+							   	<legend style="color: #7c7bad;width:inherit;padding:0 2px; border-bottom:none;font-weight: bold ! important;font-size: 14px ! important;margin-bottom: 0px ! important;" >Note Ingénieur :</legend>
+					  			<group  colspan="2">
+							   		<field name='note_ing' colspan="4" nolabel="1"/>
+							   	</group>
+                             </fieldset>
+                        </group>
+                        <footer>
+                            <button name="action_validate_ing" string="Valider" type="object" class="oe_highlight"/>
+                            or
+                            <button name="action_cancel_ing" string="Refuser" type="object"/>
+                            or
+                            <button string="Annuler" class="oe_link" special="cancel" />
+                       </footer>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="production_bordereau_line_crt_form_view" model="ir.ui.view">
+            <field name="name">production.bordereau.line.crt</field>
+            <field name="model">production.bordereau.line</field>
+            <field name="arch" type="xml">
+                <form string='Bordereau'  create="false" delete="false">
+                    <sheet>
+                    	<group>
+                            <h3>Voulez-vous valider de document?</h3>
+                        </group>
+                    	<group>
+                    		 <fieldset style="border: 1px solid #ddd !important;padding: 0 0.5em 0em 0.5em !important;margin: 0 0 1em 0 !important;">
+							   	<legend style="color: #7c7bad;width:inherit;padding:0 2px; border-bottom:none;font-weight: bold ! important;font-size: 14px ! important;margin-bottom: 0px ! important;" >Note CRT :</legend>
+					  			<group  colspan="2">
+							   		<field name='note_crt' colspan="4" nolabel="1"/>
+							   	</group>
+                             </fieldset>
+                        </group>
+                        <footer>
+                            <button name="action_validate_crt" string="Valider" type="object" class="oe_highlight"/>
+                            or
+                            <button name="action_cancel_crt" string="Refuser" type="object"/>
+                            or
+                            <button string="Annuler" class="oe_link" special="cancel" />
+                       </footer>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
+
+    <!-- Pointage -->
+        <record id="production_pointage_search_view" model="ir.ui.view">
+            <field name="name">production.pointage.search</field>
+            <field name="model">production.pointage</field>
+            <field name="arch" type="xml">
+                <search string="Pointages">
+                    <field name="employee_id"/>
+                    <filter string="Brouillon" name="draft" domain="[('state', '=', 'draft')]"/>
+                    <filter string="Envoyé" name="sent" domain="[('state', '=', 'sent')]"/>
+                    <separator/>
+                    <filter string="Mon pointage" name="my_pointage" domain="[('employee_id.user_id', '=', uid)]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Employé" name="groupby_employee" context="{'group_by': 'employee_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        <record id="production_pointage_tree_view" model="ir.ui.view">
+            <field name="name">production.pointage.tree</field>
+            <field name="model">production.pointage</field>
+            <field name="arch" type="xml">
+                <tree string="Pointages" decoration-info="state == 'draft'"
+                                          decoration-bf="state == 'sent'">
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="employee_id"/>
+                    <field name="nb_hour" sum="Total des heures"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+        <record id="production_pointage_form_view" model="ir.ui.view">
+            <field name="name">production.pointage.form</field>
+            <field name="model">production.pointage</field>
+            <field name="arch" type="xml">
+                <form string="Documents">
+                    <header>
+                        <button name="action_draft" icon="fa-paper-plane" attrs="{'invisible': [('state', '!=', 'sent')]}" string=" Mettre en brouillon" type="object"/>
+                        <button name="action_sent" icon="fa-paper-plane" attrs="{'invisible': [('state', '!=', 'draft')]}" class="oe_highlight" string=" Envoyer" type="object"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,sent"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" invisible="1"/>
+                                <field name="date"/>
+                            </group>
+                            <group>
+                                <field name="employee_id" options="{'no_create': True, 'no_open': True}"/>
+                            </group>
+                        </group>
+
+                        <group>
+                            <fieldset style="border: 1px solid #ddd !important;padding: 0 0.5em 0em 0.5em !important;margin: 0 0 1em 0 !important;">
+                                <legend style="color: #7c7bad;width:inherit;padding:0 2px; border-bottom:none;font-weight: bold ! important;font-size: 14px ! important;margin-bottom: 0px ! important;" >Liste des tâches :</legend>
+                                <field name="line_ids" style="overflow-y: auto;max-height: 200px;" colspan="4" nolabel="1" mode="tree" context="{'default_pointage_id': active_id}" editable="top">
+                                    <tree string="Lignes">
+                                        <field name="pointage_id" invisible="1"/>
+                                        <field name="affaire_id" options="{'no_open': True, 'no_create': True}"/>
+                                        <field name="type" />
+                                        <field name="task"/>
+                                        <field name="reunion_id"/>
+                                        <field name="document_id" domain="[('affaire_id','=',affaire_id)]"/>
+                                        <field name="nb_hour" invisible="1"/>
+                                        <field name="hour" sum="Total des heures"/>
+                                    </tree>
+                                    <form>
+                                        <group>
+                                            <group>
+                                                <field name="pointage_id" invisible="1"/>
+                                                <field name="affaire_id" options="{'no_open': True, 'no_create': True}" />
+                                                <field name="nb_hour"/>
+                                                <field name="hour" invisible="1"/>
+                                            </group>
+                                            <group>
+                                                <field name="type" />
+                                                <field name="task"
+                                                     attrs="{'required':[('type', '=', 'other')], 'invisible':[('type','!=','other')]}"/>
+                                                <field name="reunion_id" widget="selection"
+                                                     attrs="{'required':[('type', '=', 'meeting')], 'invisible':[('type','!=','meeting')]}"/>
+                                                <field name="document_id" widget="selection" domain="[('affaire_id','=',affaire_id)]"
+                                                    attrs="{'required':[('type', '=', 'document')], 'invisible':[('type','!=','document')]}"/>
+                                            </group>
+                                        </group>
+                                    </form>
+                                </field>
+                            </fieldset>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="production_pointage_action" model="ir.actions.act_window">
+            <field name="name">Pointage</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">production.pointage</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Créer un nouveau enregistement
+                </p>
+            </field>
+        </record>
+    <!-- Menus -->
+        <menuitem id="menu_production_root" name="Production" web_icon="tectone,static/description/production.png" groups="tectone.group_production_admin,tectone.group_production_compt,tectone.group_production_projeteur,tectone.group_production_ingenieur,tectone.group_production_transmission"/>
+        <menuitem id="menu_production_tbd" name="Tableau de bord" parent="menu_production_root" action="production_tbd_action" groups="tectone.group_production_admin" sequence="1"/>
+        <menuitem id="menu_partner_main" name="Clients" parent="menu_production_root" action="res_partner_action_customer"  groups="tectone.group_production_admin" sequence="2"/>
+        <menuitem id="menu_affaire_main" name="Affaires" parent="menu_production_root" action="action_production_affaire_production"  groups="tectone.group_production_admin" sequence="2"/>
+        <menuitem id="menu_affaire_compt" name="Affaires" parent="menu_production_root" action="action_production_affaire"  groups="tectone.group_production_compt" sequence="2"/>
+        <menuitem id="menu_production_document" name="Documents" action="production_document_action" parent="menu_production_root" sequence="3" groups="tectone.group_production_admin,tectone.group_production_projeteur,tectone.group_production_ingenieur"/>
+        <menuitem id="menu_production_pointage" name="Pointage" action="production_pointage_action" parent="menu_production_root" sequence="4" groups="tectone.group_production_admin,tectone.group_production_projeteur,tectone.group_production_ingenieur"/>
+        <menuitem id="menu_production_document_crt" name="Documents" action="production_document_crt_action" parent="menu_production_root" sequence="5" groups="tectone.group_production_transmission"/>
+        <menuitem id="menu_production_bordereau" name="Bordereaux d'envoi" action="production_bordereau_action" parent="menu_production_root" sequence="6"  groups="tectone.group_production_admin,tectone.group_production_projeteur,tectone.group_production_ingenieur,tectone.group_production_transmission"/>
+        <menuitem id="menu_production_config" name="Configuration" parent="menu_production_root" sequence="100"  groups="tectone.group_production_config"/>
+        <menuitem id="menu_production_employee" name="Employés" parent="menu_production_config" action="production_employee_action" sequence="1" />
+        <menuitem id="menu_production_job" name="Postes" parent="menu_production_config" action="production_job_action" sequence="2" />
+        <menuitem id="menu_production_emetteur" name="Emetteurs" parent="menu_production_config" action="production_emetteur_action" sequence="3" />
+        <!--<menuitem id="menu_production_scope" name="Scopes" parent="menu_production_config" action="production_scope_action" sequence="4" />-->
+        <menuitem id="menu_production_ouvrage" name="Type d'ouvrage" parent="menu_production_config" action="production_ouvrage_action" sequence="5" />
+        <menuitem id="menu_production_document_type" name="Identifiant document" parent="menu_production_config" action="production_document_type_action" sequence="6"/>
+        <menuitem id="menu_production_phase" name="Phases" parent="menu_production_config" action="production_phase_action" sequence="7"/>
+        <menuitem id="menu_production_reunion" name="Réunion" parent="menu_production_config" action="production_reunion_action" sequence="8"/>
+</odoo>

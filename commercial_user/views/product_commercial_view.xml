@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!--   Inherit form view     -->
+        <record id="commercial_user_form" model="ir.ui.view">
+            <field name="name">Inherit Commercial Form</field>
+            <field name="model">product.commercial</field>
+            <field name="inherit_id" ref="cicofap.product_commercial_form_view"/>
+            <field name="arch" type="xml">
+                <div name="button_box" position="inside">
+                    <button class="oe_stat_button" type="object" name="action_user_create_from_commercial"
+                        icon="fa-user-plus">Utilisateur
+                    </button>
+                    <button class="oe_stat_button" type="object" name="action_user_delete_from_commercial"
+                        icon="fa-trash">Utilisateur
+                    </button>
+                </div>
+                <xpath expr="//field[@name='phone']" position="before">
+                    <field name="user_id" widget="selection"/>
+                </xpath>
+            </field>
+        </record>
+        <record id="commercial_user_tree" model="ir.ui.view">
+            <field name="name">Inherit Commercial Tree</field>
+            <field name="model">product.commercial</field>
+            <field name="inherit_id" ref="cicofap.product_commercial_tree_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='zone']" position="before">
+                    <field name="user_id" widget="selection"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

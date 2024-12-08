@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<!-- Wizard -->
+        <record id="production_document_indice_create_view_form" model="ir.ui.view">
+            <field name="name">production.document.indice.add.create</field>
+            <field name="model">production.document.indice.add</field>
+            <field name="arch" type="xml">
+                <form string="Pointages">
+                    <sheet>
+                        <group>
+                            <field name="document_id" invisible="1"/>
+                            <field name="no_indice" invisible="1"/>
+                            <h3>Voulez-vous ajouter un nouveau indice?</h3>
+                        </group>
+                        <footer>
+                            <button name="action_done" string="Valider" type="object" class="oe_highlight"/>
+                            or
+                            <button string="Annuler" class="oe_link" special="cancel" />
+                       </footer>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+	</data>
+</odoo>

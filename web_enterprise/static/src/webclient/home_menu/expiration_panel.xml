@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+<t t-name="DatabaseExpirationPanel" owl="1">
+    <div t-if="state.display" t-attf-class="alert-{{state.alertType}}">
+        <!-- t-translation="off" should be on next a element below -->
+    </div>
+    <span t-else=""/>
+</t>
+</templates>

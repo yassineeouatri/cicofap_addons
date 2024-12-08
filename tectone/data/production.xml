@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<!--Adding a salary rule for loan-->
+	<data noupdate="0">
+        <!-- Postes -->
+            <record id="production_job_admin" model="production.job">
+                <field name="name">Administrateur</field>
+            </record>
+            <record id="production_job_proj" model="production.job">
+                <field name="name">Projeteur</field>
+            </record>
+            <record id="production_job_ing" model="production.job">
+                <field name="name">Ingénieur</field>
+            </record>
+        <!-- Phases -->
+            <record id="production_phase_exp" model="production.phase">
+                <field name="name">EXP</field>
+                <field name="description">Expertise</field>
+            </record>
+            <record id="production_phase_pre" model="production.phase">
+                <field name="name">PRE</field>
+                <field name="description">Pré-étude</field>
+            </record>
+            <record id="production_phase_exe" model="production.phase">
+                <field name="name">EXE</field>
+                <field name="description">Exécution</field>
+            </record>
+            <record id="production_phase_pro" model="production.phase">
+                <field name="name">PRO</field>
+                <field name="description">Proposition</field>
+            </record>
+            <record id="production_phase_ao" model="production.phase">
+                <field name="name">AO</field>
+                <field name="description">Appel d'offre</field>
+            </record>
+            <record id="production_phase_aps" model="production.phase">
+                <field name="name">APS</field>
+                <field name="description">Avant projet sommaire</field>
+            </record>
+            <record id="production_phase_apd" model="production.phase">
+                <field name="name">APD</field>
+                <field name="description">Avant projet définitif</field>
+            </record>
+            <record id="production_phase_dce" model="production.phase">
+                <field name="name">DCE</field>
+                <field name="description">Dossier consultation des entreprises</field>
+            </record>
+        <!-- Emetteurs -->
+            <record id="production_emetteur_tct" model="production.emetteur">
+                <field name="name">TCT</field>
+                <field name="description">TECTONE</field>
+            </record>
+            <record id="production_emetteur_soma" model="production.emetteur">
+                <field name="name">SOMA</field>
+                <field name="description">SOMAGEC</field>
+            </record>
+        <!-- Ouvrages -->
+            <record id="production_emetteur_gene" model="production.ouvrage">
+                <field name="name">GENE</field>
+                <field name="description">Document général</field>
+            </record>
+        <!-- Type Doc -->
+            <record id="production_document_type_rpm" model="production.document.type">
+                <field name="type">note</field>
+                <field name="name">RPM</field>
+                <field name="description">Rapport mensuel</field>
+                <field name="sequence">1</field>
+            </record>
+            <record id="production_document_type_ple" model="production.document.type">
+                <field name="type">note</field>
+                <field name="name">PLE</field>
+                <field name="description">Planning études exécution</field>
+                <field name="sequence">2</field>
+            </record>
+            <record id="production_document_type_org" model="production.document.type">
+                <field name="type">note</field>
+                <field name="name">ORG</field>
+                <field name="description">Organigramme</field>
+                <field name="sequence">3</field>
+            </record>
+            <record id="production_document_type_nhm" model="production.document.type">
+                <field name="type">note</field>
+                <field name="name">NHM</field>
+                <field name="description">Notes d'hypothèses</field>
+                <field name="sequence">4</field>
+            </record>
+            <record id="production_document_type_ndc" model="production.document.type">
+                <field name="type">note</field>
+                <field name="name">NDC</field>
+                <field name="description">Notes de calculs</field>
+                <field name="sequence">5</field>
+            </record>
+            <record id="production_document_type_nte" model="production.document.type">
+                <field name="type">note</field>
+                <field name="name">NTE</field>
+                <field name="description">Notes techniques</field>
+                <field name="sequence">6</field>
+            </record>
+            <record id="production_document_type_geo" model="production.document.type">
+                <field name="type">note</field>
+                <field name="name">GEO</field>
+                <field name="description">Géotechnique</field>
+                <field name="sequence">7</field>
+            </record>
+            <record id="production_document_type_cou" model="production.document.type">
+                <field name="type">echange</field>
+                <field name="name">COU</field>
+                <field name="description">Courrier</field>
+                <field name="sequence">8</field>
+            </record>
+            <record id="production_document_type_mas" model="production.document.type">
+                <field name="type">plan</field>
+                <field name="name">MAS</field>
+                <field name="description">Plan de masse</field>
+                <field name="sequence">9</field>
+            </record>
+            <record id="production_document_type_imp" model="production.document.type">
+                <field name="type">plan</field>
+                <field name="name">IMP</field>
+                <field name="description">Implantation</field>
+                <field name="sequence">10</field>
+            </record>
+            <record id="production_document_type_ins" model="production.document.type">
+                <field name="type">plan</field>
+                <field name="name">INS</field>
+                <field name="description">Installations et ouvrages provisoires</field>
+                <field name="sequence">11</field>
+            </record>
+            <record id="production_document_type_met" model="production.document.type">
+                <field name="type">plan</field>
+                <field name="name">MET</field>
+                <field name="description">Methodologie</field>
+                <field name="sequence">12</field>
+            </record>
+            <record id="production_document_type_ter" model="production.document.type">
+                <field name="type">plan</field>
+                <field name="name">TER</field>
+                <field name="description">Terrassement</field>
+                <field name="sequence">13</field>
+            </record>
+            <record id="production_document_type_cof" model="production.document.type">
+                <field name="type">plan</field>
+                <field name="name">COF</field>
+                <field name="description">Coffrage</field>
+                <field name="sequence">14</field>
+            </record>
+            <record id="production_document_type_arm" model="production.document.type">
+                <field name="type">plan</field>
+                <field name="name">ARM</field>
+                <field name="description">Armature</field>
+                <field name="sequence">15</field>
+            </record>
+            <record id="production_document_type_cme" model="production.document.type">
+                <field name="type">plan</field>
+                <field name="name">CME</field>
+                <field name="description">Structure Métallique (Charpente, Palonnier, Coffrage ...)</field>
+                <field name="sequence">16</field>
+            </record>
+            <record id="production_document_type_dfe" model="production.document.type">
+                <field name="type">plan</field>
+                <field name="name">DFE</field>
+                <field name="description">Forronnerie (Insert, garde corps, ...)</field>
+                <field name="sequence">17</field>
+            </record>
+            <record id="production_document_type_ass" model="production.document.type">
+                <field name="type">plan</field>
+                <field name="name">ASS</field>
+                <field name="description">Assainissement</field>
+                <field name="sequence">18</field>
+            </record>
+            <record id="production_document_type_vro" model="production.document.type">
+                <field name="type">plan</field>
+                <field name="name">VRO</field>
+                <field name="description">Voirie</field>
+                <field name="sequence">19</field>
+            </record>
+            <record id="production_document_type_rco" model="production.document.type">
+                <field name="type">plan</field>
+                <field name="name">RCO</field>
+                <field name="description">Récolement</field>
+                <field name="sequence">20</field>
+            </record>
+        <!-- REUNION -->
+            <record id="production_visio" model="production.reunion">
+                <field name="name">VISIO</field>
+                <field name="sequence">1</field>
+            </record>
+            <record id="production_bureau" model="production.reunion">
+                <field name="name">BUREAU</field>
+                <field name="sequence">2</field>
+            </record>
+            <record id="production_telephone" model="production.reunion">
+                <field name="name">TELEPHONE</field>
+                <field name="sequence">3</field>
+            </record>
+            <record id="production_chantier" model="production.reunion">
+                <field name="name">CHANTIER</field>
+                <field name="sequence">4</field>
+            </record>
+            <record id="production_exp" model="production.reunion">
+                <field name="name">EXP INFO</field>
+                <field name="sequence">5</field>
+            </record>
+            <record id="production_tbd_default" model="production.tbd">
+                <field name="name">TBD</field>
+            </record>
+	</data>
+
+</odoo>

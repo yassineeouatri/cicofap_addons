@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_invoice_cash_tree" model="ir.ui.view">
+            <field name="name">invoice.cash.tree</field>
+            <field name="model">invoice.cash</field>
+            <field name="arch" type="xml">
+                <tree string="Factures" decoration-success="state == 'done'" decoration-muted="state == 'cancel'">
+                    <field name="name" string="N° Cash"/>
+                    <field name="partner_id" string="Article"/>
+                    <field name="date" string="Date"/>
+                    <field name="price_untaxed" sum="Montant HT" optional="show"/>
+                    <field name="price_tax" sum="TVA" optional="show"/>
+                    <field name="price_total" string="Montant TTC" sum="Total" decoration-bf="1" optional="show"/>
+                    <field name="price_payed" string="Montant Payé" sum="Total payé" optional="show"/>
+                    <field name="price_due" string="Montant Restant" sum="Total restant" optional="show"/>
+                    <field name="currency_id" optional="hide"/>
+                    <field name="payment_state"
+                           widget="badge"
+                           decoration-danger="payment_state == 'not_paid'"
+                           decoration-warning="payment_state in ('partial')"
+                           decoration-success="payment_state in ('paid')"
+                           optional="show"/>
+                    <field name="state" widget="badge" decoration-success="state == 'done'" optional="show"/>
+                  </tree>
+            </field>
+        </record>
+        <record id="view_invoice_cash_form" model="ir.ui.view">
+            <field name="name">invoice.cash.form</field>
+            <field name="model">invoice.cash</field>
+            <field name="arch" type="xml">
+                <form string="Account Entry">
+                    <header>
+                        <button name="%(cicofap.action_invoice_cash_payment_register)d" string="Enregistrer un paiement" type="action" data-hotkey="q"
+                         attrs="{'invisible' : [('state', '!=', 'done')]}" class="btn-primary" groups="cicofap.group_cicofap_admin"
+                       />
+                        <button name="button_draft" string="Remettre à l'état brouillon" type="object"  attrs="{'invisible' : [('state', '=', 'draft')]}"/>
+                        <button name="button_done" string="Valider" type="object"  attrs="{'invisible' : [('state', '!=', 'draft')]}" class="btn-primary"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
+                    </header>
+                    <sheet>
+                        <div name="button_box" class="oe_button_box">
+                        </div>
+                        <!-- Payment status for invoices / receipts -->
+                        <widget name="web_ribbon" title="Payée" attrs="{'invisible': [('payment_state', '!=', 'paid')]}"/>
+                        <widget name="web_ribbon" title="Partiellement payée" attrs="{'invisible': [('payment_state', '!=', 'partiellement payée')]}"/>
+
+                        <!-- Invisible fields -->
+                        <field name="id" invisible="1"/>
+                        <field name="payment_state" invisible="1"/>
+                        <group>
+                            <group id="header_left_group">
+                                <field name="partner_id" widget="res_partner_many2one"
+                                       context="{'show_address': 1, 'default_is_company': True, 'show_vat': True}"
+                                       options='{"always_reload": True, "no_quick_create": True}'/>
+                                <field name="ref" invisible="1"/>
+                                <field name="order_id" options='{"no_open": True, "no_create": True}'/>
+                            </group>
+                            <group id="header_right_group">
+                                <field name="date" />
+                            </group>
+                        </group>
+                        <notebook>
+                            <page id="invoice_tab" string="Lignes de la facture">
+                                <field name="line_ids"
+                                       widget="section_and_note_one2many"
+                                       mode="tree" >
+                                    <tree editable="bottom" string="Journal Items" >
+                                        <!-- Displayed fields -->
+                                        <field name="product_id" optional="show"/>
+                                        <field name="name"/>
+                                        <field name="quantity"/>
+                                        <field name="price_unit" string="PU"/>
+                                        <field name="tax_id"/>
+                                        <field name="discount"/>
+                                        <field name="price_untaxed" string="Montant HT"/>
+                                        <field name="price_total" string="Total" invisible="1"/>
+
+                                        <!-- Others fields -->
+                                        <field name="partner_id" invisible="1"/>
+                                        <field name="currency_id" invisible="1"/>
+                                        <field name="date" invisible="1"/>
+                                    </tree>
+                                </field>
+                                <group class="oe_subtotal_footer oe_right">
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="price_untaxed" widget="monetary"/>
+                                    <field name="price_tax" widget="monetary"/>
+                                    <field name="price_total" widget="monetary"/>
+                                </group>
+                                <group class="oe_subtotal_footer oe_right">
+                                    <field name="price_payed" widget="monetary"/>
+                                    <field name="price_due" widget="monetary"/>
+                                </group>
+                            </page>
+                            <page id="payment_tab" string="Lignes de paiement" groups="cicofap.group_cicofap_admin" >
+                                <field name="payment_ids"
+                                       widget="section_and_note_one2many"
+                                       mode="tree" >
+                                    <tree editable="bottom" string="Paiements" >
+                                        <!-- Displayed fields -->
+                                        <field name="cash_id" invisible="1"/>
+                                        <field name="date" optional="show"/>
+                                        <field name="currency_id" invisible="1"/>
+                                        <field name="payment_method"/>
+                                        <field name="no_payment"/>
+                                        <field name="payment_filename"/>
+                                        <field name="amount"/>
+                                    </tree>
+                                    <form string="Paiements" >
+                                        <group>
+                                            <group>
+                                                <field name="cash_id" invisible="1"/>
+                                                <field name="date" optional="show"/>
+                                                <field name="currency_id" invisible="1"/>
+                                                <field name="payment_method"/>
+                                                <field name="no_payment"/>
+                                                <field name="amount"/>
+                                            </group>
+                                            <group>
+                                                <field name="payment_file" filename="payment_filename"/>
+                                                <field name="payment_filename" invisible="1"/>
+                                            </group>
+                                        </group>
+
+                                    </form>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <!-- ACTIONS -->
+        <record id="action_invoice_cash" model="ir.actions.act_window">
+            <field name="name">Cash</field>
+            <field name="res_model">invoice.cash</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_invoice_cash_tree"/>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>
+        </record>
+
+    </data>
+</odoo>

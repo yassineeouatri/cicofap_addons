@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="base.menu_board_root" name="Dashboards" sequence="260" web_icon="base,static/description/board.png" groups="base.group_erp_manager"/>
+
+    <!-- Products Control Menu -->
+    <menuitem id="menu_cicofap_product_root" name="Articles" sequence="20" web_icon="cicofap,static/description/product.png" groups="cicofap.group_cicofap_product"/>
+    <menuitem id="menu_cicofap_product_main" name="Articles" parent="menu_cicofap_product_root" sequence="1"/>
+    <menuitem id="menu_cicofap_product_template" name="Articles" action="action_cicofap_product_template" parent="menu_cicofap_product_main" sequence="1"/>
+    <menuitem id="menu_cicofap_product_product" name="Variantes d'article" action="action_cicofap_product_product" parent="menu_cicofap_product_main" sequence="2"/>
+    <menuitem id="menu_cicofap_product_pricelist" name="Liste des prix" parent="menu_cicofap_product_main" action="product.product_pricelist_action2" sequence="3"/>
+    <menuitem id="menu_cicofap_product_template_compatibility" name="Liste des compatibilités" parent="menu_cicofap_product_main" action="action_product_template_compatibility" sequence="4"/>
+    <menuitem id="menu_cicofap_product_template" name="Articles" action="action_cicofap_product_template" parent="menu_cicofap_product_main" sequence="2"/>
+    <menuitem id="menu_cicofap_product_config" name="Configuration" parent="menu_cicofap_product_root" sequence="100"/>
+    <menuitem id="menu_cicofap_product_configuration" name="Articles" parent="menu_cicofap_product_config" sequence="1"/>
+    <menuitem id="menu_cicofap_product_attribute" name="Caractéristiques" action="product.attribute_action" parent="menu_cicofap_product_configuration" groups="product.group_product_variant" sequence="1"/>
+    <menuitem id="menu_cicofap_product_category_config" action="product.product_category_action_form" parent="menu_cicofap_product_configuration" sequence="2" />
+    <menuitem id="menu_cicofap_product_template_attribute_line_config" action="action_cicofap_product_template_attribute_line" parent="menu_cicofap_product_configuration" sequence="3" groups="base.group_no_one"/>
+    <menuitem id="menu_cicofap_product_supplierinfo_config" action="action_cicofap_product_supplierinfo" parent="menu_cicofap_product_configuration" sequence="4" groups="base.group_no_one"/>
+    <menuitem id="menu_cicofap_product_marque_config" action="action_product_marque" parent="menu_cicofap_product_configuration" sequence="5"/>
+    <menuitem id="menu_cicofap_product_manufacturer_config" action="action_product_manufacturer" parent="menu_cicofap_product_configuration" sequence="6"/>
+    <!--<menuitem id="menu_cicofap_product_manufacturer_model_config" action="action_product_manufacturer_model" parent="menu_cicofap_product_configuration" sequence="7"/>-->
+    <menuitem id="menu_cicofap_product_manufacturer_serie_config" action="action_product_manufacturer_serie" parent="menu_cicofap_product_configuration" sequence="8"/>
+    <menuitem id="menu_cicofap_product_engine_type_config" action="action_product_engine_type" parent="menu_cicofap_product_configuration" sequence="9"/>
+    <menuitem id="menu_cicofap_product_motor_type_config" action="action_product_motor_type" parent="menu_cicofap_product_configuration" sequence="10"/>
+    <menuitem id="menu_cicofap_product_body_type_config" action="action_product_body_type" parent="menu_cicofap_product_configuration" sequence="11"/>
+    <menuitem id="menu_cicofap_product_drive_type_config" action="action_product_drive_type" parent="menu_cicofap_product_configuration" sequence="12"/>
+
+
+    <menuitem id="menu_cicofap_product_magasin_root" name="Articles" sequence="20" web_icon="cicofap,static/description/product.png" groups="cicofap.group_cicofap_magasin_siege,cicofap.group_cicofap_magasin_radiateur"/>
+    <menuitem id="menu_cicofap_product_magasin_main" name="Articles" parent="menu_cicofap_product_magasin_root" sequence="1"/>
+    <menuitem id="menu_cicofap_product_magasin_template" name="Articles" action="action_cicofap_product_template_magasin" parent="menu_cicofap_product_magasin_root" sequence="1"/>
+
+    <!-- inherit sale menus -->
+    <menuitem id="sale.sale_menu_root" name="Sales" groups="cicofap.group_cicofap_sale" web_icon="sale_management,static/description/icon.png" sequence="30"/>
+    <menuitem id="sale.menu_sale_report" name="Reporting" parent="sale.sale_menu_root" sequence="5" groups="sales_team.group_sale_manager,cicofap.group_cicofap_m1"/>
+    <menuitem id="menu_product_movement_report" name="Mouvements des articles" action="product_movement_report_action" parent="sale.menu_sale_report" sequence="2"/>
+    <menuitem id="sale.product_menu_catalog" name="Products" parent="sale.sale_menu_root" sequence="4" groups="base.group_no_one"/>
+    <menuitem id="sale.prod_config_main" name="Products" parent="sale.menu_sale_config" sequence="5" groups="base.group_no_one"/>
+    <menuitem id="sale_sock_picking_reliquat" name="Reliquats" parent="sale.sale_order_menu" action="action_picking_reliquat" sequence="3"/>
+    <menuitem id="sale_sock_picking_picking" action="action_picking_transfert_outgoing" parent="sale.sale_menu_root" sequence="3"/>
+    <menuitem id="sale_sock_picking_outgoing" action="action_picking_transfert_outgoing" parent="sale_sock_picking_picking" sequence="2"/>
+
+    <menuitem id="sale_config_commercial" name="Commercials" parent="sale.sale_order_menu" action="cicofap.action_product_commercial" sequence="100"/>
+    <menuitem id="sale_config_transport" name="Transports" parent="sale.menu_sale_config" action="cicofap.action_product_transport" sequence="7"/>
+
+    <menuitem id="sale.menu_sale_order_wizard_report" name="Relevé par client" parent="account.menu_finance" sequence="10"/>
+    <menuitem id="sale.menu_sale_order_invoice_wizard_report" name="Factures" action="sale_order_print_invoice_wizard_action" parent="sale.menu_sale_order_wizard_report" sequence="1"/>
+    <menuitem id="sale.menu_sale_order_cash_wizard_report" name="Cash" action="sale_order_print_cash_wizard_action" parent="sale.menu_sale_order_wizard_report" sequence="2" groups="cicofap.group_cicofap_admin"/>
+    <menuitem id="menu_cicofap_sale_order_line" name="Lignes de commande" parent="sale.sale_order_menu" groups="sales_team.group_sale_manager" action="action_cicofap_sale_order_line" sequence="3"/>
+    <!-- inherit purchase menus -->
+    <menuitem id="purchase.menu_purchase_products" name="Products" parent="purchase.menu_purchase_root" sequence="5" groups="base.group_no_one"/>
+    <menuitem id="purchase.menu_product_in_config_purchase" name="Products" parent="purchase.menu_purchase_config" sequence="30" groups="base.group_no_one"/>
+
+    <!-- inerit stock menus -->
+    <menuitem name="Inventory" id="stock.menu_stock_root" sequence="140" groups="group_cicofap_stock" web_icon="stock,static/description/icon.png"/>
+    <menuitem id="stock.all_picking" name="Transfers" parent="stock.menu_stock_warehouse_mgmt" sequence="5" action="stock.action_picking_tree_all" groups="base.group_no_one"/>
+    <menuitem id="stock.menu_stock_inventory_control" name="Products" parent="stock.menu_stock_root" sequence="4" groups="base.group_no_one"/>
+    <menuitem id="stock.menu_product_in_config_stock" name="Products" parent="stock.menu_stock_config_settings" sequence="4"  groups="base.group_no_one"/>
+    <menuitem id="stock.menu_delivery" name="Delivery" parent="stock.menu_stock_config_settings" groups="base.group_no_one" sequence="50"/>
+    <menuitem id="menu_stock_quantity" name="Stock par entrepôt" parent="stock.menu_stock_root" sequence="90"/>
+    <menuitem id="menu_stock_depot" name="Dépôt" parent="menu_stock_quantity" sequence="1" action="action_view_quants_depot" groups="cicofap.group_cicofap_admin,cicofap.group_cicofap_m1"/>
+    <menuitem id="menu_stock_m1" name="M1" parent="menu_stock_quantity" sequence="2" action="action_view_quants_m1" groups="cicofap.group_cicofap_admin,cicofap.group_cicofap_m1"/>
+    <menuitem id="menu_stock_siege" name="Siège" parent="menu_stock_quantity" sequence="3" action="action_view_quants_siege" groups="cicofap.group_cicofap_admin,cicofap.group_cicofap_adv1"/>
+    <!-- Transferts -->
+    <menuitem id="interne_picking_root" name="Transferts Internes" sequence="150" groups="cicofap.group_cicofap_transfert" web_icon="cicofap,static/description/transfert.png"/>
+    <menuitem id="interne_picking" name="Transferts Internes" parent="cicofap.interne_picking_root" sequence="1" action="action_picking_transfert_interne"/>
+    <menuitem id="stock.menu_stock_config_settings" name="Configuration" parent="stock.menu_stock_root" sequence="100" groups="stock.group_stock_manager"/>
+
+    <!-- accounting menu -->
+    <menuitem id="account.menu_finance" name="Accounting" sequence="55" groups="cicofap.group_cicofap_account"/>
+    <menuitem id="menu_cicofap_invoice_cash" name="Cash" sequence="55" action="action_invoice_cash" parent="account.menu_finance_receivables" groups="cicofap.group_cicofap_admin"/>
+
+    <menuitem id="menu_cicofap_customer_root" name="Espace Client" sequence="20" web_icon="cicofap,static/description/customer.png" groups="cicofap.group_cicofap_customer"/>
+    <menuitem id="menu_cicofap_res_partner_customer" name="Ma fiche" action="action_customer_partner" parent="menu_cicofap_customer_root" sequence="1"/>
+    <menuitem id="menu_cicofap_product_template_customer" name="Articles" action="action_cicofap_product_template_customer" parent="menu_cicofap_customer_root" sequence="2"/>
+    <menuitem id="menu_sale_quotations_customer" name="Commandes" action="action_cicofap_sale_order_customer" parent="menu_cicofap_customer_root" sequence="3"/>
+
+    <menuitem id="menu_cicofap_commercial_root" name="Espace commercial" sequence="25" web_icon="cicofap,static/description/customer.png" groups="cicofap.group_cicofap_commercial"/>
+    <menuitem id="menu_cicofap_product_template_commercial" name="Articles" action="action_cicofap_product_template_commercial" parent="menu_cicofap_commercial_root" sequence="1"/>
+    <menuitem id="menu_sale_quotations_commercial" name="Commandes" action="action_cicofap_sale_order_commercial" parent="menu_cicofap_commercial_root" sequence="2"/>
+</odoo>

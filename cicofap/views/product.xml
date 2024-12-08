@@ -1,0 +1,1090 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Attributs et valeurs-->
+        <record id="action_cicofap_product_template_attribute_line" model="ir.actions.act_window">
+            <field name="name">Attributes et valeurs</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.template.attribute.line</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{}</field>
+            <field name="view_id" eval="False"/> <!-- Force empty -->
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                No product found. Let's create one!
+              </p><p>
+                You must define a product for everything you sell or purchase,
+                whether it's a storable product, a consumable or a service.
+              </p>
+            </field>
+        </record>
+        <record id="cicofap_product_template_form_view_procurement_button" model="ir.ui.view">
+            <field name="name">cicofap.product.template</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="stock.product_template_form_view_procurement_button"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_view_stock_move_lines']" position="replace">
+                    <button type="object"
+                        name= "action_view_product_movement"
+                        attrs="{'invisible':[('type', 'not in', ['product', 'consu'])]}"
+                        class="oe_stat_button" icon="fa-exchange"
+                        groups="stock.group_stock_user">
+                        <div class="o_field_widget o_stat_info mr4">
+                            <span class="o_stat_text">In:</span>
+                            <span class="o_stat_text">Out:</span>
+                        </div>
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_value"><field name="nbr_moves_in"/></span>
+                            <span class="o_stat_value"><field name="nbr_moves_out"/></span>
+                        </div>
+                    </button>
+                </xpath>
+            </field>
+        </record>
+        <record id="cicofap_product_form_view_procurement_button" model="ir.ui.view">
+            <field name="name">cicofap.product.product</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="stock.product_form_view_procurement_button"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_view_stock_move_lines']" position="replace">
+                    <button type="object"
+                        name= "action_view_product_movement"
+                        attrs="{'invisible':[('type', 'not in', ['product', 'consu'])]}"
+                        class="oe_stat_button" icon="fa-exchange"
+                        groups="stock.group_stock_user">
+                        <div class="o_field_widget o_stat_info mr4">
+                            <span class="o_stat_text">In:</span>
+                            <span class="o_stat_text">Out:</span>
+                        </div>
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_value"><field name="nbr_moves_in"/></span>
+                            <span class="o_stat_value"><field name="nbr_moves_out"/></span>
+                        </div>
+                    </button>
+                </xpath>
+            </field>
+        </record>
+
+    <!-- Référence Fournisseurs-->
+        <record id="cicofap_product_supplierinfo_tree" model="ir.ui.view">
+            <field name="name">product.supplierinfo.tree.view2</field>
+            <field name="model">product.supplierinfo</field>
+            <field name="inherit_id" ref="product.product_supplierinfo_tree_view"/>
+            <field name="mode">primary</field>
+            <field name="priority" eval="1000"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='product_code']" position="attributes">
+                    <attribute name="optional">show</attribute>
+                </xpath>
+            </field>
+        </record>
+        <record id="action_cicofap_product_supplierinfo" model="ir.actions.act_window">
+            <field name="name">Fournisseurs</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.supplierinfo</field>
+            <field name="view_mode">tree</field>
+            <field name="context">{}</field>
+            <field name="view_id" eval="False"/> <!-- Force empty -->
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                No product found. Let's create one!
+              </p><p>
+                You must define a product for everything you sell or purchase,
+                whether it's a storable product, a consumable or a service.
+              </p>
+            </field>
+        </record>
+    <!-- product template -->
+        <record id="action_cicofap_product_template" model="ir.actions.act_window">
+            <field name="name">Articles</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.template</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="context">{}</field>
+            <field name="search_view_id" ref="product.product_template_search_view"/>
+            <field name="view_id" eval="False"/> <!-- Force empty -->
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Aucun article à afficher
+              </p>
+            </field>
+        </record>
+        <record id="action_cicofap_product_template_tree" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="cicofap_product_template_tree_view"/>
+            <field name="act_window_id" ref="action_cicofap_product_template"/>
+        </record>
+        <record id="action_cicofap_product_product" model="ir.actions.act_window">
+            <field name="name">Variantes d'article</field>
+            <field name="res_model">product.product</field>
+            <field name="view_mode">tree,kanban,form,activity</field>
+            <field name="search_view_id" ref="product.product_search_form_view"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Create a new product variant
+              </p><p>
+                You must define a product for everything you sell or purchase,
+                whether it's a storable product, a consumable or a service.
+              </p>
+            </field>
+        </record>
+        <record id="cicofap_product_template_kanban_view" model="ir.ui.view">
+            <field name="name">cicofap.product.template.kanban</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_kanban_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='product_lst_price']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//div[@name='product_lst_price']" position="after">
+                    <div>PV TTC: <field name="tax_string"/></div>
+                    <div>Marque: <field name="marque_id"/></div>
+                </xpath>
+            </field>
+        </record>
+        <record id="cicofap_product_template_tree_view" model="ir.ui.view">
+            <field name="name">cicofap.product.template.tree</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_tree_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='list_price']" position="attributes">
+                    <attribute name="groups"></attribute>
+                </xpath>
+                <xpath expr="//field[@name='standard_price']" position="attributes">
+                    <attribute name="groups"></attribute>
+                </xpath>
+            </field>
+        </record>
+        <record id="cicofap_product_template_form_view" model="ir.ui.view">
+            <field name="name">cicofap.product.template.form</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button type="object"
+                            name="action_view_compatibility"
+                            class="oe_stat_button"
+                            icon="fa-pencil-square-o">
+                            <field string="Compatibilités" name="compatibility_count" widget="statinfo"/>
+                        </button>
+                </xpath>
+                <xpath expr="//div[@name='pricing']" position="attributes">
+                    <attribute name="groups"></attribute>
+                </xpath>
+                <xpath expr="//div[@name='standard_price_uom']" position="attributes">
+                    <attribute name="groups"></attribute>
+                </xpath>
+                <xpath expr="//button[@name='open_pricelist_rules']" position="attributes">
+                    <attribute name="groups"></attribute>
+                </xpath>
+                <xpath expr="//field[@name='taxes_id']" position="attributes">
+                    <attribute name="groups"></attribute>
+                </xpath>
+                <xpath expr="//field[@name='categ_id']" position="after">
+                    <field name="supplier_id" />
+                    <field name="marque_id" />
+                </xpath>
+                <xpath expr="//label[hasclass('mt-1')]" position="attributes">
+                    <attribute name="groups"></attribute>
+                </xpath>
+                <xpath expr="//page[@name='sales']" position="attributes">
+                    <attribute name="groups"></attribute>
+                </xpath>
+                <xpath expr="//page[@name='purchase']" position="attributes">
+                    <attribute name="groups"></attribute>
+                </xpath>
+            </field>
+        </record>
+        <record id="cicofap_product_template_search_view" model="ir.ui.view">
+            <field name="name">cicofap.product.template.search</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_search_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group" position="after">
+                    <searchpanel>
+                        <field name="categ_id" sselect="multi" tring="Categories" enable_counters="1"/>
+                        <field name="marque_id" sselect="multi" tring="Marques" enable_counters="1"/>
+                        <field name="supplier_id" select="multi" string="Fournisseurs" icon="fa-truck" enable_counters="1"/>
+                    </searchpanel>
+                </xpath>
+            </field>
+        </record>
+        <record id="cicofap_product_product_customer_search_view" model="ir.ui.view">
+            <field name="name">product.product.customer.search</field>
+            <field name="model">product.product</field>
+            <field name="arch" type="xml">
+                <search string="Product">
+                    <field name="name"/>
+                    <field name="default_code"/>
+                </search>
+            </field>
+        </record>
+        <record id="cicofap_product_product_customer_tree_view" model="ir.ui.view">
+            <field name="name">cicofap.product.product.customer.tree</field>
+            <field name="model">product.product</field>
+            <field name="arch" type="xml">
+                <tree create="0" delete="0" decoration-danger="qty_available &lt;= 0" decoration-success="qty_available &gt; 0">
+                    <field name="name"/>
+                    <field name="default_code" optional="show"/>
+                    <field name="barcode" optional="hide" readonly="1"/>
+                    <field name="categ_id" optional="hide"/>
+                    <field name="type" optional="hide" readonly="1"/>
+                    <field name="list_price" optional="show"/>
+                    <field name="qty_available" invisible="1" optional="show"/>
+                    <field name="availability" optional="show"/>
+                    <field name="uom_id" options="{'no_open': True, 'no_create': True}" optional="show" readonly="1"/>
+                </tree>
+            </field>
+        </record>
+        <record id="cicofap_product_product_customer_form_view" model="ir.ui.view">
+            <field name="name">cicofap.product.product.customer.form</field>
+            <field name="model">product.product</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="default_code"/>
+                            </group>
+                            <group>
+                                <field name="categ_id"/>
+                                <field name="list_price"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Attributs et Variantes">
+                                <field name="attribute_line_ids" widget="one2many" context="{'show_attribute': False}" readonly="1">
+                                    <tree string="Variants" decoration-info="value_count &lt;= 1" editable="top">
+                                        <field name="value_count" invisible="1"/>
+                                        <field name="attribute_id" options='{"no_open": True}'/>
+                                        <field name="value_ids" widget="many2many_tags"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Caractéristiques">
+                        <group>
+                            <group>
+                                <field name="weight"/>
+                                <field name="height"/>
+                                <field name="dents"/>
+                            </group>
+                            <group>
+                                <field name="width"/>
+                                <field name="epaisseur"/>
+                            </group>
+                        </group>
+                    </page>
+                            <page string="Compatibilité">
+                        <group>
+                            <field name="compatibility_ids" colspan="4" nolabel="1" mode="tree" context="{'default_template_id': active_id}">
+                                <tree string="Compatibilité" editable="bottom">
+                                    <field name="template_id" invisible="1" required="1"/>
+                                    <field name="name"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="cicofap_product_template_customer_search_view" model="ir.ui.view">
+            <field name="name">product.template.customer.search</field>
+            <field name="model">product.template</field>
+            <field name="arch" type="xml">
+                <search string="Product">
+                    <field name="default_code"/>
+                    <field name="name"/>
+                    <searchpanel>
+                        <field name="categ_id" sselect="multi" tring="Categories" enable_counters="1"/>
+                        <field name="marque_id" sselect="multi" tring="Marques" enable_counters="1"/>
+                    </searchpanel>
+                </search>
+            </field>
+        </record>
+        <record id="cicofap_product_template_customer_tree_view" model="ir.ui.view">
+            <field name="name">cicofap.product.template.customer.tree</field>
+            <field name="model">product.template</field>
+            <field name="arch" type="xml">
+                <tree create="0" delete="0">
+                    <field name="name"/>
+                    <field name="default_code" optional="show"/>
+                    <field name="barcode" optional="hide" readonly="1"/>
+                    <field name="company_id" optional="hide" readonly="1"/>
+                    <field name="categ_id" optional="hide"/>
+                    <field name="detailed_type" optional="hide"/>
+                    <field name="type" optional="hide" readonly="1"/>
+                    <field name="list_price" widget='monetary' options="{'currency_field': 'currency_id', 'field_digits': True}" optional="show"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="qty_available" optional="show"/>
+                    <field name="virtual_available" optional="show"/>
+                    <field name="uom_id" options="{'no_open': True, 'no_create': True}" optional="show" readonly="1"/>
+                    <field name="availability" decoration-success="availability == 'En stock'" decoration-danger="availability == 'En rupture'" widget="badge" optional="show"/>
+                </tree>
+            </field>
+        </record>
+        <record id="cicofap_product_template_customer_form_view" model="ir.ui.view">
+            <field name="name">cicofap.product.template.customer.form</field>
+            <field name="model">product.template</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                      <button name="action_product_template_add" string="Ajouter à la commande" icon="fa-plus" type="object" class="btn-primary"/>
+                    </header>
+                    <sheet>
+                        <field name="id" invisible="True"/>
+                        <field name="image_1920" widget="image" class="oe_avatar" options="{'preview_image': 'image_128'}"/>
+                        <div class="oe_title">
+                            <label for="name" string="Nom du produit"/>
+                            <h1>
+                                <div class="d-flex">
+                                    <field name="priority" widget="priority" class="mr-3"/>
+                                    <field class="o_text_overflow" name="name" placeholder="e.g. Cheese Burger"/>
+                                </div>
+                            </h1>
+                        </div>
+                        <notebook>
+                            <page string="Informations générales" name="general_information">
+                                <group>
+                                    <group name="group_general">
+                                        <field name="active" invisible="1"/>
+                                        <field name="detailed_type"/>
+                                        <field name="product_tooltip" string="" class="font-italic text-muted"/>
+                                        <field name="uom_id" groups="uom.group_uom" options="{'no_create': True}"/>
+                                        <field name="uom_po_id" groups="uom.group_uom" options="{'no_create': True}"/>
+                                    </group>
+                                    <group name="group_standard_price">
+                                        <field name="default_code"/>
+                                        <field name="categ_id" string="Catégorie d'article"/>
+                                        <field name="company_id" options="{'no_create': True}"/>
+                                        <field name="supplier_id" />
+                                        <field name="marque_id" />
+                                        <label for="list_price" class="mt-1"/>
+                                        <div name="pricing">
+                                          <field name="list_price" class="oe_inline" widget='monetary'
+                                            options="{'currency_field': 'currency_id', 'field_digits': True}"/>
+                                        </div>
+                                        <field name="currency_id" invisible="1"/>
+                                        <field name="cost_currency_id" invisible="1"/>
+                                        <field name="product_variant_id" invisible="1"/>
+                                        <field name="qty_available" groups="cicofap.group_cicofap_customer_stock"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Attributs et Variantes">
+                                <field name="attribute_line_ids" widget="one2many" context="{'show_attribute': False}" readonly="1">
+                                    <tree string="Variants" decoration-info="value_count &lt;= 1" editable="top">
+                                        <field name="value_count" invisible="1"/>
+                                        <field name="attribute_id" options='{"no_open": True}'/>
+                                        <field name="value_ids" widget="many2many_tags"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Caractéristiques">
+                                <group>
+                                    <group>
+                                        <field name="weight"/>
+                                        <field name="height"/>
+                                        <field name="dents"/>
+                                    </group>
+                                    <group>
+                                        <field name="width"/>
+                                        <field name="epaisseur"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Compatibilité">
+                                <group>
+                                    <field name="compatibility_ids" colspan="4" nolabel="1" mode="tree" context="{'default_template_id': active_id}">
+                                        <tree string="Compatibilité" editable="bottom">
+                                            <field name="template_id" invisible="1" required="1"/>
+                                            <field name="name"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="action_cicofap_product_template_customer" model="ir.actions.act_window">
+            <field name="name">Articles</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.template</field>
+            <field name="search_view_id" ref="cicofap_product_template_customer_search_view"/>
+            <field name="view_mode">tree,kanban</field>
+            <field name="context">{}</field>
+            <field name="view_id" eval="False"/>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Aucun article à afficher
+              </p>
+            </field>
+        </record>
+        <record id="action_cicofap_product_template_customer_tree" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="cicofap_product_template_customer_tree_view"/>
+            <field name="act_window_id" ref="action_cicofap_product_template_customer"/>
+        </record>
+        <record id="action_cicofap_product_template_customer_form" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="cicofap_product_template_customer_form_view"/>
+            <field name="act_window_id" ref="action_cicofap_product_template_customer"/>
+        </record>
+    <!-- Commercial -->
+        <record id="cicofap_product_template_commercial_search_view" model="ir.ui.view">
+            <field name="name">product.template.commercial.search</field>
+            <field name="model">product.template</field>
+            <field name="arch" type="xml">
+                <search string="Product">
+                    <field name="default_code"/>
+                    <field name="name"/>
+                    <searchpanel>
+                        <field name="categ_id" sselect="multi" tring="Categories" enable_counters="1"/>
+                        <field name="marque_id" sselect="multi" tring="Marques" enable_counters="1"/>
+                    </searchpanel>
+                </search>
+            </field>
+        </record>
+        <record id="cicofap_product_template_commercial_tree_view" model="ir.ui.view">
+            <field name="name">cicofap.product.template.commercial.tree</field>
+            <field name="model">product.template</field>
+            <field name="arch" type="xml">
+                <tree create="0" delete="0">
+                    <field name="name"/>
+                    <field name="default_code" optional="show"/>
+                    <field name="barcode" optional="hide" readonly="1"/>
+                    <field name="company_id" optional="hide" readonly="1"/>
+                    <field name="categ_id" optional="hide"/>
+                    <field name="detailed_type" optional="hide"/>
+                    <field name="type" optional="hide" readonly="1"/>
+                    <field name="list_price" widget='monetary' options="{'currency_field': 'currency_id', 'field_digits': True}" optional="show"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="qty_available" optional="show"/>
+                    <field name="virtual_available" optional="show"/>
+                    <field name="uom_id" options="{'no_open': True, 'no_create': True}" optional="show" readonly="1"/>
+                    <field name="availability" decoration-success="availability == 'En stock'" decoration-danger="availability == 'En rupture'" widget="badge" optional="show"/>
+                </tree>
+            </field>
+        </record>
+        <record id="cicofap_product_template_commercial_form_view" model="ir.ui.view">
+            <field name="name">cicofap.product.template.commercial.form</field>
+            <field name="model">product.template</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                      <button name="action_product_template_add" string="Ajouter à la commande" icon="fa-plus" type="object" class="btn-primary"/>
+                    </header>
+                    <sheet>
+                        <field name="id" invisible="True"/>
+                        <field name="image_1920" widget="image" class="oe_avatar" options="{'preview_image': 'image_128'}"/>
+                        <div class="oe_title">
+                            <label for="name" string="Nom du produit"/>
+                            <h1>
+                                <div class="d-flex">
+                                    <field name="priority" widget="priority" class="mr-3"/>
+                                    <field class="o_text_overflow" name="name" placeholder="e.g. Cheese Burger"/>
+                                </div>
+                            </h1>
+                        </div>
+                        <notebook>
+                            <page string="Informations générales" name="general_information">
+                                <group>
+                                    <group name="group_general">
+                                        <field name="active" invisible="1"/>
+                                        <field name="detailed_type"/>
+                                        <field name="product_tooltip" string="" class="font-italic text-muted"/>
+                                        <field name="uom_id" groups="uom.group_uom" options="{'no_create': True}"/>
+                                        <field name="uom_po_id" groups="uom.group_uom" options="{'no_create': True}"/>
+                                    </group>
+                                    <group name="group_standard_price">
+                                        <field name="default_code"/>
+                                        <label for="list_price" class="mt-1"/>
+                                        <div name="pricing">
+                                          <field name="list_price" class="oe_inline" widget='monetary'
+                                            options="{'currency_field': 'currency_id', 'field_digits': True}"/>
+                                            <span class="ml-2"/><field name="tax_string"/>
+                                        </div>
+                                        <field name="currency_id" invisible="1"/>
+                                        <field name="cost_currency_id" invisible="1"/>
+                                        <field name="product_variant_id" invisible="1"/>
+                                        <field name="qty_available" groups="cicofap.group_cicofap_customer_stock"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Attributs et Variantes">
+                                <field name="attribute_line_ids" widget="one2many" context="{'show_attribute': False}" readonly="1">
+                                    <tree string="Variants" decoration-info="value_count &lt;= 1" editable="top">
+                                        <field name="value_count" invisible="1"/>
+                                        <field name="attribute_id" options='{"no_open": True}'/>
+                                        <field name="value_ids" widget="many2many_tags"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Caractéristiques">
+                                <group>
+                                    <group>
+                                        <field name="weight"/>
+                                        <field name="height"/>
+                                        <field name="dents"/>
+                                    </group>
+                                    <group>
+                                        <field name="width"/>
+                                        <field name="epaisseur"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Compatibilité">
+                                <group>
+                                    <field name="compatibility_ids" colspan="4" nolabel="1" mode="tree" context="{'default_template_id': active_id}">
+                                        <tree string="Compatibilité" editable="bottom">
+                                            <field name="template_id" invisible="1" required="1"/>
+                                            <field name="name"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="action_cicofap_product_template_commercial" model="ir.actions.act_window">
+            <field name="name">Articles</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.template</field>
+            <field name="search_view_id" ref="cicofap_product_template_commercial_search_view"/>
+            <field name="view_mode">tree,kanban</field>
+            <field name="context">{}</field>
+            <field name="view_id" eval="False"/>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Aucun article à afficher
+              </p>
+            </field>
+        </record>
+        <record id="action_cicofap_product_template_commercial_tree" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="cicofap_product_template_commercial_tree_view"/>
+            <field name="act_window_id" ref="action_cicofap_product_template_commercial"/>
+        </record>
+        <record id="action_cicofap_product_template_commercial_form" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="cicofap_product_template_commercial_form_view"/>
+            <field name="act_window_id" ref="action_cicofap_product_template_commercial"/>
+        </record>
+    <!-- Magasin -->
+        <record id="cicofap_product_product_magasin_search_view" model="ir.ui.view">
+            <field name="name">product.product.magasin.search</field>
+            <field name="model">product.product</field>
+            <field name="arch" type="xml">
+                <search string="Product">
+                    <field name="name"/>
+                    <field name="default_code"/>
+                </search>
+            </field>
+        </record>
+        <record id="cicofap_product_product_magasin_tree_view" model="ir.ui.view">
+            <field name="name">cicofap.product.product.magasin.tree</field>
+            <field name="model">product.product</field>
+            <field name="arch" type="xml">
+                <tree create="0" delete="0" decoration-danger="qty_available &lt;= 0" decoration-success="qty_available &gt; 0">
+                    <field name="name"/>
+                    <field name="default_code" optional="show"/>
+                    <field name="barcode" optional="hide" readonly="1"/>
+                    <field name="categ_id" optional="hide"/>
+                    <field name="categ_type" optional="show"/>
+                    <field name="type" optional="hide" readonly="1"/>
+                    <field name="list_price" optional="show"/>
+                    <field name="qty_available" invisible="1" optional="show"/>
+                    <field name="availability" optional="show"/>
+                    <field name="uom_id" options="{'no_open': True, 'no_create': True}" optional="show" readonly="1"/>
+                </tree>
+            </field>
+        </record>
+        <record id="cicofap_product_product_magasin_form_view" model="ir.ui.view">
+            <field name="name">cicofap.product.product.magasin.form</field>
+            <field name="model">product.product</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="default_code"/>
+                            </group>
+                            <group>
+                                <field name="categ_id"/>
+                                <field name="list_price"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Attributs et Variantes">
+                                <field name="attribute_line_ids" widget="one2many" context="{'show_attribute': False}" readonly="1">
+                                    <tree string="Variants" decoration-info="value_count &lt;= 1" editable="top">
+                                        <field name="value_count" invisible="1"/>
+                                        <field name="attribute_id" options='{"no_open": True}'/>
+                                        <field name="value_ids" widget="many2many_tags"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Caractéristiques">
+                        <group>
+                            <group>
+                                <field name="weight"/>
+                                <field name="height"/>
+                                <field name="dents"/>
+                            </group>
+                            <group>
+                                <field name="width"/>
+                                <field name="epaisseur"/>
+                            </group>
+                        </group>
+                    </page>
+                            <page string="Compatibilité">
+                        <group>
+                            <field name="compatibility_ids" colspan="4" nolabel="1" mode="tree" context="{'default_template_id': active_id}">
+                                <tree string="Compatibilité" editable="bottom">
+                                    <field name="template_id" invisible="1" required="1"/>
+                                    <field name="name"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="cicofap_product_template_magasin_search_view" model="ir.ui.view">
+            <field name="name">product.template.magasin.search</field>
+            <field name="model">product.template</field>
+            <field name="arch" type="xml">
+                <search string="Product">
+                    <field name="default_code"/>
+                    <field name="name"/>
+                    <searchpanel>
+                        <field name="categ_id" sselect="multi" tring="Categories" enable_counters="1"/>
+                        <field name="marque_id" sselect="multi" tring="Marques" enable_counters="1"/>
+                    </searchpanel>
+                </search>
+            </field>
+        </record>
+        <record id="cicofap_product_template_magasin_tree_view" model="ir.ui.view">
+            <field name="name">cicofap.product.template.magasin.tree</field>
+            <field name="model">product.template</field>
+            <field name="arch" type="xml">
+                <tree create="0" delete="0">
+                    <field name="name"/>
+                    <field name="default_code" optional="show"/>
+                    <field name="barcode" optional="hide" readonly="1"/>
+                    <field name="company_id" optional="hide" readonly="1"/>
+                    <field name="categ_id" optional="hide"/>
+                    <field name="categ_type" optional="show"/>
+                    <field name="detailed_type" optional="hide"/>
+                    <field name="type" optional="hide" readonly="1"/>
+                    <field name="list_price" widget='monetary' options="{'currency_field': 'currency_id', 'field_digits': True}" optional="show"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="qty_available" optional="show"/>
+                    <field name="virtual_available" optional="show"/>
+                    <field name="uom_id" options="{'no_open': True, 'no_create': True}" optional="show" readonly="1"/>
+                    <field name="availability" decoration-success="availability == 'En stock'" decoration-danger="availability == 'En rupture'" widget="badge" optional="show"/>
+                </tree>
+            </field>
+        </record>
+        <record id="cicofap_product_template_magasin_form_view" model="ir.ui.view">
+            <field name="name">cicofap.product.template.magasin.form</field>
+            <field name="model">product.template</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <field name="id" invisible="True"/>
+                        <field name="image_1920" widget="image" class="oe_avatar" options="{'preview_image': 'image_128'}"/>
+                        <div class="oe_title">
+                            <label for="name" string="Nom du produit"/>
+                            <h1>
+                                <div class="d-flex">
+                                    <field name="priority" widget="priority" class="mr-3"/>
+                                    <field class="o_text_overflow" name="name" placeholder="e.g. Cheese Burger"/>
+                                </div>
+                            </h1>
+                        </div>
+                        <notebook>
+                            <page string="Informations générales" name="general_information">
+                                <group>
+                                    <group name="group_general">
+                                        <field name="active" invisible="1"/>
+                                        <field name="detailed_type"/>
+                                        <field name="product_tooltip" string="" class="font-italic text-muted"/>
+                                        <field name="uom_id" groups="uom.group_uom" options="{'no_create': True}" widget="selection"/>
+                                        <field name="uom_po_id" groups="uom.group_uom" options="{'no_create': True}" widget="selection"/>
+                                    </group>
+                                    <group name="group_standard_price">
+                                        <field name="default_code"/>
+                                        <field name="categ_id" string="Catégorie d'article" widget="selection"/>
+                                        <field name="company_id" options="{'no_create': True}" widget="selection"/>
+                                        <field name="supplier_id" widget="selection"/>
+                                        <field name="marque_id" widget="selection"/>
+                                        <label for="list_price" class="mt-1"/>
+                                        <div name="pricing">
+                                          <field name="list_price" class="oe_inline" widget='monetary'
+                                            options="{'currency_field': 'currency_id', 'field_digits': True}"/>
+                                        </div>
+                                        <field name="currency_id" invisible="1"/>
+                                        <field name="cost_currency_id" invisible="1"/>
+                                        <field name="product_variant_id" invisible="1"/>
+                                        <field name="qty_available" groups="cicofap.group_cicofap_customer_stock"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Attributs et Variantes">
+                                <field name="attribute_line_ids" widget="one2many" context="{'show_attribute': False}" readonly="1">
+                                    <tree string="Variants" decoration-info="value_count &lt;= 1" editable="top">
+                                        <field name="value_count" invisible="1"/>
+                                        <field name="attribute_id" options='{"no_open": True, "no_create": True}' widget="selection"/>
+                                        <field name="value_ids" widget="many2many_tags"/>
+                                    </tree>
+                                    <form>
+                                        <group><field name="attribute_id" options='{"no_open": True, "no_create": True}' widget="selection"/></group>
+                                    </form>
+                                </field>
+                            </page>
+                            <page string="Caractéristiques">
+                                <group>
+                                    <group>
+                                        <field name="weight"/>
+                                        <field name="height"/>
+                                        <field name="dents"/>
+                                    </group>
+                                    <group>
+                                        <field name="width"/>
+                                        <field name="epaisseur"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Compatibilité">
+                                <group>
+                                    <field name="compatibility_ids" colspan="4" nolabel="1" mode="tree" context="{'default_template_id': active_id}" readonly="1">
+                                        <tree string="Compatibilité" editable="bottom">
+                                            <field name="template_id" invisible="1" required="1" widget="selection"/>
+                                            <field name="name"/>
+                                        </tree>
+                                        <form><group><field name="name"/></group></form>
+                                    </field>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="action_cicofap_product_template_magasin" model="ir.actions.act_window">
+            <field name="name">Articles</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.template</field>
+            <field name="search_view_id" ref="cicofap_product_template_magasin_search_view"/>
+            <field name="view_mode">tree,kanban</field>
+            <field name="context">{}</field>
+            <field name="view_id" eval="False"/>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Aucun article à afficher
+              </p>
+            </field>
+        </record>
+        <record id="action_cicofap_product_template_magasin_tree" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="cicofap_product_template_magasin_tree_view"/>
+            <field name="act_window_id" ref="action_cicofap_product_template_magasin"/>
+        </record>
+        <record id="action_cicofap_product_template_magasin_form" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="cicofap_product_template_magasin_form_view"/>
+            <field name="act_window_id" ref="action_cicofap_product_template_magasin"/>
+        </record>
+    <!-- product marque -->
+        <record id="product_marque_tree_view" model="ir.ui.view">
+            <field name="name">product.marque.tree</field>
+            <field name="model">product.marque</field>
+            <field name="arch" type="xml">
+                <tree editable="top">
+                    <field name="name"/>
+                    <field name="parent_id" options='{"no_open": True, "no_create": True}'/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_product_marque" model="ir.actions.act_window">
+            <field name="name">Marques</field>
+            <field name="res_model">product.marque</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="product_marque_tree_view"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_empty_folder">
+                    Ajouter une nouvelle marque
+                </p>
+            </field>
+        </record>
+    <!-- product marque -->
+        <record id="product_marque_tree_view" model="ir.ui.view">
+            <field name="name">product.marque.tree</field>
+            <field name="model">product.marque</field>
+            <field name="arch" type="xml">
+                <tree editable="top">
+                    <field name="name"/>
+                    <field name="parent_id" options='{"no_open": True, "no_create": True}'/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_product_marque" model="ir.actions.act_window">
+            <field name="name">Marques</field>
+            <field name="res_model">product.marque</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="product_marque_tree_view"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_empty_folder">
+                    Ajouter une nouvelle marque
+                </p>
+            </field>
+        </record>
+    <!-- product template compatibility -->
+        <record id="product_template_compatibility_search_view" model="ir.ui.view">
+            <field name="name">product.template.compatibility.search</field>
+            <field name="model">product.template.compatibility</field>
+            <field name="arch" type="xml">
+                <search string="Product">
+                    <field name="template_id"/>
+                    <field name="manufacturer_id"/>
+                    <field name="serie_id"/>
+                    <field name="motor_type_id"/>
+                    <field name="body_type_id"/>
+                    <field name="drive_type_id"/>
+                    <field name="engine_type_id"/>
+                    <group expand="0" string="Grouper par">
+                        <filter string="Fabriquant" name="groupby_manufacturer" domain="[]" context="{'group_by': 'manufacturer_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        <record id="product_template_compatibility_tree_view" model="ir.ui.view">
+            <field name="name">product.template.compatibility.tree</field>
+            <field name="model">product.template.compatibility</field>
+            <field name="arch" type="xml">
+                <tree editable="top">
+                    <field name="template_id" required="1"/>
+                    <field name="name" invisible="1"/>
+                    <field name="manufacturer_id" optional="show"/>
+                    <field name="model_id" invisible="1"/>
+                    <field name="serie_id" optional="show"/>
+                    <field name="motor_type_id"  optional="show"/>
+                    <field name="displacement" invisible="1"/>
+                    <field name="model_year_from" invisible="1"/>
+                    <field name="model_year_to" invisible="1"/>
+                    <field name="model_year" optional="show"/>
+                    <field name="body_type_id" optional="show"/>
+                    <field name="drive_type_id" optional="show"/>
+                    <field name="engine_type_id" optional="show"/>
+                    <field name="engine_code" optional="show"/>
+                    <field name="type" invisible="1"/>
+                    <field name="kw" optional="show"/>
+                    <field name="hp" optional="show"/>
+                    <field name="cylinder" optional="show"/>
+                    <field name="valve" optional="show"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_product_template_compatibility" model="ir.actions.act_window">
+            <field name="name">Listes des compatibilités</field>
+            <field name="res_model">product.template.compatibility</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="product_template_compatibility_tree_view"/>
+            <field name="context">{"search_default_groupby_manufacturer" : True, }</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_empty_folder">
+                    Ajouter un nouveau enregistrement
+                </p>
+            </field>
+        </record>
+
+    <!-- product manufacturer-->
+        <record id="product_manufacturer_tree_view" model="ir.ui.view">
+            <field name="name">product.manufacturer.tree</field>
+            <field name="model">product.manufacturer</field>
+            <field name="arch" type="xml">
+                <tree editable="top">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_product_manufacturer" model="ir.actions.act_window">
+            <field name="name">Fabriquants</field>
+            <field name="res_model">product.manufacturer</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="product_manufacturer_tree_view"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_empty_folder">
+                    Ajouter un nouveau enregistrement
+                </p>
+            </field>
+        </record>
+
+    <!-- product manufacturer model-->
+        <record id="product_manufacturer_model_tree_view" model="ir.ui.view">
+            <field name="name">product.manufacturer.model.tree</field>
+            <field name="model">product.manufacturer.model</field>
+            <field name="arch" type="xml">
+                <tree editable="top">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_product_manufacturer_model" model="ir.actions.act_window">
+            <field name="name">Modèles</field>
+            <field name="res_model">product.manufacturer.model</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="product_manufacturer_model_tree_view"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_empty_folder">
+                    Ajouter un nouveau enregistrement
+                </p>
+            </field>
+        </record>
+
+     <!-- product manufacturer series-->
+        <record id="product_manufacturer_serie_tree_view" model="ir.ui.view">
+            <field name="name">product.manufacturer.serie.tree</field>
+            <field name="model">product.manufacturer.serie</field>
+            <field name="arch" type="xml">
+                <tree editable="top">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_product_manufacturer_serie" model="ir.actions.act_window">
+            <field name="name">Modèles séries</field>
+            <field name="res_model">product.manufacturer.serie</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="product_manufacturer_serie_tree_view"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_empty_folder">
+                    Ajouter un nouveau enregistrement
+                </p>
+            </field>
+        </record>
+
+    <!-- product engine type-->
+        <record id="product_engine_type_tree_view" model="ir.ui.view">
+            <field name="name">product.engine.type.tree</field>
+            <field name="model">product.engine.type</field>
+            <field name="arch" type="xml">
+                <tree editable="top">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_product_engine_type" model="ir.actions.act_window">
+            <field name="name">Type d'engines</field>
+            <field name="res_model">product.engine.type</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="product_engine_type_tree_view"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_empty_folder">
+                    Ajouter un nouveau enregistrement
+                </p>
+            </field>
+        </record>
+    <!-- product drive type-->
+        <record id="product_drive_type_tree_view" model="ir.ui.view">
+            <field name="name">product.drive.type.tree</field>
+            <field name="model">product.drive.type</field>
+            <field name="arch" type="xml">
+                <tree editable="top">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_product_drive_type" model="ir.actions.act_window">
+            <field name="name">Type de tractions</field>
+            <field name="res_model">product.drive.type</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="product_drive_type_tree_view"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_empty_folder">
+                    Ajouter un nouveau enregistrement
+                </p>
+            </field>
+        </record>
+
+    <!-- product body type-->
+        <record id="product_body_type_tree_view" model="ir.ui.view">
+            <field name="name">product.body.type.tree</field>
+            <field name="model">product.body.type</field>
+            <field name="arch" type="xml">
+                <tree editable="top">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_product_body_type" model="ir.actions.act_window">
+            <field name="name">Type de corps</field>
+            <field name="res_model">product.body.type</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="product_body_type_tree_view"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_empty_folder">
+                    Ajouter un nouveau enregistrement
+                </p>
+            </field>
+        </record>
+
+    <!-- product moteur type-->
+        <record id="product_motor_type_tree_view" model="ir.ui.view">
+            <field name="name">product.motor.type.tree</field>
+            <field name="model">product.motor.type</field>
+            <field name="arch" type="xml">
+                <tree editable="top">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_product_motor_type" model="ir.actions.act_window">
+            <field name="name">Type de moteurs</field>
+            <field name="res_model">product.motor.type</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="product_motor_type_tree_view"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_empty_folder">
+                    Ajouter un nouveau enregistrement
+                </p>
+            </field>
+        </record>
+
+</odoo>

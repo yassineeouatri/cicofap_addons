@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_partner_merge_view_form" model="ir.ui.view">
+        <field name="name">res.partner.merge.form</field>
+        <field name="model">res.partner.merge</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="dest_partner_id" options='{"no_open": True, "no_create": True}'/>
+                    <field name="src_partner_id" options='{"no_open": True, "no_create": True}'/>
+                </group>
+
+                <footer>
+                    <button string="Fusionner" name="action_merge" type="object" class="oe_highlight" data-hotkey="q"/>
+                    <button string="Annuler" class="btn btn-default" special="cancel" data-hotkey="z"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="res_partner_merge_wizard_action" model="ir.actions.act_window">
+        <field name="name">Fusionner 2 clients</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.partner.merge</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="res_partner_merge_view_form"/>
+        <field name="target">new</field>
+    </record>
+
+
+    <menuitem id="menu_cicofap_action_merge_partner" name="Fusionner les clients" action="res_partner_merge_wizard_action" parent="menu_action_product_template" sequence="6"/>
+</odoo>

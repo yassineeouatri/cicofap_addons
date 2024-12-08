@@ -1,0 +1,759 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="cicofap_view_order_filter" model="ir.ui.view">
+        <field name="name">cicofap.sale.order.filter</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group" position="after">
+                <searchpanel>
+                    <field name="warehouse_id" select="multi" string="Entrepôts" enable_counters="1"/>
+                </searchpanel>
+            </xpath>
+        </field>
+    </record>
+    <record id="cicofap_view_order_form" model="ir.ui.view">
+        <field name="name">cicofap.sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group" position="after">
+                <searchpanel>
+                    <field name="warehouse_id" select="multi" string="Entrepôts" enable_counters="1"/>
+                </searchpanel>
+            </xpath>
+            <xpath expr="//button[@name='action_cancel']" position="replace">
+                <button name="action_cancel" type="object" string="Annuler" attrs="{'invisible': ['|', ('state', 'not in', ['new', 'draft', 'sent','sale']), ('id', '=', False)]}" data-hotkey="z"/>
+            </xpath>
+            <xpath expr="//button[@name='action_quotation_send']" position="before">
+                <button name="%(cicofap.action_view_sale_make_invoice_cash)d" string="Créer un cash"
+                        type="action" data-hotkey="q"
+                        attrs="{'invisible': [('invoice_status', '!=', 'to invoice')]}" groups="cicofap.group_cicofap_admin"/>
+            </xpath>
+            <xpath expr="//button[@name='action_view_delivery']" position="before">
+                <field name="show_cash_button" invisible="1"/>
+                <button type="object"
+                    name="action_view_cash"
+                    class="oe_stat_button"
+                        attrs="{'invisible':[('show_cash_button', '=', False)]}"
+                    icon="fa-pencil-square-o">
+                    <field string="Cash" name="cash_count" widget="statinfo"/>
+                </button>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="attributes">
+                <attribute name="options">{'no_open': True, 'no_create': True, 'no_edit': True}</attribute>
+                <attribute name="domain">[('customer', '=', True)]</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="devis_no"/>
+                <field name="expedition"/>
+                <field name="commercial_id"/>
+                <field name="transport_id"/>
+            </xpath>
+            <xpath expr="//button[@name='preview_sale_order']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_confirm']" position="before">
+                <button name="preview_sale_order" type="object" string="Aperçu"/>
+            </xpath>
+            <xpath expr="//button[@name='action_quotation_send']" position="attributes">
+                <attribute name="groups"></attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_confirm']" position="attributes">
+                <attribute name="groups"></attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_confirm']" position="attributes">
+                <attribute name="groups"></attribute>
+            </xpath>
+            <xpath expr="//button[@name='preview_sale_order']" position="attributes">
+                <attribute name="groups"></attribute>
+            </xpath>
+            <xpath expr="//field[@name='date_order']" position="attributes">
+                <attribute name="groups"></attribute>
+            </xpath>
+            <xpath expr="//field[@name='pricelist_id']" position="attributes">
+                <attribute name="groups"></attribute>
+            </xpath>
+            <xpath expr="//field[@name='payment_term_id']" position="attributes">
+                <field name="payment_term_id"/>
+            </xpath>
+            <xpath expr="//field[@name='payment_term_id']" position="attributes">
+                <attribute name="groups"></attribute>
+            </xpath>
+            <xpath expr="//field[@name='warehouse_id']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//group[@name='order_details']" position="after">
+                <group name="sale_shipping" string="Delivery">
+                    <field name="warehouse_id" options="{'no_create': True}" force_save="1"/>
+                    <label for="commitment_date" string="Delivery Date"/>
+                    <div name="commitment_date_div" class="o_row">
+                        <field name="commitment_date"/>
+                        <span name="expected_date_span" class="text-muted">Expected: <field name="expected_date" widget="date"/></span>
+                    </div>
+                </group>
+            </xpath>
+            <xpath expr="//create[@name='add_section_control']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//create[@name='add_note_control']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                <field name="payment_method"/>
+                <field name="no_payment" string="Numéro de paiement"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']" position="attributes">
+                <attribute name="domain">[('route_id', '!=', False)]</attribute>
+            </xpath>
+            <xpath expr="//form/sheet/notebook/page[1]/field[@name='order_line']/tree/field[@name='price_subtotal']" position='after'>
+                <field name="price_total"/>
+            </xpath>
+            <xpath expr="//form/sheet/notebook/page[1]/field[@name='order_line']/tree/field[@name='tax_id']" position='after'>
+                <field name="price_taxinc"/>
+            </xpath>
+
+            <xpath expr="//form/sheet/notebook/page[1]/field[@name='order_line']/tree/field[@name='product_template_id']" position='attributes'>
+                <attribute name="options">{}</attribute>
+            </xpath>
+            <xpath expr="//form/sheet/notebook/page[1]/field[@name='order_line']/tree/field[@name='product_id']" position='attributes'>
+                <attribute name="options">{}</attribute>
+            </xpath>
+            <xpath expr="//page[@name='other_information']" position="attributes">
+                <attribute name="groups"></attribute>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="attributes">
+                <attribute name="groups"></attribute>
+            </xpath>
+
+        </field>
+    </record>
+    <record id="cicofap_view_order_tree" model="ir.ui.view">
+        <field name="name">cicofap.sale.order.tree</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='date_order']" position="before">
+                <field name="create_date" string="Date de création" widget="date" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="cicofap_view_order_quotation" model="ir.ui.view">
+        <field name="name">cicofap.sale.quotation.tree</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='create_date']" position="after">
+                <field name="date_order" string="Date de la commande" widget="date" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="sale.action_quotations" model="ir.actions.act_window">
+        <field name="context">{}</field>
+    </record>
+    <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
+        <field name="context">{}</field>
+    </record>
+    <record id="cicofap_action_quotations_with_onboarding_tree" model="ir.actions.act_window.view">
+        <field eval="1" name="sequence"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="cicofap_view_order_tree"/>
+        <field name="act_window_id" ref="sale.action_quotations_with_onboarding"/>
+    </record>
+    <record id="cicofap_action_quotations_with_onboarding_form" model="ir.actions.act_window.view">
+        <field eval="2" name="sequence"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="cicofap_view_order_form"/>
+        <field name="act_window_id" ref="sale.action_quotations_with_onboarding"/>
+    </record>
+
+
+    <record id="cicofap_view_order_form_inherit_sale_stock" model="ir.ui.view">
+        <field name="name">cicofap.sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale_stock.view_order_form_inherit_sale_stock"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='warehouse_id']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+        </field>
+    </record>
+    <!-- sale order line -->
+        <record id="cicofap_view_order_line_tree" model="ir.ui.view">
+            <field name="name">cicofap.sale.order.line.tree</field>
+            <field name="model">sale.order.line</field>
+            <field name="arch" type="xml">
+                <tree create="0" delete="0" >
+                    <field name="order_id"/>
+                    <field name="order_partner_id"/>
+                    <field name="product_id"/>
+                    <field name="name"/>
+                    <field name="price_unit"/>
+                    <field name="product_uom_qty" string="Qty"/>
+                    <field name="discount"/>
+                    <field name="product_uom" string="Unit of Measure" groups="uom.group_uom"/>
+                    <field name="price_subtotal" sum="Total" widget="monetary"/>
+                    <field name="price_total" sum="Total" widget="monetary"/>
+                    <field name="currency_id" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_cicofap_sale_order_line" model="ir.actions.act_window">
+            <field name="name">Lignes de commande</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">sale.order.line</field>
+            <field name="view_mode">tree</field>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Créer une nouvelle ligne de commande
+                </p>
+            </field>
+        </record>
+
+    <!-- sale order customer -->
+        <record id="view_sales_order_cicofap_customer_filter" model="ir.ui.view">
+                <field name="name">sale.order.list.select</field>
+                <field name="model">sale.order</field>
+                <field name="priority" eval="15"/>
+                <field name="arch" type="xml">
+                    <search string="Search Sales Order">
+                        <field name="partner_id"/>
+                   </search>
+                </field>
+            </record>
+        <record id="view_order_cicofap_customer_tree" model="ir.ui.view">
+            <field name="name">sale.order.customer.tree</field>
+            <field name="model">sale.order</field>
+            <field name="priority">2</field>
+            <field name="arch" type="xml">
+                <tree string="Sales Orders" sample="1">
+                    <field name="name" string="Numéro" readonly="1" decoration-bf="1"/>
+                    <field name="create_date" string="Date de création" widget="date" optional="show"/>
+                    <field name="date_order" string="Date de la commande" widget="date" optional="show"/>
+                    <field name="partner_id" readonly="1"/>
+                    <field name="commitment_date" string="Date de livraison" widget="date" optional="show"/>
+                    <field name="amount_tax" sum="Tax Total" widget="monetary" optional="hide"/>
+                    <field name="amount_total" sum="Total Tax Included" widget="monetary" decoration-bf="1" optional="show"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="invoice_status" decoration-success="invoice_status == 'invoiced'" decoration-info="invoice_status == 'to invoice'" decoration-warning="invoice_status == 'upselling'" widget="badge" optional="show"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+        <record id="view_order_cicofap_customer_form" model="ir.ui.view">
+                <field name="name">sale.order.customer.form</field>
+                <field name="model">sale.order</field>
+                <field name="arch" type="xml">
+                  <form string="Commandes">
+                      <header>
+                          <button name="action_quotation_validate" string="Confirmer" type="object" states="new" class="btn-primary" data-hotkey="g"/>
+                          <button name="action_cancel" type="object" string="Annuler" states="new"  data-hotkey="z"/>
+                          <field name="state" widget="statusbar" statusbar_visible="new,draft,sent,sale"/>
+                      </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                                <field name="company_id" invisible="1"/>
+                                <field name="pricelist_id" invisible="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="partner_id" options='{"no_create": True,"no_open": True}' attrs="{'readonly': [('state', 'not in', ('new'))]}" domain="[('allowed_user_ids','in',[uid])]"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Lignes de commande" name="order_lines">
+                                <field name="order_line" widget="section_and_note_one2many" mode="tree" attrs="{'readonly': [('state', 'not in', ('new'))]}">
+                                    <tree string="Sales Order Lines" editable="bottom">
+                                        <field name="company_id" invisible="1"/>
+                                        <field name="sequence" widget="handle" />
+                                        <!-- We do not display the type because we don't want the user to be bothered with that information if he has no section or note. -->
+                                        <field name="display_type" invisible="1"/>
+                                        <field name="product_uom_category_id" invisible="1"/>
+
+                                        <field name="product_updatable" invisible="1"/>
+                                        <field
+                                            name="product_id"
+                                            attrs="{
+                                                'readonly': [('product_updatable', '=', False)],
+                                                'required': [('display_type', '=', False)],
+                                            }"
+                                            options="{'no_open': True}"
+                                            force_save="1"
+                                            context="{
+                                                'partner_id': parent.partner_id,
+                                                'quantity': product_uom_qty,
+                                                'pricelist': parent.pricelist_id,
+                                                'uom':product_uom,
+                                                'default_lst_price': price_unit,
+                                                'default_description_sale': name,
+                                                'tree_view_ref':'cicofap.cicofap_product_product_customer_tree_view',
+                                                'form_view_ref':'cicofap.cicofap_product_product_customer_form_view',
+                                                'search_view_ref':'cicofap.cicofap_product_product_customer_search_view'
+                                            }"
+                                            widget="product_configurator"
+                                        />
+                                        <field name="product_template_id" string="Product" invisible="1" attrs="{'readonly': [('product_updatable', '=', False)],
+                                              'required': [('display_type', '=', False)],}"
+                                          options="{'no_open': True}"
+                                          context="{
+                                              'partner_id': parent.partner_id,
+                                              'quantity': product_uom_qty,
+                                              'pricelist': parent.pricelist_id,
+                                              'uom':product_uom,
+                                              'default_list_price': price_unit,
+                                              'default_description_sale': name,
+                                              'tree_view_ref':'cicofap.cicofap_product_template_customer_tree_view',
+                                              'form_view_ref':'cicofap.cicofap_product_template_customer_form_view',
+                                              'search_view_ref':'cicofap.cicofap_product_template_customer_search_view'
+                                          }"
+                                          widget="product_configurator"/>
+                                        <field name="name" widget="section_and_note_text" optional="hide"/>
+                                        <field
+                                            name="product_uom_qty"
+                                            decoration-info="(not display_type and invoice_status == 'to invoice')" decoration-bf="(not display_type and invoice_status == 'to invoice')"
+                                            context="{
+                                                'partner_id': parent.partner_id,
+                                                'quantity': product_uom_qty,
+                                                'pricelist': parent.pricelist_id,
+                                                'uom': product_uom,
+                                            }"
+                                        />
+                                        <field name="qty_to_invoice" invisible="1"/>
+                                        <field name="product_uom_readonly" invisible="1"/>
+                                        <field
+                                            name="product_uom"
+                                            force_save="1"
+                                            string="UoM"
+                                            attrs="{
+                                                'readonly': [('product_uom_readonly', '=', True)],
+                                                'required': [('display_type', '=', False)],
+                                            }"
+                                            groups="uom.group_uom"
+                                            options='{"no_open": True}'
+                                            optional="hide"
+                                        />
+                                        <field name="product_packaging_qty" attrs="{'invisible': ['|', ('product_id', '=', False), ('product_packaging_id', '=', False)]}" groups="product.group_stock_packaging" optional="show"/>
+                                        <field name="product_packaging_id" attrs="{'invisible': [('product_id', '=', False)]}" context="{'default_product_id': product_id, 'tree_view_ref':'product.product_packaging_tree_view', 'form_view_ref':'product.product_packaging_form_view'}" groups="product.group_stock_packaging" optional="show"/>
+                                        <field name="price_unit" readonly="1"/>
+                                        <field name="discount" invisible="1"/>
+                                        <field name="price_subtotal" readonly="1"/>
+                                        <field name="price_total" readonly="1"/>
+                                        <field name="state" invisible="1"/>
+                                        <field name="invoice_status" invisible="1"/>
+                                        <field name="currency_id" invisible="1"/>
+                                        <field name="price_tax" invisible="1"/>
+                                    </tree>
+                                </field>
+                                <group name="note_group" col="6" class="mt-2 mt-md-0">
+                                <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
+                                    <field name="tax_totals_json" widget="account-tax-totals-field" nolabel="1" colspan="2"/>
+                                </group>
+                                <div class="oe_clear"/>
+                            </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                  </form>
+                </field>
+            </record>
+        <record id="action_cicofap_sale_order_customer" model="ir.actions.act_window">
+            <field name="name">Commandes</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">sale.order</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_sales_order_cicofap_customer_filter"/>
+            <field name="context">{'default_state': 'new'}</field>
+            <field name="domain">[]</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Créer une nouvelle commande
+                </p>
+            </field>
+        </record>
+        <record id="action_cicofap_sale_order_customer_tree" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_order_cicofap_customer_tree"/>
+            <field name="act_window_id" ref="action_cicofap_sale_order_customer"/>
+        </record>
+        <record id="action_cicofap_sale_order_customer_form" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_order_cicofap_customer_form"/>
+            <field name="act_window_id" ref="action_cicofap_sale_order_customer"/>
+        </record>
+    <!-- sale order commercial -->
+        <record id="view_sales_order_cicofap_commercial_filter" model="ir.ui.view">
+            <field name="name">sale.order.commercial.search</field>
+            <field name="model">sale.order</field>
+            <field name="priority" eval="15"/>
+            <field name="arch" type="xml">
+                <search string="Search Sales Order">
+                    <field name="partner_id"/>
+               </search>
+            </field>
+        </record>
+        <record id="view_order_cicofap_commercial_tree" model="ir.ui.view">
+            <field name="name">sale.order.commercial.tree</field>
+            <field name="model">sale.order</field>
+            <field name="priority">2</field>
+            <field name="arch" type="xml">
+                <tree string="Sales Orders" sample="1">
+                    <field name="name" string="Numéro" readonly="1" decoration-bf="1"/>
+                    <field name="create_date" string="Date de création" widget="date" optional="show"/>
+                    <field name="date_order" string="Date de la commande" widget="date" optional="show"/>
+                    <field name="partner_id" readonly="1"/>
+                    <field name="commitment_date" string="Date de livraison" widget="date" optional="show"/>
+                    <field name="amount_tax" sum="Tax Total" widget="monetary" optional="hide"/>
+                    <field name="amount_total" sum="Total Tax Included" widget="monetary" decoration-bf="1" optional="show"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="invoice_status" decoration-success="invoice_status == 'invoiced'" decoration-info="invoice_status == 'to invoice'" decoration-warning="invoice_status == 'upselling'" widget="badge" optional="show"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+        <record id="view_order_cicofap_commercial_form" model="ir.ui.view">
+                <field name="name">sale.order.commercial.form</field>
+                <field name="model">sale.order</field>
+                <field name="arch" type="xml">
+                  <form string="Commandes">
+                      <header>
+                          <button name="action_quotation_validate" string="Confirmer" type="object" states="new" class="btn-primary" data-hotkey="g"/>
+                          <button name="action_cancel" type="object" string="Annuler" states="new"  data-hotkey="z"/>
+                          <field name="state" widget="statusbar" statusbar_visible="new,draft,sent,sale"/>
+                      </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                                <field name="company_id" invisible="1"/>
+                                <field name="pricelist_id" invisible="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="partner_id" options='{"no_create": True,"no_open": True}' attrs="{'readonly': [('state', 'not in', ('new'))]}"/>
+                                <label for="commitment_date" string="Date de livraison"/>
+                                <div name="commitment_date_div" class="o_row">
+                                    <field name="commitment_date"/>
+                                    <span name="expected_date_span" class="text-muted">Prévu: <field name="expected_date" widget="date"/></span>
+                                </div>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Lignes de commande" name="order_lines">
+                                <field name="order_line" widget="section_and_note_one2many" mode="tree" attrs="{'readonly': [('state', 'not in', ('new'))]}">
+                                    <tree string="Sales Order Lines" editable="bottom">
+                                        <field name="company_id" invisible="1"/>
+                                        <field name="sequence" widget="handle" />
+                                        <!-- We do not display the type because we don't want the user to be bothered with that information if he has no section or note. -->
+                                        <field name="display_type" invisible="1"/>
+                                        <field name="product_uom_category_id" invisible="1"/>
+
+                                        <field name="product_updatable" invisible="1"/>
+                                        <field
+                                            name="product_id"
+                                            attrs="{
+                                                'readonly': [('product_updatable', '=', False)],
+                                                'required': [('display_type', '=', False)],
+                                            }"
+                                            options="{'no_open': True}"
+                                            force_save="1"
+                                            context="{
+                                                'partner_id': parent.partner_id,
+                                                'quantity': product_uom_qty,
+                                                'pricelist': parent.pricelist_id,
+                                                'uom':product_uom,
+                                                'default_lst_price': price_unit,
+                                                'default_description_sale': name,
+                                                'tree_view_ref':'cicofap.cicofap_product_product_customer_tree_view',
+                                                'form_view_ref':'cicofap.cicofap_product_product_customer_form_view',
+                                                'search_view_ref':'cicofap.cicofap_product_product_customer_search_view'
+                                            }"
+                                            widget="product_configurator"
+                                        />
+                                        <field name="product_template_id" string="Product" invisible="1" attrs="{'readonly': [('product_updatable', '=', False)],
+                                              'required': [('display_type', '=', False)],}"
+                                          options="{'no_open': True}"
+                                          context="{
+                                              'partner_id': parent.partner_id,
+                                              'quantity': product_uom_qty,
+                                              'pricelist': parent.pricelist_id,
+                                              'uom':product_uom,
+                                              'default_list_price': price_unit,
+                                              'default_description_sale': name,
+                                              'tree_view_ref':'cicofap.cicofap_product_template_customer_tree_view',
+                                              'form_view_ref':'cicofap.cicofap_product_template_customer_form_view',
+                                              'search_view_ref':'cicofap.cicofap_product_template_customer_search_view'
+                                          }"
+                                          widget="product_configurator"/>
+                                        <field name="name" widget="section_and_note_text" optional="hide"/>
+                                        <field
+                                            name="product_uom_qty"
+                                            decoration-info="(not display_type and invoice_status == 'to invoice')" decoration-bf="(not display_type and invoice_status == 'to invoice')"
+                                            context="{
+                                                'partner_id': parent.partner_id,
+                                                'quantity': product_uom_qty,
+                                                'pricelist': parent.pricelist_id,
+                                                'uom': product_uom,
+                                            }"
+                                        />
+                                        <field name="qty_to_invoice" invisible="1"/>
+                                        <field name="product_uom_readonly" invisible="1"/>
+                                        <field
+                                            name="product_uom"
+                                            force_save="1"
+                                            string="UoM"
+                                            attrs="{
+                                                'readonly': [('product_uom_readonly', '=', True)],
+                                                'required': [('display_type', '=', False)],
+                                            }"
+                                            groups="uom.group_uom"
+                                            options='{"no_open": True}'
+                                            optional="hide"
+                                        />
+                                        <field name="product_packaging_qty" attrs="{'invisible': ['|', ('product_id', '=', False), ('product_packaging_id', '=', False)]}" groups="product.group_stock_packaging" optional="show"/>
+                                        <field name="product_packaging_id" attrs="{'invisible': [('product_id', '=', False)]}" context="{'default_product_id': product_id, 'tree_view_ref':'product.product_packaging_tree_view', 'form_view_ref':'product.product_packaging_form_view'}" groups="product.group_stock_packaging" optional="show"/>
+                                        <field name="price_unit" readonly="1"/>
+                                        <field name="discount" invisible="1"/>
+                                        <field name="price_subtotal" readonly="1"/>
+                                        <field name="price_total" readonly="1"/>
+                                        <field name="state" invisible="1"/>
+                                        <field name="invoice_status" invisible="1"/>
+                                        <field name="currency_id" invisible="1"/>
+                                        <field name="price_tax" invisible="1"/>
+                                    </tree>
+                                </field>
+                                <group name="note_group" col="6" class="mt-2 mt-md-0">
+                                <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
+                                    <field name="tax_totals_json" widget="account-tax-totals-field" nolabel="1" colspan="2"/>
+                                </group>
+                                <div class="oe_clear"/>
+                            </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                  </form>
+                </field>
+            </record>
+        <record id="action_cicofap_sale_order_commercial" model="ir.actions.act_window">
+            <field name="name">Commandes</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">sale.order</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_sales_order_cicofap_commercial_filter"/>
+            <field name="context">{'default_state': 'new'}</field>
+            <field name="domain">[]</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Créer une nouvelle commande
+                </p>
+            </field>
+        </record>
+        <record id="action_cicofap_sale_order_commercial_tree" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_order_cicofap_commercial_tree"/>
+            <field name="act_window_id" ref="action_cicofap_sale_order_commercial"/>
+        </record>
+        <record id="action_cicofap_sale_order_commercial_form" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_order_cicofap_commercial_form"/>
+            <field name="act_window_id" ref="action_cicofap_sale_order_commercial"/>
+        </record>
+        <!--record id="sale.model_sale_order_action_quotation_sent" model="ir.actions.server">
+            <field name='groups_id' eval="[(4, ref('cicofap.group_cicofap_admin')),(4, ref('cicofap.group_cicofap_m1')),(4, ref('cicofap.group_cicofap_depot'))]"/>
+        </record-->
+    <!-- Inherit move line -->
+    <record id="stock.stock_move_line_action" model="ir.actions.act_window">
+        <field name="name">Product Moves</field>
+        <field name="res_model">stock.move.line</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,kanban,pivot,form</field>
+        <field name="view_id" ref="stock.view_move_line_tree"/>
+        <field name="context">{'search_default_filter_last_12_months': 1, 'search_default_done': 1, 'create': 0}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_empty_folder">
+                There's no product move yet
+            </p><p>
+                This menu gives you the full traceability of inventory operations on a specific product.
+                You can filter on the product to see all the past movements for the product.
+            </p>
+        </field>
+    </record>
+
+    <!-- product commercial -->
+        <record id="product_commercial_kanban_dashboard_view" model="ir.ui.view" >
+            <field name="name">product.commercial.kanban.dashboard</field>
+            <field name="model">product.commercial</field>
+            <field name="priority">10</field>
+            <field name="arch" type="xml">
+                <kanban class="oe_background_grey o_kanban_dashboard o_crm_team_kanban" create="0" sample="1">
+                    <field name="name"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+        <record id="product_commercial_tree_view" model="ir.ui.view">
+            <field name="name">product.commercial.tree</field>
+            <field name="model">product.commercial</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="zone"/>
+                </tree>
+            </field>
+        </record>
+        <record id="product_commercial_form_view" model="ir.ui.view">
+            <field name="name">product.commercial.form</field>
+            <field name="model">product.commercial</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <div name="button_box" position="inside" class="oe_button_box">
+                            <button type="object"
+                                name="action_view_sale_order"
+                                class="oe_stat_button"
+                                icon="fa-usd">
+                                <field string="Ventes" name="sale_order_count" widget="statinfo"/>
+                            </button>
+                            <button type="object"
+                                name="action_view_sale_order"
+                                class="oe_stat_button"
+                                icon="fa-pencil-square-o">
+                                <div class="o_form_field o_stat_info">
+                                    <span class="o_stat_value">
+                                        <field name="currency_id" invisible="1"/>
+                                        <field name="total" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                    </span>
+                                    <span class="o_stat_text">Total</span>
+                                </div>
+                            </button>
+                            <button type="object"
+                                name="action_view_cash"
+                                class="oe_stat_button"
+                                icon="fa-pencil-square-o">
+                                <div class="o_form_field o_stat_info">
+                                    <span class="o_stat_value">
+                                        <field name="currency_id" invisible="1"/>
+                                        <field name="total_cashed" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                    </span>
+                                    <span class="o_stat_text">Total Cash</span>
+                                </div>
+                            </button>
+                            <button type="object"
+                                name="action_view_invoice"
+                                class="oe_stat_button"
+                                icon="fa-pencil-square-o">
+                                <div class="o_form_field o_stat_info">
+                                    <span class="o_stat_value">
+                                        <field name="currency_id" invisible="1"/>
+                                        <field name="total_invoiced" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                    </span>
+                                    <span class="o_stat_text">Total Facturé</span>
+                                </div>
+                            </button>
+                        </div>
+                        <field name="avatar_128" invisible="1"/>
+                        <field name="image_1920" widget='image' class="oe_avatar" options='{"preview_image": "avatar_128"}'/>
+                        <div class="oe_title mb24">
+                            <h1>
+                                <field class="o_text_overflow" name="name" default_focus="1" placeholder="e.g. Brandom Freeman"/>
+                            </h1>
+                    </div>
+                        <group>
+                            <group>
+                                <span class="o_form_label o_td_label" name="address_name">
+                                    <b>Adresse</b>
+                                </span>
+                                <div class="o_address_format">
+                                    <field name="street" placeholder="Rue..." class="o_address_street"/>
+                                    <field name="street2" placeholder="Rue 2..." class="o_address_street"/>
+                                    <field name="city" placeholder="Ville" class="o_address_city"/>
+                                    <field name="state_id" class="o_address_state" placeholder="State" options="{'no_open': True, 'no_quick_create': True}"/>
+                                    <field name="zip" placeholder="ZIP" class="o_address_zip"/>
+                                    <field name="country_id" placeholder="Pays" class="o_address_country" options='{"no_open": True, "no_create": True}'/>
+                                </div>
+                                <field name="total" widget='monetary' options="{'currency_field': 'currency_id'}" string="Total"/>
+                                <field name="total_payed" widget='monetary' options="{'currency_field': 'currency_id'}" string="Total payé"/>
+                            </group>
+                            <group>
+                                <field name="phone" widget="phone"/>
+                                <field name="mobile" widget="phone"/>
+                                <field name="email" widget="email" context="{'gravatar_image': True}"/>
+                                <field name="website" string="Website" widget="url" placeholder="e.g. https://www.odoo.com"/>
+                                <field name="zone"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Informations sur les factures">
+                                <field name="total_invoiced" widget='monetary' options="{'currency_field': 'currency_id'}" string="Total Facturé"/>
+                                <field name="total_invoiced_payed" widget='monetary' options="{'currency_field': 'currency_id'}" string="Montant payé"/>
+                            </group>
+                            <group string="Informations sur le cash">
+                                <field name="total_cashed" widget='monetary' options="{'currency_field': 'currency_id'}" string="Total cash"/>
+                                <field name="total_cash_payed" widget='monetary' options="{'currency_field': 'currency_id'}" string="Cash payé"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_product_commercial" model="ir.actions.act_window">
+            <field name="name">Commercials</field>
+            <field name="res_model">product.commercial</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="product_commercial_tree_view"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_empty_folder">
+                    Ajouter une nouveau commercial
+                </p>
+            </field>
+        </record>
+    <!-- product transport -->
+        <record id="product_transport_tree_view" model="ir.ui.view">
+            <field name="name">product.transport.tree</field>
+            <field name="model">product.transport</field>
+            <field name="arch" type="xml">
+                <tree editable="top">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_product_transport" model="ir.actions.act_window">
+            <field name="name">Transports</field>
+            <field name="res_model">product.transport</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="product_transport_tree_view"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_empty_folder">
+                    Ajouter une nouveau transport
+                </p>
+            </field>
+        </record>
+    <!-- sale analysis -->
+        <record id="cicofap_sale_report_view_tree" model="ir.ui.view">
+            <field name="name">sale.report.view.tree.inherit.website.sale</field>
+            <field name="model">sale.report</field>
+            <field name="inherit_id" ref="sale.view_order_product_pivot"/>
+            <field name="arch" type="xml">
+                 <field name="team_id" position="replace">
+                    <field name="commercial_id" type="col"/>
+                </field>
+            </field>
+        </record>
+</odoo>

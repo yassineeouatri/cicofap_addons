@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <template id="external_layout_standard_tectone" inherit_id="web.external_layout_standard">
+        <!-- Custom Header-->
+        <xpath expr="//div[1]" position="replace">
+            <t t-if="not o" t-set="o" t-value="doc"/>
+
+            <t t-if="not company">
+                <!-- Multicompany -->
+                <t t-if="company_id">
+                    <t t-set="company" t-value="company_id"/>
+                </t>
+                <t t-elif="o and 'company_id' in o and o.company_id.sudo()">
+                    <t t-set="company" t-value="o.company_id.sudo()"/>
+                </t>
+                <t t-else="else">
+                    <t t-set="company" t-value="res_company"/>
+                </t>
+            </t>
+            <div t-attf-class="header o_company_#{company.id}_layout" t-att-style="report_header_style">
+                <div class="row">
+                    <div class="col-3 mb4">
+                        <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="max-height: 100px;" alt="Logo"/>
+                    </div>
+                    <div class="col-9 text-right" style="margin-top:22px;" t-field="company.report_header" name="moto"/>
+                </div>
+            </div>
+        </xpath>
+        <!-- Custom footer -->
+        <xpath expr="//div/div[hasclass('text-center')]" position="replace">
+            <div class="text-center" style="border-top: 1px solid black;font-size:12px;margin-top: -30px;">
+                <ul class="list-inline mb4 text-nowrap">
+                    <li><strong>TECTONE S.A.R.L</strong></li>
+                    <li>Siège social : Lotissement Attaoufik Zénith II Sidi Mâarouf - 20 001 CASABLANCA</li>
+                    <li>Tél : +212(0) 5 22 32 15 51/52 – Fax : +212(0) 5 22 32 10 44 – E-Mail : contact@tectonegroup.com</li>
+                    <li>R.C. Casa 55793 – C.N.S.S. 2026492 – ICE – 001617533000083 - I.F. N°01020675 –– Patente : 36102629</li>
+                    <li>Site : <a>http://www.tectonegroup.com</a></li>
+                </ul>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="internal_layout_tectone" inherit_id="web.internal_layout">
+        <xpath expr="//div[1]" position="replace">
+        </xpath>
+    </template>
+    <template id="report_production_bordereau_document">
+         <t t-call="web.external_layout_standard">
+                <t t-set="o" t-value="o.with_context(lang=lang)" />
+                <div class="page" t-attf-style="font-size:14px;">
+
+                    <div id="informations" class="row mt16 mb8" style="font-size:14px;">
+                        <div class="mb-3 col-6" name="Objet">
+                            <strong>Objet : </strong><span class="m-0" t-field="o.affaire_id.name"/>
+                        </div>
+                        <div class="mb-3 col-6" name="info">
+                            <table class="table">
+                                <tr><td style="border: 1px solid">Destionation :</td><td style="border: 1px solid"><strong><span t-field="o.affaire_id.partner_id.name"/></strong></td></tr>
+                                <tr><td style="border: 1px solid">A l'attention de :</td><td style="border: 1px solid"><strong><span t-field="o.affaire_id.directeur_travaux"/></strong></td></tr>
+                                <tr><td style="border: 1px solid">Date :</td><td style="border: 1px solid"><strong><span t-esc="datetime.datetime.now().strftime('%d/%m/%Y')"/></strong></td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    <p>Nous vous prions de trouver ci-joint les documents énumérés ci-dessous :</p>
+                    <div class="table-responsive">
+                            <table class="o_event_table table">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center" colspan="5" style="border: 1px solid; width: 50%">Codifications Identification document</th>
+                                        <th class="text-center" rowspan="2" style="vertical-align:middle; border: 1px solid">Titre du document</th>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-center" colspan="4" style="border: 1px solid">Numéro Document</th>
+                                        <th class="text-center" style="border: 1px solid">Rev</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="o.line_ids" t-as="line">
+                                        <span t-if="line.state in ('sent_client', 'validate')">
+                                            <tr>
+                                                <td class="text-center" style="border: 1px solid"><span t-field="line.document_id.emetteur_id.name"/></td>
+                                                <td class="text-center" style="border: 1px solid"><span t-field="line.document_id.phase_id.name"/></td>
+                                                <td class="text-center" style="border: 1px solid"><span t-field="line.document_id.type_id.name"/></td>
+                                                <td class="text-center" style="border: 1px solid"><span t-field="line.order"/></td>
+                                                <td class="text-center" style="border: 1px solid"><span t-field="line.document_id.indice"/></td>
+                                                <td style="border: 1px solid"><span t-field="line.document_id.name"/></td>
+                                            </tr>
+                                        </span>
+                                    </t>
+                                <span t-if="len(o.line_ids)  &lt; 10 ">
+                                    <t t-set="rows" t-value="10-len(o.line_ids)"/>
+                                    <t t-foreach="range(rows)" t-as="row">
+                                     <tr>
+                                        <td style="border: 1px solid"></td>
+                                        <td style="border: 1px solid"></td>
+                                        <td style="border: 1px solid"></td>
+                                        <td style="border: 1px solid"></td>
+                                        <td style="border: 1px solid"></td>
+                                        <td style="border: 1px solid"></td>
+                                    </tr>
+                                    </t>
+                                </span>
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </t>
+    </template>
+    <template id="report_production_bordereau">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="tectone.report_production_bordereau_document"/>
+            </t>
+        </t>
+    </template>
+    <template id="report_affaire_plan_document">
+         <t t-call="web.internal_layout">
+                <t t-set="o" t-value="o.with_context(lang=lang)" />
+                <div class="page" t-attf-style="font-size:14px;">
+                    <div class="table-responsive">
+                            <table class="o_event_table table">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center" colspan="5" rowspan="2" style="border: 1px solid; vertical-align:middle; width: 40%">LISTE DE DIFFUSION DES PLANS</th>
+                                        <th class="text-center" rowspan="2" style="border: 1px solid; vertical-align:middle; width: 30%"></th>
+                                        <th colspan="5" style="border: 1px solid; width: 40%">N° AFFAIRE : <span t-field="o.number"/></th>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="5" style="border: 1px solid">Date édition : <span t-esc="datetime.datetime.now().strftime('%d/%m/%Y')"/></th>
+                                    </tr>
+                                    <tr><th></th></tr>
+                                    <tr><th colspan="5" style="border: 1px solid;">OUVRAGE</th></tr>
+                                    <tr><th></th></tr>
+                                    <tr>
+                                        <th class="text-center" style="border: 1px solid">Prov</th>
+                                        <th class="text-center" style="border: 1px solid">Phase</th>
+                                        <th class="text-center" style="border: 1px solid">Scope</th>
+                                        <th class="text-center" style="border: 1px solid">N° Plan</th>
+                                        <th class="text-center" style="border: 1px solid">Indice</th>
+                                        <th class="text-center" style="border: 1px solid">Titre</th>
+                                        <th class="text-center" style="border: 1px solid">Date Indice</th>
+                                        <th class="text-center" style="border: 1px solid">Date Envoi</th>
+                                        <th class="text-center" style="border: 1px solid">N° Envoi</th>
+                                        <th class="text-center" style="border: 1px solid">Emetteur</th>
+                                        <th class="text-center" style="border: 1px solid">Code</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="o.plan_ids" t-as="plan">
+                                        <t t-foreach="plan.indice_ids" t-as="indice">
+                                            <tr>
+                                                <td class="text-center" style="border: 1px solid"><span t-field="plan.emetteur_id.name"/></td>
+                                                <td class="text-center" style="border: 1px solid"><span t-field="plan.phase_id.name"/></td>
+                                                <td class="text-center" style="border: 1px solid"><span t-field="plan.presta_id.name"/></td>
+                                                <td class="text-center" style="border: 1px solid"><span t-field="plan.numero"/></td>
+                                                <td class="text-center" style="border: 1px solid"><span t-field="indice.indice"/></td>
+                                                <td style="border: 1px solid"><span t-field="plan.name"/></td>
+                                                <td class="text-center" style="border: 1px solid"><span t-field="indice.date"/></td>
+                                                <td class="text-center" style="border: 1px solid"><span t-field="indice.date_client"/></td>
+                                                <td class="text-center" style="border: 1px solid"></td>
+                                                <td class="text-center" style="border: 1px solid"><span t-field="plan.employee_id.name"/></td>
+                                                <span t-if="indice.actif">
+                                                    <td class="text-center" style="border: 1px solid">1</td>
+                                                </span>
+                                                <span t-if="not indice.actif">
+                                                    <td class="text-center" style="border: 1px solid">0</td>
+                                                </span>
+                                            </tr>
+                                        </t>
+                                    </t>
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </t>
+    </template>
+    <template id="report_affaire_plan">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="tectone.report_affaire_plan_document"/>
+            </t>
+        </t>
+    </template>
+</odoo>

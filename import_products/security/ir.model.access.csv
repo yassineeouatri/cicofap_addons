@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_product_template_wizard,access_product_template_wizard,model_product_template_wizard,base.group_user,1,1,1,1
+access_product_import_image,access_product_import_image,model_product_import_image,group_cicofap_article,1,1,1,1
+access_res_partner_merge_admin,access_res_partner_merge_admin,model_res_partner_merge,cicofap.group_cicofap_admin,1,1,1,1
+access_product_template_merge_admin,access_product_template_merge_admin,model_product_template_merge,cicofap.group_cicofap_admin,1,1,1,1

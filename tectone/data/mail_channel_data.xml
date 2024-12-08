@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record model="mail.channel" id="channel_production">
+            <field name="name">Production</field>
+            <field name="group_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="description">Annonces pour la chaîne production.</field>
+        </record>
+    </data>
+</odoo>

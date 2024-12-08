@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Inherit Search View  -->
+        <record id="inherit_partner_search_commercial" model="ir.ui.view">
+            <field name="name">Inherit Partner Search</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_res_partner_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="replace">
+                    <field name="commercial_id"/>
+                </xpath>
+
+            </field>
+        </record>
+        <!--   Inherit form view     -->
+        <record id="inherit_partner_form_commercial" model="ir.ui.view">
+            <field name="name">Inherit Partner Form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='vat']" position="after">
+                    <field name="commercial_id"/>
+                </xpath>
+
+            </field>
+        </record>
+        <!--   Inherit tree view     -->
+        <record id="inherit_partner_tree_commercial" model="ir.ui.view">
+            <field name="name">Inherit Partner Tree</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_tree"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='display_name']" position="after">
+                    <field name="commercial_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- inherit kanban view -->
+        <record id="cicofap_res_partner_commercial_kanban_view" model="ir.ui.view">
+            <field name="name">Inherit Partner kanban</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.res_partner_kanban_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='display_name']" position="after">
+                    <field name="commercial_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Inherit commercial views-->
+        <record id="product_commercial_form_view_inherit" model="ir.ui.view">
+            <field name="name">product.commercial.inherit</field>
+            <field name="model">product.commercial</field>
+            <field name="inherit_id" ref="cicofap.product_commercial_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_view_sale_order']" position="before">
+                    <button type="object"
+                            name="action_view_partner"
+                            class="oe_stat_button"
+                            icon="fa-user">
+                            <field string="Clients" name="partner_count" widget="statinfo"/>
+                        </button>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

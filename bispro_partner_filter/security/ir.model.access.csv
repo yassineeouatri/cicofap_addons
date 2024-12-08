@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_res_ward_user,res.ward user,model_res_ward,base.group_user,1,1,1,1
+access_res_district_user,res.district user,model_res_district,base.group_user,1,1,1,1
+
+
+

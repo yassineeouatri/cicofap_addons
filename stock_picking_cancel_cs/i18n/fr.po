@@ -1,0 +1,66 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* stock
+# 
+# Translators:
+# Alexandra Jubert <aju@odoo.com>, 2021
+# f477e7ae9c75a2428d6113663a8354fe_bcd021c <0ff4ce060a36f446722508a48e99c22a_347081>, 2021
+# RHTodoo, 2021
+# Sebastien LANGE, 2021
+# Thomas Deleval <thd@odoo.com>, 2021
+# Cécile Collart <cco@odoo.com>, 2022
+# Martin Trigaux, 2022
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-11-16 13:18+0000\n"
+"PO-Revision-Date: 2021-09-14 12:26+0000\n"
+"Last-Translator: Martin Trigaux, 2022\n"
+"Language-Team: French (https://www.transifex.com/odoo/teams/41243/fr/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: fr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#. module: stock_picking_cancel_cs
+#: model_terms:ir.ui.view,arch_db:stock_picking_cancel_cs.cancel_order_extended_for_warehouse_cft
+#: model_terms:ir.ui.view,arch_db:stock_picking_cancel_cs.delivery_cancel_form_cft
+msgid "Cancel"
+msgstr "Annuler"
+
+#. module: stock_picking_cancel_cs
+#: model_terms:ir.ui.view,arch_db:stock_picking_cancel_cs.cancel_order_extended_for_warehouse_cft
+msgid "Reset to Draft"
+msgstr "Mettre à l'état brouillon"
+
+#. module: stock_picking_cancel_cs
+#: model_terms:ir.ui.view,arch_db:stock_picking_cancel_cs.sale_order_view_extended_cancel_picking_cft
+#: model:ir.actions.act_window,name:stock_picking_cancel_cs.action_cancel_delivery_cft
+msgid "Cancel Delivery"
+msgstr "Annuler la livraison"
+
+#. module: stock_picking_cancel_cs
+#: model_terms:ir.ui.view,arch_db:stock_picking_cancel_cs.sale_order_view_extended_cancel_picking_cft
+msgid "Click here to cancel delivery"
+msgstr "Cliquer ici pour annuler la livraison"
+
+#. module: stock_picking_cancel_cs
+#: model_terms:ir.ui.view,arch_db:stock_picking_cancel_cs.delivery_cancel_form_cft
+msgid "Clear All"
+msgstr "Annuler tout"
+
+#. module: stock_picking_cancel_cs
+#: model_terms:ir.ui.view,arch_db:stock_picking_cancel_cs.delivery_cancel_form_cft
+msgid "Delivery orders"
+msgstr "Bons de livraison"
+
+#. module: stock_picking_cancel_cs
+#: model_terms:ir.ui.view,arch_db:stock_picking_cancel_cs.delivery_cancel_form_cft
+#: model:res.groups,name:stock_picking_cancel_cs.group_cancel_delivery_order
+msgid "Cancel Delivery Orders"
+msgstr "Annuler les bons de livraison"
+
+

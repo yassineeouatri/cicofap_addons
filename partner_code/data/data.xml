@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Sequences for lead mining requests -->
+        <record id="ir_sequence_partner_code" model="ir.sequence">
+            <field name="name">Lead Mining Request</field>
+            <field name="code">res.partner</field>
+            <field name="prefix"></field>
+            <field name="padding">6</field>
+        </record>
+
+    </data>
+</odoo>

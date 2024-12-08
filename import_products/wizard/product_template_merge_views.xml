@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_template_merge_view_form" model="ir.ui.view">
+        <field name="name">product.template.merge.form</field>
+        <field name="model">product.template.merge</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="dest_product_id" options='{"no_open": True, "no_create": True}'/>
+                    <field name="src_product_id" options='{"no_open": True, "no_create": True}'/>
+                </group>
+
+                <footer>
+                    <button string="Fusionner" name="action_merge" type="object" class="oe_highlight" data-hotkey="q"/>
+                    <button string="Annuler" class="btn btn-default" special="cancel" data-hotkey="z"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="product_template_merge_wizard_action" model="ir.actions.act_window">
+        <field name="name">Fusionner 2 articles</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.template.merge</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="product_template_merge_view_form"/>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_cicofap_action_merge_product" name="Fusionner les articles" action="product_template_merge_wizard_action" parent="menu_action_product_template" sequence="5"/>
+</odoo>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="cicofap._report_sale_order_print">
+        <t t-call="web.external_layout">
+            <t t-set="o" t-value="o.with_context(lang=lang)"/>
+            <div class="page">
+                 <div id="informations" class="row mt32 mb32 mb-4">
+                    <div class="col-6" name="reference">
+                    </div>
+                    <div class="col-6" name="invoice_date">
+                        <div style="background:#ECECEC;padding:15px 10px">
+                            <p t-if="o.partner_id.ref"><strong>Code Client:</strong> <span t-if="o.partner_id.ref" t-field="o.partner_id.ref"/></p>
+                            <span class="m-0" t-field="o.partner_id.name"/><br />
+                            <span class="m-0" t-if="o.partner_id.street" t-field="o.partner_id.street"/><span class="m-0" t-if="o.partner_id.street2" t-field="o.partner_id.street2"/><span class="m-0" t-if="o.partner_id.zip" t-field="o.partner_id.zip"/>
+                            <span t-if="o.partner_id.city"><br /> <span class="m-0" t-if="o.partner_id.city" t-field="o.partner_id.city"/></span>
+                            <span t-if="o.partner_id.phone"><br /> <strong>Tel:</strong> <span t-field="o.partner_id.phone"/></span>
+                            <span t-if="o.partner_id.hrsft_ice"><br /><strong>ICE:</strong>  <span  t-if="o.partner_id.hrsft_ice" t-field="o.partner_id.hrsft_ice"/></span>
+                            <address style="display:none" />
+                        </div>
+                    </div>
+                 </div>
+            </div>
+        </t>
+    </template>
+    <template id="cicofap.report_sale_order_print">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+
+                        <div id="informations" class="row mt32 mb32 mb-4">
+                            <div class="col-6" name="reference">
+                            </div>
+                            <div class="col-6" name="invoice_date">
+                                <p style="text-center:right">le <span t-esc="time.strftime('%d %B %Y')"/></p>
+                                <div style="background:#ECECEC;padding:15px 10px">
+                                    <p t-if="partner_id.ref"><strong>Code Client:</strong> <span t-if="partner_id.ref" t-field="partner_id.ref"/></p>
+                                    <span class="m-0" t-field="partner_id.name"/>
+                                    <br /> <span class="m-0" t-if="partner_id.street" t-field="o.partner_id.street"/><span class="m-0" t-if="o.partner_id.street2" t-field="o.partner_id.street2"/><span class="m-0" t-if="o.partner_id.zip" t-field="o.partner_id.zip"/>
+                                    <br /><span t-if="partner_id.city"><span class="m-0" t-if="partner_id.city" t-field="partner_id.city"/></span>
+                                    <br /><span t-if="partner_id.phone"><strong>Tel:</strong> <span t-field="partner_id.phone"/></span>
+                                    <br /><span t-if="partner_id.hrsft_ice"><strong>ICE:</strong>  <span  t-if="partner_id.hrsft_ice" t-field="partner_id.hrsft_ice"/></span>
+                                    <address style="display:none" />
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            A l'attention du service comptabilité<br/>
+                            Madame, Monsieur<br/>
+                            Veuillez trouver ci-après le détail des opérations portées à votre compte entre
+                            <span t-if="date_from"><span t-esc="date_from" options="{'format': 'DD/MM/YYYY'}"/></span>
+                            et le <span t-if="date_to"><span t-esc="date_to" options="{'format': 'DD/MM/YYYY'}"/></span>
+                        </div>
+                        <table class="table table-sm o_main_table mb-2" name="invoice_line_table">
+                            <thead>
+                              <tr>
+                                  <th name="th_date" class="text-center" style="background:#FFF;border:1px solid #495057"><span>N° commande</span></th>
+                                  <th name="th_reference" class="text-center" style="background:#FFF;border:1px solid #495057"><span>N° de BL/Avoir</span></th>
+                                  <th name="th_reference" class="text-center" style="background:#FFF;border:1px solid #495057"><span>Date du BL</span></th>
+                                  <th name="th_facture" class="text-center" style="background:#FFF;border:1px solid #495057"><span>Quantité</span></th>
+                                  <th name="th_avoir" class="text-center" style="background:#FFF;border:1px solid #495057"><span>Montant TTC</span></th>
+                              </tr>
+                            </thead>
+                            <tbody class="invoice_tbody">
+                                <t t-set="total_ht" t-value="0"/>
+                                <t t-set="total_ttc" t-value="0"/>
+                                <t t-foreach="lines" t-as="line">
+                                    <t t-set="total_ht" t-value="total_ht+line['amount_untaxed_signed']"/>
+                                    <t t-set="total_ttc" t-value="total_ttc+line['amount_total_signed']"/>
+                                    <tr>
+                                        <td class="text-center" style="background:#FFF;border:1px solid #495057"><span t-esc="line['name']"/></td>
+                                        <td class="text-center" style="background:#FFF;border:1px solid #495057"><span t-esc="line['bl_name']"/></td>
+                                        <td class="text-center" style="background:#FFF;border:1px solid #495057"><span t-esc="line['bl_date']"/></td>
+                                        <td class="text-right" style="background:#FFF;border:1px solid #495057">
+                                            <span t-esc="line['quantity']"/>
+                                        </td>
+                                         <td class="text-right" style="background:#FFF;border:1px solid #495057">
+                                            <span t-esc="line['amount_total_signed']" t-options="{'widget': 'monetary', 'display_currency': (company_id or res_company).currency_id}"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <tr>
+                                    <td class="text-right" style="background:#FFF;border-left:1px solid #fff" colspan="3"></td>
+                                    <td class="text-right" style="background:#FFF;border:1px solid #495057"><strong>Total H.T</strong></td>
+                                    <td class="text-right" style="background:#FFF;border:1px solid #495057">
+                                        <span t-esc="total_ht" t-options="{'widget': 'monetary', 'display_currency': (company_id or res_company).currency_id}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-right" style="background:#FFF;border-left:1px solid #fff;border-bottom:1px solid #fff" colspan="3"></td>
+                                    <td class="text-right" style="background:#FFF;border:1px solid #495057"><strong>Total TTC</strong></td>
+                                    <td class="text-right" style="background:#FFF;border:1px solid #495057">
+                                        <span t-esc="total_ttc" t-options="{'widget': 'monetary', 'display_currency': (company_id or res_company).currency_id}"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div>
+                            Veuillez agréer, Madame, Monsieur, l'assurance de notre considération distinguée.
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+    <record id="action_report_sale_order_print" model="ir.actions.report">
+        <field name="name">Relevé</field>
+        <field name="model">sale.order.print.report</field>
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">cicofap.report_sale_order_print</field>
+        <field name="report_file">cicofap.report_sale_order_print</field>
+        <field name="print_report_name">Relevé</field>
+        <field name="binding_model_id" ref="model_report_cicofap_report_sale_order_print"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

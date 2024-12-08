@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Affaires -->
+    <record id="production_affaire_view_search" model="ir.ui.view">
+        <field name="name">production.affaire.search</field>
+        <field name="model">production.affaire</field>
+        <field name="arch" type="xml">
+            <search string="Affaire">
+                <field name="full_name"/>
+                <group expand="0" string="Group By">
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="production_affaire_view_tree" model="ir.ui.view">
+        <field name="name">production.affaire.tree</field>
+        <field name="model">production.affaire</field>
+        <field name="arch" type="xml">
+            <tree string="Affaires">
+                <field name="full_name"/>
+                <field name="amount_contract" widget='monetary'/>
+                <field name="amount_avenant" widget='monetary'/>
+                <field name="amount_billed" widget='monetary'/>
+                <field name="percentage_billed" widget="percentage"/>
+                <field name="amount_payed" widget='monetary'/>
+                <field name="percentage_payed" widget="percentage"/>
+                <field name="currency_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+    <record id="production_affaire_view_form" model="ir.ui.view">
+        <field name="name">production.affaire.form</field>
+        <field name="model">production.affaire</field>
+        <field name="arch" type="xml">
+            <form string="Affaires">
+                <sheet string="Affaire">
+                    <group>
+                        <group>
+                            <field name="full_name" invisible="1"/>
+                            <field name="number"/>
+                            <field name="name"/>
+                            <field name="no_affaire"/>
+                            <field name="partner_id" options="{'no_create': True, 'no_open': True}" required="1"/>
+                            <field name="directeur_travaux"/>
+                            <field name="phase_id" widget="selection"/>
+                            <field name="phase_ids" widget="many2many_tags" options="{'no_create':True}"/>
+                            <field name="type"/>
+                            <div class="o_td_label">
+                                <label for="no_contract" string="N° Contrat"
+                                       attrs="{'invisible': [('type', 'not in', ('contract'))]}"/>
+                                <label for="no_contract" string="N° Marché" style="font-weight:bold;"
+                                       attrs="{'invisible': [('type', 'not in', ('marche'))]}"/>
+                                <label for="no_contract" string="N° BC" style="font-weight:bold;"
+                                       attrs="{'invisible': [('type', 'not in', ('bc'))]}"/>
+                                <label for="no_contract" string="N° Contrat" style="font-weight:bold;"
+                                       attrs="{'invisible': [('type', '!=', False)]}"/>
+                            </div>
+                            <field name="no_contract" nolabel="1"/>
+                        </group>
+                        <group>
+                            <field name="year"/>
+                            <field name="currency_id" options="{'no_create': True, 'no_create_edit':True}"/>
+                            <div class="o_td_label">
+                                <label for="amount_contract" string="Montant Contrat" style="font-weight:bold;"
+                                       attrs="{'invisible': [('type', 'not in', ('contract'))]}"/>
+                                <label for="amount_contract" string="Montant Marché" style="font-weight:bold;"
+                                       attrs="{'invisible': [('type', 'not in', ('marche'))]}"/>
+                                <label for="amount_contract" string="Montant BC" style="font-weight:bold;"
+                                       attrs="{'invisible': [('type', 'not in', ('bc'))]}"/>
+                                <label for="amount_contract" string="Montant Contrat" style="font-weight:bold;"
+                                       attrs="{'invisible': [('type', '!=', False)]}"/>
+                            </div>
+                            <field name="amount_contract" widget='monetary' nolabel="1"/>
+                            <field name="amount_avenant" widget='monetary'/>
+                            <field name="amount_billed" widget="monetary"/>
+                            <field name="amount_payed" widget="monetary"/>
+                            <field name="percentage_billed" widget="percentage"/>
+                            <field name="percentage_payed" widget="percentage"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="invoices" string="Factures">
+                            <group>
+                                <fieldset style="border: 1px solid #ddd !important;padding: 0 0.5em 0em 0.5em !important;margin: 0 0 1em 0 !important;">
+                                    <legend style="color: #7c7bad;width:inherit;padding:0 2px; border-bottom:none;font-weight: bold ! important;font-size: 14px ! important;margin-bottom: 0px ! important;" >Liste des factures :</legend>
+                                    <field name="invoice_ids" style="overflow-y: auto;max-height: 200px;" colspan="4" nolabel="1" mode="tree" context="{'default_affaire_id': active_id}">
+                                        <tree string="Factures" limit="10000" editable="bottom">
+                                            <field name="affaire_id" invisible="1"/>
+                                            <field name="name"/>
+                                            <field name="date"/>
+                                            <field name="amount" widget='monetary'/>
+                                            <field name="currency_id" invisible="1"/>
+                                        </tree>
+                                        <form>
+                                            <sheet>
+                                                <group>
+                                                    <field name="affaire_id" invisible="1"/>
+                                                    <field name="name"/>
+                                                    <field name="date"/>
+                                                    <field name="amount" widget='monetary'/>
+                                                    <field name="currency_id" invisible="1"/>
+                                                </group>
+                                            </sheet>
+                                        </form>
+                                    </field>
+                                </fieldset>
+                            </group>
+                        </page>
+                        <page name="payments" string="Paiements">
+                            <group>
+                                <fieldset style="border: 1px solid #ddd !important;padding: 0 0.5em 0em 0.5em !important;margin: 0 0 1em 0 !important;">
+                                    <legend style="color: #7c7bad;width:inherit;padding:0 2px; border-bottom:none;font-weight: bold ! important;font-size: 14px ! important;margin-bottom: 0px ! important;" >Liste des paiements :</legend>
+                                    <field name="payment_ids" style="overflow-y: auto;max-height: 200px;" colspan="4" nolabel="1" mode="tree" context="{'default_affaire_id': active_id}">
+                                        <tree string="Paiements" limit="10000" editable="bottom">
+                                            <field name="affaire_id" invisible="1"/>
+                                            <field name="name"/>
+                                            <field name="date"/>
+                                            <field name="amount" widget='monetary'/>
+                                            <field name="currency_id" invisible="1"/>
+                                        </tree>
+                                        <form>
+                                            <sheet>
+                                                <group>
+                                                    <field name="affaire_id" invisible="1"/>
+                                                    <field name="name"/>
+                                                    <field name="date"/>
+                                                    <field name="amount" widget='monetary'/>
+                                                    <field name="currency_id" invisible="1"/>
+                                                </group>
+                                            </sheet>
+                                        </form>
+                                    </field>
+                                </fieldset>
+                            </group>
+                        </page>
+                        <page name="documents" string="Documents">
+                            <group>
+                                <fieldset style="border: 1px solid #ddd !important;padding: 0 0.5em 0em 0.5em !important;margin: 0 0 1em 0 !important;">
+                                    <legend style="color: #7c7bad;width:inherit;padding:0 2px; border-bottom:none;font-weight: bold ! important;font-size: 14px ! important;margin-bottom: 0px ! important;" >Liste des documents :</legend>
+                                    <field name="document_ids" style="overflow-y: auto;max-height: 200px;" colspan="4" nolabel="1" mode="tree" context="{'default_affaire_id': active_id}">
+                                        <tree string="Documents" limit="10000" editable="bottom">
+                                            <field name="affaire_id" invisible="1"/>
+                                            <field name="filename" string="Nom du fichier" invisible="1"/>
+                                            <field name="file" filename="filename"/>
+                                        </tree>
+                                        <form>
+                                            <sheet>
+                                                <group>
+                                                    <field name="affaire_id" invisible="1"/>
+                                                    <field name="filename" string="Nom du fichier" invisible="1"/>
+                                                    <field name="file" filename="filename"/>
+                                                </group>
+                                            </sheet>
+                                        </form>
+                                    </field>
+                                </fieldset>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record model="ir.actions.act_window" id="action_production_affaire">
+        <field name="name">Affaires</field>
+        <field name="res_model">production.affaire</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context"></field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_empty_folder">
+            Ajouter une nouvelle affaire
+          </p>
+        </field>
+    </record>
+    <record model="ir.actions.act_window.view" id="action_production_affaire_tree">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="production_affaire_view_tree"/>
+        <field name="act_window_id" ref="action_production_affaire"/>
+    </record>
+    <record model="ir.actions.act_window.view" id="action_production_affaire_form">
+        <field name="sequence" eval="2"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="production_affaire_view_form"/>
+        <field name="act_window_id" ref="action_production_affaire"/>
+    </record>
+    <record id="production_affaire_production_view_tree" model="ir.ui.view">
+        <field name="name">production.affaire.production.tree</field>
+        <field name="model">production.affaire</field>
+        <field name="arch" type="xml">
+            <tree string="Affaires">
+                <field name="full_name"/>
+                <field name="amount_contract" widget='monetary'/>
+                <field name="amount_avenant" widget='monetary'/>
+                <field name="percentage_billed" widget="percentage"/>
+                <field name="currency_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+    <record id="production_affaire_production_view_form" model="ir.ui.view">
+        <field name="name">production.affaire.production.form</field>
+        <field name="model">production.affaire</field>
+        <field name="arch" type="xml">
+            <form string="Affaires">
+                <sheet string="Affaire">
+                    <group>
+                        <group>
+                            <field name="full_name" invisible="1"/>
+                            <field name="number" required="1"/>
+                            <field name="name" required="1"/>
+                            <field name="no_affaire" invisible="1"/>
+                            <field name="partner_id" options="{'no_create': True, 'no_open': True}" required="1"/>
+                            <field name="directeur_travaux"/>
+                            <field name="phase_id" widget="selection" invisible="1"/>
+                            <field name="phase_ids" widget="many2many_tags" options="{'no_create':True}"/>
+                            <field name="type"/>
+                            <div class="o_td_label">
+                                <label for="no_contract" string="N° Contrat"
+                                       attrs="{'invisible': [('type', 'not in', ('contract'))]}"/>
+                                <label for="no_contract" string="N° Marché" style="font-weight:bold;"
+                                       attrs="{'invisible': [('type', 'not in', ('marche'))]}"/>
+                                <label for="no_contract" string="N° BC" style="font-weight:bold;"
+                                       attrs="{'invisible': [('type', 'not in', ('bc'))]}"/>
+                                <label for="no_contract" string="N° Contrat" style="font-weight:bold;"
+                                       attrs="{'invisible': [('type', '!=', False)]}"/>
+                            </div>
+                            <field name="no_contract" nolabel="1"/>
+                        </group>
+                        <group>
+                            <field name="year" required="1"/>
+                            <field name="currency_id" options="{'no_create': True, 'no_open':True}"/>
+                            <div class="o_td_label">
+                                <label for="amount_contract" string="Montant Contrat" style="font-weight:bold;"
+                                       attrs="{'invisible': [('type', 'not in', ('contract'))]}"/>
+                                <label for="amount_contract" string="Montant Marché" style="font-weight:bold;"
+                                       attrs="{'invisible': [('type', 'not in', ('marche'))]}"/>
+                                <label for="amount_contract" string="Montant BC" style="font-weight:bold;"
+                                       attrs="{'invisible': [('type', 'not in', ('bc'))]}"/>
+                                <label for="amount_contract" string="Montant Contrat" style="font-weight:bold;"
+                                       attrs="{'invisible': [('type', '!=', False)]}"/>
+                            </div>
+                            <field name="amount_contract" widget='monetary' nolabel="1"/>
+                            <field name="amount_avenant" widget='monetary'/>
+                            <field name="amount_billed" widget="monetary"/>
+                            <field name="amount_payed" widget="monetary"/>
+                            <field name="percentage_billed" widget="percentage"/>
+                            <field name="percentage_payed" widget="percentage"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="zones" string="Zones">
+                            <group>
+                                <fieldset style="border: 1px solid #ddd !important;padding: 0 0.5em 0em 0.5em !important;margin: 0 0 1em 0 !important;">
+                                    <legend style="color: #7c7bad;width:inherit;padding:0 2px; border-bottom:none;font-weight: bold ! important;font-size: 14px ! important;margin-bottom: 0px ! important;" >Liste des zones :</legend>
+                                    <field name="zone_ids" style="overflow-y: auto;max-height: 200px;" colspan="4" nolabel="1" mode="tree" context="{'default_affaire_id': active_id}">
+                                        <tree string="Zones" limit="10000" editable="bottom">
+                                            <field name="affaire_id" invisible="1"/>
+                                            <field name="name"/>
+                                            <field name="need_plage"/>
+                                            <field name="from_indice"/>
+                                            <field name="to_indice"/>
+                                        </tree>
+                                    </field>
+                                </fieldset>
+                            </group>
+                        </page>
+                        <page name="emails" string="Destinataires">
+                            <group>
+                                <fieldset style="border: 1px solid #ddd !important;padding: 0 0.5em 0em 0.5em !important;margin: 0 0 1em 0 !important;">
+                                    <legend style="color: #7c7bad;width:inherit;padding:0 2px; border-bottom:none;font-weight: bold ! important;font-size: 14px ! important;margin-bottom: 0px ! important;" >Liste des destinataires :</legend>
+                                    <field name="email_ids" style="overflow-y: auto;max-height: 200px;" colspan="4" nolabel="1" mode="tree" context="{'default_affaire_id': active_id}">
+                                        <tree string="Documents" limit="10000" editable="bottom">
+                                            <field name="affaire_id" invisible="1"/>
+                                            <field name="name"/>
+                                        </tree>
+                                        <form>
+                                            <sheet>
+                                                <group>
+                                                    <field name="affaire_id" invisible="1"/>
+                                                    <field name="name"/>
+                                                </group>
+                                            </sheet>
+                                        </form>
+                                    </field>
+                                </fieldset>
+                            </group>
+                        </page>
+                        <page name="type_documents" string="Documents Prévus">
+                            <group>
+                                <fieldset style="border: 1px solid #ddd !important;padding: 0 0.5em 0em 0.5em !important;margin: 0 0 1em 0 !important;">
+                                    <legend style="color: #7c7bad;width:inherit;padding:0 2px; border-bottom:none;font-weight: bold ! important;font-size: 14px ! important;margin-bottom: 0px ! important;" >Nombre de prévisions par type de document :</legend>
+                                    <field name="document_type_ids" style="overflow-y: auto;max-height: 200px;" colspan="4" nolabel="1" mode="tree" context="{'default_affaire_id': active_id}">
+                                        <tree string="Documents" limit="1000" create="false" delete="false" editable="top">
+                                            <field name="affaire_id" invisible="1"/>
+                                            <field name="type_id"/>
+                                            <field name="prev" sum="PREV"/>
+                                        </tree>
+                                    </field>
+                                </fieldset>
+                            </group>
+                        </page>
+                        <page name="setting" string="Réglages">
+                            <table style="width:100%;table-layout: fixed;">
+                                <tbody>
+                                    <tr>
+                                        <td style="border: 2px solid;text-align: center;background-color: beige;" ><strong>Champs</strong></td>
+                                        <td style="border: 2px solid;text-align: center;background-color: beige;" ><strong>Visibilité</strong></td>
+                                        <!--td style="border: 2px solid;text-align: center;background-color: beige;" ><strong>Obligation</strong></td-->
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 2px solid;text-align: center;background-color: beige;"><strong>Zone</strong></td>
+                                        <td style="border: 2px solid;text-align: center;"><field name="zone_id_visible" nolabel="1"/></td>
+                                        <!--td style="border: 2px solid;text-align: center;"><field name="zone_id_required" nolabel="1"/></td-->
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 2px solid;text-align: center;background-color: beige;"><strong>Phase</strong></td>
+                                        <td style="border: 2px solid;text-align: center;"><field name="phase_id_visible" nolabel="1"/></td>
+                                        <!--td style="border: 2px solid;text-align: center;"><field name="scope_id_required" nolabel="1"/></td-->
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 2px solid;text-align: center;background-color: beige;"><strong>Ouvrage</strong></td>
+                                        <td style="border: 2px solid;text-align: center;"><field name="ouvrage_id_visible" nolabel="1"/></td>
+                                        <!--td style="border: 2px solid;text-align: center;"><field name="ouvrage_id_required" nolabel="1"/></td-->
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 2px solid;text-align: center;background-color: beige;"><strong>Identifiant Document</strong></td>
+                                        <td style="border: 2px solid;text-align: center;"><field name="type_id_visible" nolabel="1"/></td>
+                                        <!--td style="border: 2px solid;text-align: center;"><field name="type_id_required" nolabel="1"/></td-->
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record model="ir.actions.act_window" id="action_production_affaire_production">
+        <field name="name">Affaires</field>
+        <field name="res_model">production.affaire</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context"></field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_empty_folder">
+            Ajouter une nouvelle affaire
+          </p>
+        </field>
+    </record>
+    <record model="ir.actions.act_window.view" id="action_production_affaire_production_tree">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="production_affaire_production_view_tree"/>
+        <field name="act_window_id" ref="action_production_affaire_production"/>
+    </record>
+    <record model="ir.actions.act_window.view" id="action_production_affaire_production_form">
+        <field name="sequence" eval="2"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="production_affaire_production_view_form"/>
+        <field name="act_window_id" ref="action_production_affaire_production"/>
+    </record>
+    <!--menuitem id="menu_finance_affaire" name="Affaires" parent="account.menu_finance" sequence="1"/>
+    <menuitem id="menu_finance_affaire_" name="Affaires" parent="menu_finance_affaire" action="action_account_affaire" sequence="1"/-->
+
+</odoo>

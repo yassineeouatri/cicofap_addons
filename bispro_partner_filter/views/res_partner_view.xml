@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Open profile partner form -->
+        <record id="view_partner_profile_form_customer_inherit" model="ir.ui.view">
+            <field name="name">res.partner.form.customer.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="priority" eval="10"/>
+            <field name="arch" type="xml">
+                <!-- Customize option customer-->
+                <xpath expr="//page[@name='sales_purchases']//field[@name='user_id']" position="before">
+                    <field name="customer"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_partner_profile_form_supplier_inherit" model="ir.ui.view">
+            <field name="name">res.partner.form.supplier.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="account.view_partner_property_form"/>
+            <field name="priority" eval="20"/>
+            <field name="arch" type="xml">
+                <!-- Customize option vendor -->
+                <xpath expr="//field[@name='property_supplier_payment_term_id']" position="before">
+                    <field name="supplier"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Domain Customize option in Sale -->
+        <record id="view_order_form_customer_inherit" model="ir.ui.view">
+            <field name="name">sale.order.form.customer.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="priority" eval="20"/>
+            <field name="arch" type="xml">
+                <!-- Customize option vendor -->
+                <xpath expr="//field[@name='partner_id']" position="replace">
+                    <field name="partner_id" widget="res_partner_many2one"
+                           domain="[('customer', '=', True)]"
+                           context="{'res_partner_search_mode': 'customer', 'show_address': 1, 'show_vat': True}"
+                           options="{&quot;always_reload&quot;: True}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Domain Vendor option in Purchase -->
+        <record id="view_purchase_order_form_supplier_inherit" model="ir.ui.view">
+            <field name="name">purchase.order.form.supplier.inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="priority" eval="20"/>
+            <field name="arch" type="xml">
+                <!-- Customize option vendor -->
+                <xpath expr="//field[@name='partner_id']" position="replace">
+                    <field name="partner_id" widget="res_partner_many2one"
+                           domain="[('supplier', '=', True)]"
+                           context="{'res_partner_search_mode': 'supplier', 'show_vat': True}"
+                           placeholder="Nom, TIN, e-mail ou référence"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="res_partner_ALFAWEB_search" model="ir.ui.view">
+            <field name="name">res.partner.search.partner.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_res_partner_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='inactive']" position="before">
+                    <filter string="Client"  name="customer" domain="[('customer', '=', True)]"/>
+                    <filter string="Fournisseur"  name="vendor" domain="[('supplier', '=', True)]"/>
+                    <separator/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

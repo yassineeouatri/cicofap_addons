@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="sms.res_partner_act_window_sms_composer_single" model="ir.actions.act_window">
+            <field name="groups_id" eval="[(4, ref('base.group_no_one'))]"/>
+    </record>
+
+    <record id="sms.res_partner_act_window_sms_composer_multi" model="ir.actions.act_window">
+            <field name="groups_id" eval="[(4, ref('base.group_no_one'))]"/>
+    </record>
+
+    <record id="bi_sales_security.partner_user_sale_view" model="ir.actions.act_window">
+            <field name="groups_id" eval="[(4, ref('base.group_no_one'))]"/>
+    </record>
+
+    <!--record model="ir.actions.server" id="web_entreprise.download_contact">
+        <field name="groups_id" eval="[(4, ref('base.group_no_one'))]"/>
+    </record-->
+
+    <record model="ir.actions.server" id="portal.partner_wizard_action_create_and_open">
+        <field name="groups_id" eval="[(4, ref('base.group_no_one'))]"/>
+    </record>
+
+
+</odoo>

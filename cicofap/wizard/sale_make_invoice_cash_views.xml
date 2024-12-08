@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+        <record id="view_sale_make_invoice_cash" model="ir.ui.view">
+            <field name="name">Invoice Cash</field>
+            <field name="model">sale.make.invoice.cash</field>
+            <field name="arch" type="xml">
+                <form string="Invoice Cash">
+                    <p class="oe_grey">
+                        Créer un cash à partir d'une commande.
+                    </p>
+                    <footer>
+                        <button name="create_invoices" id="create_invoice_open" string="Créer et ouvrir le cash" type="object"
+                            context="{'open_invoices': True}" class="btn-primary" data-hotkey="q"/>
+                        <button name="create_invoices" id="create_invoice" string="Créer le cash" type="object" data-hotkey="w"/>
+                        <button string="Anuller" class="btn-secondary" special="cancel" data-hotkey="z"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_view_sale_make_invoice_cash" model="ir.actions.act_window">
+            <field name="name">Créer une facture cash</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">sale.make.invoice.cash</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+</odoo>

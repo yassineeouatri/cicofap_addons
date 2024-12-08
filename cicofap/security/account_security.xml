@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record model="ir.module.category" id="base.module_category_accounting">
+            <field name="visible" eval="0" />
+        </record>
+        <delete model="ir.rule" id="account.account_move_rule_group_invoice"/>
+        <delete model="ir.rule" id="account.account_move_see_all"/>
+        <delete model="ir.rule" id="sale.sale_order_see_all"/>
+        <delete model="ir.rule" id="sale.sale_order_personal_rule"/>
+        <!-- Groups -->
+        <record id="module_category_cicofap" model="ir.module.category">
+            <field name="name">Cicofap</field>
+            <field name="description">Cicofap</field>
+            <field name="sequence">4</field>
+        </record>
+        <record id="group_cicofap_stock" model="res.groups">
+            <field name="name">Visualiser le menu Stock</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="base.module_category_hidden"/>
+        </record>
+        <record id="group_cicofap_transfert" model="res.groups">
+            <field name="name">Visualiser le menu Transferts Internes</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="base.module_category_hidden"/>
+        </record>
+        <record id="group_cicofap_sale" model="res.groups">
+            <field name="name">Visualiser le menu Ventes</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="base.module_category_hidden"/>
+        </record>
+        <record id="group_cicofap_product" model="res.groups">
+            <field name="name">Visualiser le menu Articles</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="base.module_category_hidden"/>
+        </record>
+        <record id="group_cicofap_account" model="res.groups">
+            <field name="name">Visualiser le menu Facturation</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="base.module_category_hidden"/>
+        </record>
+        <record id="group_archive" model="res.groups">
+            <field name="name">Archiver et désarchiver </field>
+        </record>
+        <record id="group_cicofap_admin" model="res.groups">
+            <field name="name">Admin</field>
+            <field name="implied_ids" eval="[(4, ref('cicofap.group_archive')),(4, ref('cicofap.group_cicofap_transfert')),(4, ref('cicofap.group_cicofap_account')),(4, ref('cicofap.group_cicofap_product')),(4, ref('cicofap.group_cicofap_sale')),(4, ref('cicofap.group_cicofap_stock')),(4, ref('base.group_user')),(4, ref('sales_team.group_sale_manager')),(4, ref('account.group_account_manager')),(4, ref('base.group_erp_manager')),(4, ref('stock.group_stock_manager')),(4, ref('purchase.group_purchase_manager'))]"/>
+            <field name="category_id" ref="module_category_cicofap"/>
+        </record>
+        <record id="group_cicofap_m1" model="res.groups">
+            <field name="name">Manager M1</field>
+            <field name="implied_ids" eval="[(4, ref('cicofap.group_archive')),(4, ref('cicofap.group_cicofap_transfert')),(4, ref('account.group_account_invoice')),(4, ref('cicofap.group_cicofap_account')),(4, ref('cicofap.group_cicofap_product')),(4, ref('cicofap.group_cicofap_sale')),(4, ref('cicofap.group_cicofap_stock')),(4, ref('base.group_user')),(4, ref('sales_team.group_sale_salesman_all_leads')), (4, ref('stock.group_stock_user'))]"/>
+            <field name="category_id" ref="module_category_cicofap"/>
+        </record>
+        <record id="group_cicofap_adv1" model="res.groups">
+            <field name="name">ADV N1</field>
+            <field name="implied_ids" eval="[(4, ref('cicofap.group_archive')),(4, ref('cicofap.group_cicofap_transfert')),(4, ref('account.group_account_invoice')),(4, ref('cicofap.group_cicofap_account')),(4, ref('cicofap.group_cicofap_product')),(4, ref('cicofap.group_cicofap_sale')),(4, ref('cicofap.group_cicofap_stock')),(4, ref('base.group_user')),(4, ref('sales_team.group_sale_salesman_all_leads')), (4, ref('stock.group_stock_user'))]"/>
+            <field name="category_id" ref="module_category_cicofap"/>
+        </record>
+        <record id="group_cicofap_depot" model="res.groups">
+            <field name="name">Gestionnaire de dépôt</field>
+            <field name="implied_ids" eval="[(4, ref('cicofap.group_archive')),(4, ref('cicofap.group_cicofap_product')),(4, ref('cicofap.group_cicofap_stock')),(4, ref('base.group_user')),(4, ref('sales_team.group_sale_salesman_all_leads')), (4, ref('stock.group_stock_user'))]"/>
+            <field name="category_id" ref="module_category_cicofap"/>
+
+        </record>
+        <record id="group_cicofap_magasin" model="res.groups">
+            <field name="name">Gestionnaire de magasin</field>
+            <field name="implied_ids" eval="[(4, ref('cicofap.group_archive')),(4, ref('cicofap.group_cicofap_product')),(4, ref('base.group_user')),(4, ref('sales_team.group_sale_salesman_all_leads')), (4, ref('stock.group_stock_user'))]"/>
+            <field name="category_id" ref="module_category_cicofap"/>
+        </record>
+        <record id="group_cicofap_magasin_siege" model="res.groups">
+            <field name="name">Magasin siege</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="module_category_cicofap"/>
+        </record>
+        <record id="group_cicofap_magasin_radiateur" model="res.groups">
+            <field name="name">Magasin radiateur</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="module_category_cicofap"/>
+        </record>
+        <record id="group_cicofap_adv_radiateur" model="res.groups">
+            <field name="name">ADV radiateur</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user')), (4, ref('sales_team.group_sale_salesman_all_leads')), (4, ref('account.group_account_invoice')), (4, ref('stock.group_stock_user')), (4, ref('cicofap.group_cicofap_product')), (4, ref('cicofap.group_cicofap_sale')), (4, ref('cicofap.group_cicofap_account')), (4, ref('cicofap.group_cicofap_stock'))]"/>
+            <field name="category_id" ref="module_category_cicofap"/>
+        </record>
+        <record id="group_cicofap_adv_siege" model="res.groups">
+            <field name="name">ADV siege</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user')), (4, ref('sales_team.group_sale_salesman_all_leads')), (4, ref('account.group_account_invoice')), (4, ref('stock.group_stock_user')), (4, ref('cicofap.group_cicofap_product')), (4, ref('cicofap.group_cicofap_sale')), (4, ref('cicofap.group_cicofap_account')), (4, ref('cicofap.group_cicofap_stock'))]"/>
+            <field name="category_id" ref="module_category_cicofap"/>
+        </record>
+        <record id="group_cicofap_manager_radiateur" model="res.groups">
+            <field name="name">Manager radiateur</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user')), (4, ref('sales_team.group_sale_salesman_all_leads')), (4, ref('account.group_account_invoice')), (4, ref('stock.group_stock_user')), (4, ref('cicofap.group_cicofap_product')), (4, ref('cicofap.group_cicofap_sale')), (4, ref('cicofap.group_cicofap_account')), (4, ref('cicofap.group_cicofap_stock')), (4, ref('purchase.group_purchase_user'))]"/>
+            <field name="category_id" ref="module_category_cicofap"/>
+        </record>
+        <record id="group_cicofap_manager_siege" model="res.groups">
+            <field name="name">Manager siege</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user')), (4, ref('sales_team.group_sale_salesman_all_leads')), (4, ref('account.group_account_invoice')), (4, ref('stock.group_stock_user')), (4, ref('cicofap.group_cicofap_product')), (4, ref('cicofap.group_cicofap_sale')), (4, ref('cicofap.group_cicofap_account')), (4, ref('cicofap.group_cicofap_stock')), (4, ref('purchase.group_purchase_user'))]"/>
+            <field name="category_id" ref="module_category_cicofap"/>
+        </record>
+        <record id="group_cicofap_customer" model="res.groups">
+            <field name="name">Client</field>
+            <field name="implied_ids" eval="[(4, ref('cicofap.group_archive')), (4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="module_category_cicofap"/>
+        </record>
+        <record id="group_cicofap_commercial" model="res.groups">
+            <field name="name">Commercial</field>
+            <field name="implied_ids" eval="[(4, ref('cicofap.group_archive')), (4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="module_category_cicofap"/>
+        </record>
+        <record id="group_cicofap_customer_stock" model="res.groups">
+            <field name="name">Client Stock</field>
+            <field name="category_id" ref="module_category_cicofap"/>
+        </record>
+        <record id="cicofap_depot_stock_picking_internal_only" model="ir.rule">
+            <field name="name">Access to stock picking internal only</field>
+            <field name="model_id" ref="stock.model_stock_picking_type"/>
+            <field name="domain_force">[('code', 'in', ('internal', 'incoming'))]</field>
+            <field name="groups" eval="[(4, ref('cicofap.group_cicofap_depot'))]"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        <!-- Rules for admin -->
+        <record id="cicofap_admin_move" model="ir.rule">
+            <field name="name">Access to moves for admin</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('cicofap.group_cicofap_admin'))]"/>
+        </record>
+        <!-- Rules for M1 -->
+        <record id="cicofap_m1_products" model="ir.rule">
+            <field name="name">Access to products for M1</field>
+            <field name="model_id" ref="product.model_product_template"/>
+            <!--<field name="domain_force">[('categ_id.parent_id.name', '=', 'REFROIDISSEMENT-RADIATEURS')]</field>-->
+            <field name="domain_force">[]</field>
+            <field name="groups" eval="[(4, ref('cicofap.group_cicofap_m1'))]"/>
+        </record>
+        <record id="cicofap_m1_partners" model="ir.rule">
+            <field name="name">Access to partners for M1</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <!--<field name="domain_force">[('category', '=', 'radiateur')]</field>-->
+            <field name="domain_force">[]</field>
+            <field name="groups" eval="[(4, ref('cicofap.group_cicofap_m1'))]"/>
+        </record>
+        <record id="cicofap_m1_orders" model="ir.rule">
+            <field name="name">Access to orders for M1</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="domain_force">[]</field>
+            <field name="groups" eval="[(4, ref('cicofap.group_cicofap_m1'))]"/>
+        </record>
+        <record id="cicofap_m1_move" model="ir.rule">
+            <field name="name">Access to moves for M1</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="domain_force">[]</field>
+            <field name="groups" eval="[(4, ref('cicofap.group_cicofap_m1'))]"/>
+        </record>
+        <record id="cicofap_m1_stock_picking_all" model="ir.rule">
+            <field name="name">Access to all stock picking</field>
+            <field name="model_id" ref="stock.model_stock_picking_type"/>
+            <field name="domain_force">[]</field>
+            <field name="groups" eval="[(4, ref('cicofap.group_cicofap_m1'))]"/>
+        </record>
+        <!-- Rules for ADV1 -->
+        <record id="cicofap_adv1_products" model="ir.rule">
+            <field name="name">Access to products for ADV1</field>
+            <field name="model_id" ref="product.model_product_template"/>
+            <field name="domain_force">[]</field>
+            <field name="groups" eval="[(4, ref('cicofap.group_cicofap_adv1'))]"/>
+        </record>
+        <record id="cicofap_adv1_partners" model="ir.rule">
+            <field name="name">Access to partners for ADV1</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="domain_force">[]</field>
+            <field name="groups" eval="[(4, ref('cicofap.group_cicofap_adv1'))]"/>
+        </record>
+        <record id="cicofap_adv1_orders" model="ir.rule">
+            <field name="name">Access to orders for ADV1</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="domain_force">[]</field>
+            <field name="groups" eval="[(4, ref('cicofap.group_cicofap_adv1'))]"/>
+        </record>
+        <record id="cicofap_adv1_move" model="ir.rule">
+            <field name="name">Access to moves for ADV1</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="domain_force">[]</field>
+            <field name="groups" eval="[(4, ref('cicofap.group_cicofap_adv1'))]"/>
+        </record>
+        <record id="cicofap_adv1_pickings" model="ir.rule">
+            <field name="name">Access to pickings for ADV1</field>
+            <field name="model_id" ref="stock.model_stock_picking"/>
+            <field name="domain_force">[]</field>
+            <field name="groups" eval="[(4, ref('cicofap.group_cicofap_adv1'))]"/>
+        </record>
+        <record id="cicofap_adv1_stock_picking_all" model="ir.rule">
+            <field name="name">Access to all stock picking</field>
+            <field name="model_id" ref="stock.model_stock_picking_type"/>
+            <field name="domain_force">[]</field>
+            <field name="groups" eval="[(4, ref('cicofap.group_cicofap_adv1'))]"/>
+        </record>
+         <!-- Rules for Depot -->
+        <record id="cicofap_depot_products" model="ir.rule">
+            <field name="name">Access to products for Depot</field>
+            <field name="model_id" ref="product.model_product_template"/>
+            <field name="domain_force">[]</field>
+            <field name="groups" eval="[(4, ref('cicofap.group_cicofap_depot'))]"/>
+        </record>
+         <!-- Rules for Magasin -->
+        <record id="cicofap_magasin_siege_product_template" model="ir.rule">
+            <field name="name">Access to products for magasin siege</field>
+            <field name="model_id" ref="product.model_product_template"/>
+            <field name="domain_force">[('categ_type', '=', 'siege')]</field>
+            <field name="groups" eval="[(4, ref('cicofap.group_cicofap_magasin_siege'))]"/>
+        </record>
+        <record id="cicofap_magasin_radiateur_product_template" model="ir.rule">
+            <field name="name">Access to products for magasin radiateur</field>
+            <field name="model_id" ref="product.model_product_template"/>
+            <field name="domain_force">[('categ_type', '=', 'radiateur')]</field>
+            <field name="groups" eval="[(4, ref('cicofap.group_cicofap_magasin_radiateur'))]"/>
+        </record>
+        <!-- Rules for ADV -->
+        <record id="cicofap_adv_siege_sale_order" model="ir.rule">
+            <field name="name">Access to orders for adv siege</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="domain_force">[('partner_id.category', '=', 'siege')]</field>
+            <field name="groups" eval="[(4, ref('cicofap.group_cicofap_adv_siege'))]"/>
+        </record>
+        <record id="cicofap_adv_radiateur_sale_order" model="ir.rule">
+            <field name="name">Access to orders for adv radiateur</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="domain_force">[('partner_id.category', '=', 'radiateur')]</field>
+            <field name="groups" eval="[(4, ref('cicofap.group_cicofap_adv_radiateur'))]"/>
+        </record>
+        <!-- Rules for Managers -->
+        <record id="cicofap_manager_siege_sale_order" model="ir.rule">
+            <field name="name">Access to purchases for manager siege</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="domain_force">[('partner_id.category', '=', 'siege')]</field>
+            <field name="groups" eval="[(4, ref('cicofap.group_cicofap_manager_siege'))]"/>
+        </record>
+        <record id="cicofap_manager_radiateur_sale_order" model="ir.rule">
+            <field name="name">Access to purchases for manager radiateur</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="domain_force">[('partner_id.category', '=', 'radiateur')]</field>
+            <field name="groups" eval="[(4, ref('cicofap.group_cicofap_manager_radiateur'))]"/>
+        </record>
+        <!-- Rules for customer -->
+        <record id="cicofap_customer_sale_order" model="ir.rule">
+            <field name="name">Customers Access to orders</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="domain_force">[('partner_id.allowed_user_ids','in',[user.id])]</field>
+            <field name="groups" eval="[(4, ref('cicofap.group_cicofap_customer'))]"/>
+        </record>
+        <record id="cicofap_customer_res_partner" model="ir.rule">
+            <field name="name">Customers Access to partners</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="domain_force">['|','|','|',('user_id','=',user.id),('allowed_user_ids','in',[user.id]),('partner_share','=',False),('is_company_user','=',True)]</field>
+            <field name="groups" eval="[(4, ref('cicofap.group_cicofap_customer'))]"/>
+        </record>
+        <!-- Rules for commercial -->
+        <record id="cicofap_commercial_sale_order" model="ir.rule">
+            <field name="name">Commercials Access to orders</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="domain_force">[('user_id','in',[user.id])]</field>
+            <field name="groups" eval="[(4, ref('cicofap.group_cicofap_commercial'))]"/>
+        </record>
+        <record id="cicofap_commercial_res_partner" model="ir.rule">
+            <field name="name">Commercials Access to partners</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="domain_force">[]</field>
+            <field name="groups" eval="[(4, ref('cicofap.group_cicofap_commercial'))]"/>
+        </record>
+    </data>
+</odoo>
