@@ -76,9 +76,37 @@ class production_affaire(models.Model):
     def name_search(self, name, args=None, operator='ilike', limit=100):
         args = args or []
         recs = self.browse()
-        print(recs)
+
+        # Si aucune correspondance n'est trouvée dans les affaires
         if not recs:
-            recs = self.search(['|', '|', ('name', operator, name), ('number', operator, name), ('year', operator, name)] + args, limit=limit)
+            # Recherche directe dans le modèle des affaires
+            recs = self.search([
+                                   '|', '|',
+                                   ('name', operator, name),  # Recherche dans le champ "name"
+                                   ('number', operator, name),  # Recherche dans le champ "number"
+                                   ('year', operator, name)  # Recherche dans le champ "year"
+                               ] + args, limit=limit)
+
+            # Recherche via les phases Many2many
+            if not recs and name:
+                phase_model = self.env['production.phase']  # Modèle des phases
+                # Recherche des phases correspondant au terme
+                phase_recs = phase_model.search([('name', operator, name)], limit=limit)
+                if phase_recs:
+                    # Récupérer les affaires liées aux phases trouvées
+                    affaire_ids = self.search([('phase_ids', 'in', phase_recs.ids)] + args, limit=limit)
+                    recs |= affaire_ids  # Ajouter les affaires trouvées via les phases
+
+            # Recherche via le partenaire (Many2one)
+            if not recs and name:
+                partner_model = self.env['res.partner']  # Modèle des partenaires
+                # Recherche des partenaires correspondant au terme
+                partner_recs = partner_model.search([('name', operator, name)], limit=limit)
+                if partner_recs:
+                    # Récupérer les affaires liées aux partenaires trouvés
+                    affaire_ids = self.search([('partner_id', 'in', partner_recs.ids)] + args, limit=limit)
+                    recs |= affaire_ids  # Ajouter les affaires trouvées via les partenaires
+
         return recs.name_get()
     # -------------------------------------------------------------------------
     # COMPUTE METHODS
