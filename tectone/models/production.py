@@ -1125,7 +1125,7 @@ class production_pointage_line(models.Model):
 
     pointage_id = fields.Many2one('production.pointage', 'Pointage')
     affaire_id = fields.Many2one('production.affaire', 'Affaire', required=True)
-    type = fields.Selection([('meeting', 'Réunion'), ('document', 'Document'), ('research', 'Recherche'), ('stand', 'Stand-By'), ('other', 'Autre')], 'Type',
+    type = fields.Selection([('meeting', 'Réunion'), ('document', 'Document'), ('research', 'Recherche'), ('modelisation_cao', 'Modélisation CAO'), ('modelisation_calcul', 'Modélisation Calcul'), ('stand', 'Stand-By'), ('other', 'Autre')], 'Type',
                             required=True)
     reunion_id = fields.Many2one('production.reunion', 'Réunion')
     document_id = fields.Many2one('production.document', 'Document')
