@@ -1288,9 +1288,8 @@ class production_tbd(models.Model):
                                             'prev': row[1],
                                             'exe': row[2],
                                             'percentage': row[3]}))
-            other_ids.append((0, 0, {'modele': 'Recherche', 'prev': 0, 'exe': 0, 'percentage': 0}))
-            other_ids.append((0, 0, {'modele': 'Stand by', 'prev': 0, 'exe': 0, 'percentage': 0}))
-            other_ids.append((0, 0, {'modele': 'Autre', 'prev': 0, 'exe': 0, 'percentage': 0}))
+            for pointage_name in ['Modélisation CAO', 'Modélisation Calcul', 'Recherche', 'Stand by', 'Autre']:
+                other_ids.append((0, 0, {'modele': pointage_name, 'prev': 0, 'exe': 0, 'percentage': 0}))
             livrable_time_ids = []
             other_time_ids = []
             self._cr.execute("""select pdt.name,case when t2.nb_hour_ing is null then 0 else t2.nb_hour_ing end,
@@ -1333,55 +1332,24 @@ class production_tbd(models.Model):
 								order by r.sequence""".format(affaire_id))
             for row in self._cr.fetchall():
                 other_time_ids.append((0, 0, {'h_ing': row[1], 'h_proj': row[2], }))
-            self._cr.execute(""" select 'Recherche',
-                                                sum(case when job.name like 'Ing%' then b.hour else 0 end) as nb_hour_ing,
-                                                sum(case when job.name like 'Proj%' then b.hour else 0 end) as nb_hour_proj 
-                                            from production_pointage a
-                                            inner join production_pointage_line b on a.id=b.pointage_id
-                                            inner join production_employee emp on emp.id=a.employee_id
-                                            inner join production_job job on job.id=emp.job_id
-                                            where b.type like 'research'
-                                            and a.state = 'sent'
-                                            and b.affaire_id={}
-                                            group by b.affaire_id,b.document_id,a.employee_id""".format(affaire_id))
-            row = self._cr.fetchone()
-            if row:
-                other_time_ids.append((0, 0, {'h_ing': row[1], 'h_proj': row[2], }))
-            else:
-                other_time_ids.append((0, 0, {'h_ing': 0, 'h_proj': 0, }))
-            self._cr.execute(""" select 'Stand by',
-                                    sum(case when job.name like 'Ing%' then b.hour else 0 end) as nb_hour_ing,
-                                    sum(case when job.name like 'Proj%' then b.hour else 0 end) as nb_hour_proj 
-                                from production_pointage a
-                                inner join production_pointage_line b on a.id=b.pointage_id
-                                inner join production_employee emp on emp.id=a.employee_id
-                                inner join production_job job on job.id=emp.job_id
-                                where b.type like 'stand'
-                                and a.state = 'sent'
-                                and b.affaire_id={}
-                                group by b.affaire_id,b.document_id,a.employee_id""".format(
-                affaire_id))
-            row = self._cr.fetchone()
-            if row:
-                other_time_ids.append((0, 0, {'h_ing': row[1], 'h_proj': row[2], }))
-            else:
-                other_time_ids.append((0, 0, {'h_ing': 0, 'h_proj': 0, }))
-            self._cr.execute(""" select 'Autre',
-                                    sum(case when job.name like 'Ing%' then b.hour else 0 end) as nb_hour_ing,
-                                    sum(case when job.name like 'Proj%' then b.hour else 0 end) as nb_hour_proj 
-                                from production_pointage a
-                                inner join production_pointage_line b on a.id=b.pointage_id
-                                inner join production_employee emp on emp.id=a.employee_id
-                                inner join production_job job on job.id=emp.job_id
-                                where b.type like 'other'
-                                and a.state = 'sent'
-                                and b.affaire_id={}
-                                group by b.affaire_id,b.document_id,a.employee_id""".format(affaire_id))
-            row = self._cr.fetchone()
-            if row:
-                other_time_ids.append((0, 0, {'h_ing': row[1], 'h_proj': row[2], }))
-            else:
-                other_time_ids.append((0, 0, {'h_ing': 0, 'h_proj': 0, }))
+            for (pointage_name, pointage_type) in [('modelisation_cao', 'Modélisation CAO'), ('modelisation_calcul', 'Modélisation Calcul'),
+                                                   ('Recherche', 'research'), ('Stand by', 'stand'), ('Autre', 'other')]:
+                self._cr.execute(f""" select '{pointage_type}',
+                                                    sum(case when job.name like 'Ing%' then b.hour else 0 end) as nb_hour_ing,
+                                                    sum(case when job.name like 'Proj%' then b.hour else 0 end) as nb_hour_proj 
+                                                from production_pointage a
+                                                inner join production_pointage_line b on a.id=b.pointage_id
+                                                inner join production_employee emp on emp.id=a.employee_id
+                                                inner join production_job job on job.id=emp.job_id
+                                                where b.type like '{pointage_name}'
+                                                and a.state = 'sent'
+                                                and b.affaire_id={affaire_id}
+                                                group by b.affaire_id,b.document_id,a.employee_id""")
+                row = self._cr.fetchone()
+                if row:
+                    other_time_ids.append((0, 0, {'h_ing': row[1], 'h_proj': row[2], }))
+                else:
+                    other_time_ids.append((0, 0, {'h_ing': 0, 'h_proj': 0, }))
             ratio_ids = []
             self._cr.execute(
                 """select employee_id,sum(ppl.hour) as hour from production_pointage pp

@@ -5,8 +5,10 @@ from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
 PASSWORD = "cestsecret"
-LOCAL_DIRECTORY = "C://Program Files//Odoo15//server//odoo//addons//web//static//reports//"
-#LOCAL_DIRECTORY = "C://Users//Yassine//PycharmProjects//cicofap//Scripts//odoo//addons//web//static//reporting//"
+#LOCAL_DIRECTORY = "C://Program Files//Odoo15//server//odoo//addons//web//static//reports//"
+LOCAL_REPORTS_DIRECTORY = "/web/static/reports/"
+LOCAL_DIRECTORY = "C://Users//Yassine//PycharmProjects//cicofap//Scripts//odoo//addons//web//static//reporting//"
+LOCAL_REPORTS_DIRECTORY = "web/static/reporting/"
 
 class ProductionReport(models.TransientModel):
     _name = "production.report"
@@ -157,7 +159,8 @@ class ProductionReport(models.TransientModel):
         sheet.set_zoom(85)
         sheet.set_tab_color("orange")
         sheet.set_column("A:A", 100)
-        sheet.set_column("B:H", 15)
+        sheet.set_column("B:B", 30)
+        sheet.set_column("C:H", 15)
         x = 1
         sheet.write("A" + str(x), "Affaire", style_title)
         sheet.write("B" + str(x), "Modèle", style_title)
@@ -249,7 +252,7 @@ class ProductionReport(models.TransientModel):
                 sheet.write("H" + str(x_deb), row[2], style_number)
                 x_deb += 1
 
-            for model in ['Recherche', 'Stand by', 'Autre']:
+            for model in ['Modélisation CAO', 'Modélisation Calcul', 'Recherche', 'Stand by', 'Autre']:
                 sheet.write("A" + str(x), affaire.full_name, style)
                 sheet.write("B" + str(x), model, style)
                 sheet.write("C" + str(x), 0, style)
@@ -257,18 +260,21 @@ class ProductionReport(models.TransientModel):
                 sheet.write("E" + str(x), 0, style)
                 sheet.write("F" + str(x), 0, style_percentage)
                 x += 1
-            for model in ['research', 'stand', 'other']:
-                self._cr.execute(""" select 'Recherche',
+            for (pointage_name, pointage_type) in [('modelisation_cao', 'Modélisation CAO'),
+                                                   ('modelisation_calcul', 'Modélisation Calcul'),
+                                                   ('Recherche', 'research'), ('Stand by', 'stand'),
+                                                   ('Autre', 'other')]:
+                self._cr.execute(f""" select '{pointage_type}',
                                         sum(case when job.name like 'Ing%' then b.hour else 0 end) as nb_hour_ing,
                                         sum(case when job.name like 'Proj%' then b.hour else 0 end) as nb_hour_proj 
                                     from production_pointage a
                                     inner join production_pointage_line b on a.id=b.pointage_id
                                     inner join production_employee emp on emp.id=a.employee_id
                                     inner join production_job job on job.id=emp.job_id
-                                    where b.type like 'research'
-                                    and a.state = '{}'
-                                    and b.affaire_id={}
-                                    group by b.affaire_id,b.document_id,a.employee_id""".format(model, affaire.id))
+                                    where b.type like '{pointage_type}'
+                                    and a.state = 'sent'
+                                    and b.affaire_id={affaire.id}
+                                    group by b.affaire_id,b.document_id,a.employee_id""")
                 row = self._cr.fetchone()
                 if row:
                     sheet.write("G" + str(x_deb), row[1], style_number)
@@ -284,7 +290,7 @@ class ProductionReport(models.TransientModel):
 
 
     def get_return(self, fichier):
-        url = "/web/static/reports/" + fichier
+        url = LOCAL_REPORTS_DIRECTORY + fichier
         if url:
             return {
                 "type": "ir.actions.act_url",
