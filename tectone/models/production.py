@@ -14,8 +14,8 @@ SERVER_ADRESS = 'http://192.168.0.35'
 EMAIL_FROM = 'tectonegroup@outlook.com'
 LOCAL_DIRECTORY = "C://Program Files//Odoo15//server//odoo//addons//web//static//reports"
 LOCAL_REPORTS_DIRECTORY = "/web/static/reports/"
-#LOCAL_DIRECTORY = "C://Users//Yassine//PycharmProjects//cicofap//Scripts//odoo//addons//web//static//reporting//"
-#LOCAL_REPORTS_DIRECTORY = "web/static/reporting/"
+LOCAL_DIRECTORY = "C://Users//Yassine//PycharmProjects//cicofap//Scripts//odoo//addons//web//static//reporting//"
+LOCAL_REPORTS_DIRECTORY = "web/static/reporting/"
 
 class production_job(models.Model):
     _name = 'production.job'
@@ -675,6 +675,8 @@ class production_bordereau(models.Model):
 
         body1 = "<ul>"
         attachment_ids = []
+        attachment_ids.append(self.generate_bordereau_attachement())
+        # Attach documents files
         for rec in self.line_ids:
             body1 += f"<li>{rec.document_id.full_name}</li>"
             if rec.document_id.full_name:
@@ -771,26 +773,8 @@ class production_bordereau(models.Model):
             if rec.name:
                 emails.append(rec.name)
         emails = self.get_emails(emails)
-
-        # generate bordereau
-        filename = self.generate_bordereau(order)
-        file_path = os.path.join(LOCAL_DIRECTORY, filename)
-        # Lire le fichier depuis le répertoire
-        try:
-            with open(file_path, 'rb') as file:
-                file_data = file.read()
-            encoded_file = base64.b64encode(file_data)
-        except FileNotFoundError:
-            raise ValueError("Le fichier spécifié est introuvable.")
-
-        # Créer une pièce jointe
-        attachment = self.env['ir.attachment'].create({
-            'name': filename,  # Nom du fichier
-            'datas': encoded_file,  # Données encodées en base64
-            'type': 'binary',
-            'res_model': 'production.bordereau',  # Associez au modèle si nécessaire
-        })
-
+        attachments = []
+        attachments.append(self.generate_bordereau_attachement(order=order, send_crt=Tr))
         body1 = "<table style='border-collapse: collapse;'>"
         for rec in self.line_ids:
             if rec.state == 'validate':
@@ -828,7 +812,7 @@ class production_bordereau(models.Model):
             'email_to': emails,
             'body_html': body,
             'model': 'production.bordereau',  # Modèle concerné
-            'attachment_ids': [(6, 0, [attachment.id])],
+            'attachment_ids': [(6, 0, attachments)],
         }
 
         msg_id = mail_pool.create(values)
@@ -853,7 +837,7 @@ class production_bordereau(models.Model):
         filename = self.generate_bordereau()
         return self.get_return(filename)
 
-    def generate_bordereau(self, numero=None):
+    def generate_bordereau(self, numero=None, send_client=False):
         filename = 'bordereau.xlsx'
 
         path_file = os.path.join(LOCAL_DIRECTORY, filename)
@@ -873,7 +857,18 @@ class production_bordereau(models.Model):
         worksheet['P13'] = datetime.now().strftime('%d/%m/%Y')
         x = 19
         for record in self.line_ids:
-            if record.state in ['validate']:
+            if send_client:
+                if record.state in ['validate']:
+                    worksheet['A' + str(x)] = record.document_id.emetteur_id.name
+                    worksheet['B' + str(x)] = record.document_id.zone_id.name if record.document_id.zone_id.name else ''
+                    worksheet['C' + str(x)] = record.document_id.phase_id.name if record.document_id.phase_id.name else ''
+                    worksheet['D' + str(x)] = record.document_id.ouvrage_id.name if record.document_id.ouvrage_id.name else ''
+                    worksheet['E' + str(x)] = record.document_id.type_id.name if record.document_id.type_id.name else ''
+                    worksheet['F' + str(x)] = record.document_id.numero
+                    worksheet['G' + str(x)] = record.document_id.indice
+                    worksheet['H' + str(x)] = record.document_id.name if record.document_id.name else ''
+                    x = x + 1
+            else:
                 worksheet['A' + str(x)] = record.document_id.emetteur_id.name
                 worksheet['B' + str(x)] = record.document_id.zone_id.name if record.document_id.zone_id.name else ''
                 worksheet['C' + str(x)] = record.document_id.phase_id.name if record.document_id.phase_id.name else ''
@@ -889,6 +884,27 @@ class production_bordereau(models.Model):
         # Save the changes
         workbook.save(path_file)
         return filename
+
+    def generate_bordereau_attachement(self, order=None, send_crt=False):
+        # generate bordereau
+        filename = self.generate_bordereau(order, send_crt)
+        file_path = os.path.join(LOCAL_DIRECTORY, filename)
+        # Lire le fichier depuis le répertoire
+        try:
+            with open(file_path, 'rb') as file:
+                file_data = file.read()
+            encoded_file = base64.b64encode(file_data)
+        except FileNotFoundError:
+            raise ValueError("Le fichier spécifié est introuvable.")
+
+        # Créer une pièce jointe
+        attachment = self.env['ir.attachment'].create({
+            'name': filename,  # Nom du fichier
+            'datas': encoded_file,  # Données encodées en base64
+            'type': 'binary',
+            'res_model': 'production.bordereau',  # Associez au modèle si nécessaire
+        })
+        return  attachment.id
 
 class production_bordereau_line(models.Model):
     _name = 'production.bordereau.line'
