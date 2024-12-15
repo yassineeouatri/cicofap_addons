@@ -19,7 +19,7 @@ class production_affaire(models.Model):
             number = affaire_id.number + 1
         return number
 
-    full_name = fields.Char(string='Affaire', readonly=True, compute='_compute_full_name')
+    full_name = fields.Char(string='Affaire', readonly=True, compute='_compute_full_name', store=True)
     no_affaire = fields.Char('N° Affaire')
     name = fields.Char('Désignation')
     number = fields.Integer("N° Affaire", default=_default_number)
@@ -81,7 +81,8 @@ class production_affaire(models.Model):
         if not recs:
             # Recherche directe dans le modèle des affaires
             recs = self.search([
-                                   '|', '|',
+                                   '|', '|', '|',
+                                   ('full_name', operator, name),  # Recherche dans le champ "name"
                                    ('name', operator, name),  # Recherche dans le champ "name"
                                    ('number', operator, name),  # Recherche dans le champ "number"
                                    ('year', operator, name)  # Recherche dans le champ "year"
@@ -112,6 +113,7 @@ class production_affaire(models.Model):
     # COMPUTE METHODS
     # -------------------------------------------------------------------------
 
+    @api.depends('year', 'number', 'partner_id', 'phase_ids', 'name')
     def _compute_full_name(self):
         for record in self:
             full_name = ''
