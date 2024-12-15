@@ -12,6 +12,9 @@
             <record id="production_job_ing" model="production.job">
                 <field name="name">Ingénieur</field>
             </record>
+            <record id="production_job_crt" model="production.job">
+                <field name="name">CRT</field>
+            </record>
         <!-- Phases -->
             <record id="production_phase_exp" model="production.phase">
                 <field name="name">EXP</field>
