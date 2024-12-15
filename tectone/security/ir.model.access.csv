@@ -16,6 +16,7 @@ access_production_document_file_user,production.document.file user,model_product
 access_production_document_note_user,production.document.note user,model_production_document_note,base.group_user,1,1,1,1
 access_production_document_indice_add_user,production.document.indice.add user,model_production_document_indice_add,base.group_user,1,1,1,1
 access_production_document_file_add_user,production.document.file.add user,model_production_document_file_add,base.group_user,1,1,1,1
+access_production_pointage_add_user,production.pointage.add user,model_production_pointage_add,base.group_user,1,1,1,1
 access_production_pointage_user,production.pointage user,model_production_pointage,base.group_user,1,1,1,1
 access_production_pointage_line_puser,production.pointage.line user,model_production_pointage_line,base.group_user,1,1,1,1
 access_production_bordereau_user,production.bordereau user,model_production_bordereau,base.group_user,1,1,1,0

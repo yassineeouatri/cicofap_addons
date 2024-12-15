@@ -950,8 +950,9 @@
                         <group>
                             <fieldset style="border: 1px solid #ddd !important;padding: 0 0.5em 0em 0.5em !important;margin: 0 0 1em 0 !important;">
                                 <legend style="color: #7c7bad;width:inherit;padding:0 2px; border-bottom:none;font-weight: bold ! important;font-size: 14px ! important;margin-bottom: 0px ! important;" >Liste des tâches :</legend>
+                                <button class="btn btn-primary" string="Ajouter des pointages" type="object" name="action_add_pointage" attrs="{'invisible': [('state', 'not in', ('draft'))]}"/>
                                 <field name="line_ids" style="overflow-y: auto;max-height: 200px;" colspan="4" nolabel="1" mode="tree" context="{'default_pointage_id': active_id}" editable="top">
-                                    <tree string="Lignes">
+                                    <tree string="Lignes" create="false" editable="top">
                                         <field name="pointage_id" invisible="1"/>
                                         <field name="affaire_id" options="{'no_open': True, 'no_create': True}"/>
                                         <field name="type" />
@@ -961,25 +962,6 @@
                                         <field name="nb_hour" invisible="1"/>
                                         <field name="hour" sum="Total des heures"/>
                                     </tree>
-                                    <form>
-                                        <group>
-                                            <group>
-                                                <field name="pointage_id" invisible="1"/>
-                                                <field name="affaire_id" options="{'no_open': True, 'no_create': True}" />
-                                                <field name="nb_hour"/>
-                                                <field name="hour" invisible="1"/>
-                                            </group>
-                                            <group>
-                                                <field name="type" />
-                                                <field name="task"
-                                                     attrs="{'required':[('type', '=', 'other')], 'invisible':[('type','!=','other')]}"/>
-                                                <field name="reunion_id" widget="selection"
-                                                     attrs="{'required':[('type', '=', 'meeting')], 'invisible':[('type','!=','meeting')]}"/>
-                                                <field name="document_id" widget="selection" domain="[('affaire_id','=',affaire_id)]"
-                                                    attrs="{'required':[('type', '=', 'document')], 'invisible':[('type','!=','document')]}"/>
-                                            </group>
-                                        </group>
-                                    </form>
                                 </field>
                             </fieldset>
                         </group>

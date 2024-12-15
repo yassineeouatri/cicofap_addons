@@ -1136,17 +1136,34 @@ class production_pointage(models.Model):
                 raise UserError("Vous ne pouvez pas supprimer un document qui n'est pas à l'état de brouillon!")
         return super(production_document, self).unlink()
 
+    def action_add_pointage(self):
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "production.pointage.add",
+            "view_mode": "form",
+            "view_type": "form",
+            "views": [
+                (
+                    self.env.ref("tectone.production_pointage_create_view_form").id,
+                    "form",
+                )
+            ],
+            "context": {"default_pointage_id": self.id},
+            "target": "new",
+            "flags": {"form": {"action_buttons": True}},
+        }
+
 class production_pointage_line(models.Model):
     _name = 'production.pointage.line'
 
     pointage_id = fields.Many2one('production.pointage', 'Pointage')
-    affaire_id = fields.Many2one('production.affaire', 'Affaire', required=True)
+    affaire_id = fields.Many2one('production.affaire', 'Affaire', required=True, readonly=True)
     type = fields.Selection([('meeting', 'Réunion'), ('document', 'Document'), ('research', 'Recherche'), ('modelisation_cao', 'Modélisation CAO'), ('modelisation_calcul', 'Modélisation Calcul'), ('stand', 'Stand-By'), ('other', 'Autre')], 'Type',
-                            required=True)
-    reunion_id = fields.Many2one('production.reunion', 'Réunion')
-    document_id = fields.Many2one('production.document', 'Document')
-    task = fields.Char('Tâche')
-    nb_hour = fields.Selection([('0.5', '1/2h'),
+                            required=True, readonly=True)
+    reunion_id = fields.Many2one('production.reunion', 'Réunion', readonly=True)
+    document_id = fields.Many2one('production.document', 'Document', readonly=True)
+    task = fields.Char('Tâche', readonly=True)
+    nb_hour = fields.Selection([('0', '0h'), ('0.5', '1/2h'),
                                 ('1', '1h'), ('1.5', '1.5h'),
                                 ('2', '2h'), ('2.5', '2.5h'),
                                 ('3', '3h'), ('3.5', '3.5h'),

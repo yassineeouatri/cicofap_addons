@@ -20,6 +20,7 @@
         'wizard/production_indice_add_view.xml',
         'wizard/production_file_add_view.xml',
         'wizard/production_document_send_view.xml',
+        'wizard/production_pointage_add_view.xml',
         'wizard/production_report_view.xml',
     ],
     'demo': [
