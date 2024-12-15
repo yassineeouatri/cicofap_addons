@@ -1,8 +1,10 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ir_actions_act_user,ir.actions.act_window user,base.model_ir_actions_act_window,base.group_user,1,1,1,1
 access_mail_mail_user,mail.mail user,mail.model_mail_mail,base.group_user,1,1,1,1
 access_mail_mail_message,mail.message user,mail.model_mail_message,base.group_user,1,1,1,1
 access_production_document_send_user,production.document.send user,model_production_document_send,base.group_user,1,1,1,1
-access_production_affaire_user,production.affaire user,model_production_affaire,base.group_user,1,1,1,1
+access_production_affaire_user,production.affaire user,model_production_affaire,base.group_user,1,0,0,0
+access_production_affaire_admin,production.affaire admin,model_production_affaire,tectone.group_production_admin,1,1,1,1
 access_production_zone_user,production.zone officer,model_production_zone,base.group_user,1,1,1,1
 access_production_affaire_email_user,production.affaire.email user,model_production_affaire_email,base.group_user,1,1,1,1
 access_production_affaire_email_cc_user,production.affaire.email.cc user,model_production_affaire_email_cc,base.group_user,1,1,1,1
