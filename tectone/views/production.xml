@@ -990,7 +990,7 @@
         <menuitem id="menu_affaire_compt" name="Affaires" parent="menu_production_root" action="action_production_affaire"  groups="tectone.group_production_compt" sequence="2"/>
         <menuitem id="menu_production_document" name="Documents" action="production_document_action" parent="menu_production_root" sequence="3" groups="tectone.group_production_admin,tectone.group_production_projeteur,tectone.group_production_ingenieur"/>
         <menuitem id="menu_production_pointage" name="Pointage" action="production_pointage_action" parent="menu_production_root" sequence="4" groups="tectone.group_production_admin,tectone.group_production_projeteur,tectone.group_production_ingenieur"/>
-        <menuitem id="menu_production_document_crt" name="Documents" action="production_document_crt_action" parent="menu_production_root" sequence="5" groups="tectone.group_production_transmission"/>
+        <!--menuitem id="menu_production_document_crt" name="Documents" action="production_document_crt_action" parent="menu_production_root" sequence="5" groups="tectone.group_production_transmission"/-->
         <menuitem id="menu_production_bordereau" name="Bordereaux d'envoi" action="production_bordereau_action" parent="menu_production_root" sequence="6"  groups="tectone.group_production_admin,tectone.group_production_projeteur,tectone.group_production_ingenieur,tectone.group_production_transmission"/>
         <menuitem id="menu_production_config" name="Configuration" parent="menu_production_root" sequence="100"  groups="tectone.group_production_config"/>
         <menuitem id="menu_production_employee" name="Employés" parent="menu_production_config" action="production_employee_action" sequence="1" />
