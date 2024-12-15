@@ -10,7 +10,7 @@ from datetime import datetime
 
 
 SERVER_ADRESS = 'http://192.168.0.35'
-#SERVER_ADRESS = 'http://localhost:8069'
+SERVER_ADRESS = 'http://localhost:8069'
 EMAIL_FROM = 'tectonegroup@outlook.com'
 LOCAL_DIRECTORY = "C://Program Files//Odoo15//server//odoo//addons//web//static//reports"
 LOCAL_REPORTS_DIRECTORY = "/web/static/reports/"
@@ -254,25 +254,14 @@ class production_document(models.Model):
                 zone = self.env['production.zone'].search([('id', '=', zone_id)], limit=1)
                 if zone.need_plage and (int(numero) < int(zone.from_indice) or int(numero) > int(zone.to_indice)):
                     raise UserError("La valeur '{}' saisie pour le champs numéro doit être dans la range[{}, {}]!".format(numero, zone.from_indice, zone.to_indice))
-
         document = super(production_document, self).create(values)
-        # Post comment on a model
-        # self.env.user.notify_info("Document crée avec succès")
-        """document.message_post(
-            body="Hello everybody",
-            message_type="notification",  # You can also use "comment"
-            subtype="mail.mt_comment",
-            partner_ids=[self.env.user.partner_id.id]  # Add the partner_id to send the message to a specific user
-        )"""
-        # Post a message to the specified user
-        # document.send_message("cc", self.env.user.partner_id.id)
-        #document.message_post(subject="subject", body="body", partner_ids=[self.env.user.partner_id.id])
-        """# create indice
+
+        # create indice
         self.env['production.document.indice'].create({'document_id': document.id,
                                                        'nature': 'Première diffusion',
                                                        'date': datetime.today(),
                                                        'actif': True,
-                                                       'indice': "{:02d}".format(0)})"""
+                                                       'indice': "{:02d}".format(0)})
         return document
 
     def write(self, values):
@@ -298,9 +287,7 @@ class production_document(models.Model):
     def default_get(self, vals):
         # company_id is added so that we are sure to fetch a default value from it to use in repartition lines, below
         rslt = super(production_document, self).default_get(vals)
-        rslt['indice_ids'] = [
-            (0, 0, {'nature': 'Première diffusion', 'date': datetime.today(), 'actif': True, 'indice': "{:02d}".format(1)})
-        ]
+
         return rslt
 
     def unlink(self):
@@ -318,43 +305,6 @@ class production_document(models.Model):
                           subtype_xmlid='mail.mt_comment', author_id=self.env.user.partner_id.id,
                           notification_ids=notification_ids)
 
-    def send_mail(self, bordereau_obj):
-        mail_pool = self.env['mail.mail']
-        values = {}
-        emails = [bordereau_obj.manager_id.email]
-        body1 = "<ul>"
-        attachment_ids = []
-        body1 += "</ul>"
-        action = self.env['ir.actions.act_window'].search([('res_model', '=', 'production.bordereau'), ('name', '=', "Bordereaux d'envoi")], limit=1)
-        action_id = action.id
-        menu = self.env['ir.ui.menu'].search([('action', '=', f'ir.actions.act_window,{action_id}')], limit=1)
-        menu_id = menu.id
-        body = """<div style="margin: 0px; padding: 0px;">
-                    <div style="margin: 0px; padding: 0px; font-size: 13px;">
-                        Bonjour,
-                        <br /><br />
-                        Vous recevez cet email suite à un nouvel bordereau crée de la part <strong>""" + bordereau_obj.employee_id.name + """</strong>.
-                        <br /><br />
-                        Vous pouvez accéder au bordereau en cliquant sur le lien ci-dessous :
-                        <a href={}/web#id={}&cids=1&menu_id={}&action={}&model=production.bordereau&view_type=form>Lien</a>
-                        <br /><br />
-                        Cordialement,
-                    </p>
-                </div>""".format(SERVER_ADRESS, bordereau_obj.id, menu_id, action_id)
-        values.update({'subject': bordereau_obj.affaire_id.full_name + ' - Nouveau bordereau'})
-        values.update({'email_from': EMAIL_FROM})
-        values.update({'email_to': ','.join(emails)})
-        values.update({'body_html': body})
-        if attachment_ids:
-            values.update({'attachment_ids': [(6, 0, attachment_ids)]})
-        # values.update({'res_id': 'obj.id'})  # [optional] here is the record id, where you want to post that email after sending
-        values.update({'model': 'production.bordereau'})  # [optional] here is the object(like 'project.project')  to whose record id you want to post that email after sending
-        msg_id = mail_pool.create(values)
-        # And then call send function of the mail.mail,
-        if msg_id:
-            mail_pool.send([msg_id])
-        return  True
-
     def action_ready(self, manager_id):
         # create bordereau record
         order = 0
@@ -370,16 +320,8 @@ class production_document(models.Model):
                                                                      'date': datetime.today()})
             if employee_obj:
                 if employee_obj.user_id:
-                    # send web notification to manager
-                    # employee_obj.user_id.notify_info("Nouveau bordereau crée", self.affaire_id.name)
-
                     # send notification to manager
                     self.send_message(bordereau_obj, employee_obj.user_id.partner_id.id)
-
-                    # send email
-                    # self.send_mail(bordereau_obj)
-
-        # self.env.user.notify_info("Le document {} a été bien ajouté au bordereau".format(self.full_name))
 
         # create bordereau line record
         self.env['production.bordereau.line'].create({'bordereau_id': bordereau_obj.id,
@@ -528,6 +470,27 @@ class production_document_indice(models.Model):
         [('draft', 'Draft'), ('ready', 'ready'), ('sent', 'Sent')], readonly=True, default='draft', copy=False,
         string="Etat")
 
+    @api.model
+    def create(self, values):
+        indice = values['indice']
+        if not indice.isnumeric():
+            raise UserError(f"La valeur {indice} saisie pour le champs indice doit être numérique!")
+        elif len(indice) != 2:
+            raise UserError(f"La valeur {indice} saisie pour le champs indice doit contenir 2 chiffres!")
+
+        document_indice = super(production_document_indice, self).create(values)
+        return document_indice
+
+    def write(self, values):
+        indice = values.get('indice', None)
+        if indice:
+            if not indice.isnumeric():
+                raise UserError(f"La valeur {indice} saisie pour le champs indice doit être numérique!")
+            elif len(indice) != 2:
+                raise UserError(f"La valeur {indice} saisie pour le champs indice doit contenir 2 chiffres!")
+
+        return super(production_document_indice, self).write(values)
+
     def unlink(self):
         records_to_delete = []
         for record in self:
@@ -610,7 +573,7 @@ class production_bordereau(models.Model):
                              readonly=True, default='draft', copy=False,
                              string="Etat", track_visibility='onchange')
 
-    def get_emails_validation(self, emails = []):
+    def get_emails_sent_crt(self, emails = []):
         self._cr.execute("""select email,job.name from production_employee emp
                             inner join production_job job on job.id=emp.job_id
                             where job.name like 'CRT'""")
@@ -626,7 +589,7 @@ class production_bordereau(models.Model):
         emails = ','.join(emails)
         return  emails
 
-    def get_emails(self, emails = []):
+    def get_emails_sent_client(self, emails = []):
         # Get Admin emails
         self._cr.execute("""select email from production_employee emp
                             inner join production_job job on job.id=emp.job_id
@@ -656,6 +619,10 @@ class production_bordereau(models.Model):
         return  emails
 
     def action_sent_crt(self):
+        # Check there is at least one document
+        if not self.line_ids:
+            raise UserError(_("Vous ne pouvez pas envoyer ce bordereau pour validation CRT/Responsable tant qu'aucun document n'y est attaché"))
+
         for line in self.line_ids:
             line.write({'state': 'sent_crt'})
             #####################
@@ -671,7 +638,7 @@ class production_bordereau(models.Model):
 
         mail_pool = self.env['mail.mail']
         values = {}
-        emails = self.get_emails_validation() # Récupère les e-mails des destinataires
+        emails = self.get_emails_sent_crt() # Récupère les e-mails des destinataires
 
         body1 = "<ul>"
         attachment_ids = []
@@ -702,13 +669,13 @@ class production_bordereau(models.Model):
         <div style="margin: 0px; padding: 0px;">
             <div style="margin: 0px; padding: 0px; font-size: 13px;">
                 Bonjour,<br /><br />
-                Vous recevez cet email suite à une demande de validation de la part <strong>{self.employee_id.name}</strong>.
+                Vous recevez ce mail suite à une demande de validation de la part de <strong>{self.employee_id.name}</strong>.
                 <br /><br />
                 Le borderau contient la liste des documents suivants:
                 {body1}
                 <br /><br />
-                Veuillez prendre quelques instants pour examiner le bordereau et confirmer sa validité. 
-                Vous pouvez accéder au bordereau en cliquant sur le lien ci-dessous :
+                Veuillez prendre quelques instants pour examiner le bordereau et les documents et confirmez leurs validités. <br />
+                Vous pouvez accéder au bordereau et aux documents en cliquant sur le lien :
                 <a href="{SERVER_ADRESS}/web#id={self.id}&cids=1&menu_id={menu_id}&action={action_id}&model=production.bordereau&view_type=form">Lien</a>
                 <br /><br />
                 Cordialement,
@@ -717,7 +684,7 @@ class production_bordereau(models.Model):
         """
         # Préparation des valeurs de l'email
         values.update({
-            'subject': f"{self.affaire_id.full_name} - Bordereau à valider",
+            'subject': f"{self.affaire_id.full_name} - Bordereau et documents à valider",
             'email_from': EMAIL_FROM,  # Assurez-vous que cet email est correctement configuré
             'email_to': emails,  # Liste des destinataires
             'body_html': body,
@@ -772,7 +739,7 @@ class production_bordereau(models.Model):
         for rec in self.affaire_id.email_ids:
             if rec.name:
                 emails.append(rec.name)
-        emails = self.get_emails(emails)
+        emails = self.get_emails_sent_client(emails)
         attachments = []
         attachments.append(self.generate_bordereau_attachement(order=order, send_crt=Tr))
         body1 = "<table style='border-collapse: collapse;'>"
@@ -921,27 +888,30 @@ class production_bordereau_line(models.Model):
         string="Etat")
 
     def action_cancel_ing(self):
+        note_ing = self.note_ing if self.note_ing else ''
         document_id = self.env['production.document'].search([('id', '=', self.document_id.id)])
         if document_id:
-            note_ing = self.note_ing if self.note_ing else ''
             self._cr.execute('''Insert into production_document_note(document_id,user_id,date,note) 
                                    values({}, {}, '{}', '{}')'''.format(self.document_id.id, self.env.user.id,
                                                                         datetime.today(), note_ing))
             self._cr.commit()
             document_id.write({'state': 'return'})
-        self.send_email_validation('Refus Ingénieur', 'refusé')
+
+        body_refus = f"Commentaires du refus :</br> {note_ing}"
+        self.send_email_validation('Refus Ingénieur', 'refusé', body_refus)
         return self.write({'state': 'return'})
 
     def action_cancel_crt(self):
+        note_crt = self.note_crt if self.note_crt else ''
         document_id = self.env['production.document'].search([('id', '=', self.document_id.id)])
         if document_id:
-            note_crt = self.note_crt if self.note_crt else ''
             self._cr.execute('''Insert into production_document_note(document_id,user_id,date,note) 
                                    values({}, {}, '{}', '{}')'''.format(self.document_id.id, self.env.user.id,
                                                                         datetime.today(), note_crt))
             self._cr.commit()
             document_id.write({'state': 'wait'})
-        self.send_email_validation('Refus CRT', 'refusé')
+        body_refus = f"Commentaires du refus :</br> {note_crt}"
+        self.send_email_validation('Refus CRT', 'refusé', body_refus)
         return self.write({'state': 'wait'})
 
     def action_validate_ing(self):
@@ -960,7 +930,7 @@ class production_bordereau_line(models.Model):
         self.send_email_validation('Validation CRT', 'validé')
         return True
 
-    def get_emails(self):
+    def get_emails_validation(self):
         emails = []
         self._cr.execute("""select email,job.name from production_employee emp
                             inner join production_job job on job.id=emp.job_id
@@ -977,7 +947,7 @@ class production_bordereau_line(models.Model):
         emails = ','.join(emails)
         return  emails
 
-    def send_email_validation(self, subject, status):
+    def send_email_validation(self, subject, status, body_refus=''):
         """
         Envoie un e-mail de validation avec le statut du document.
         """
@@ -998,7 +968,7 @@ class production_bordereau_line(models.Model):
             attachment_ids.append(attachment.id)
 
         # Récupérer les e-mails des destinataires
-        emails = self.get_emails()
+        emails = self.get_emails_validation()
         if not emails:
             raise UserError(_("Aucun e-mail n'a été trouvé pour les destinataires."))
 
@@ -1007,8 +977,9 @@ class production_bordereau_line(models.Model):
             <div style="margin: 0px; padding: 0px; font-size: 13px;">
                 Bonjour,<br /><br />
                 Le document <strong>{self.document_id.full_name}</strong> a été 
-                <strong>{status}</strong> par l'utilisateur <strong>{self.env.user.name}</strong>.
-                <br /><br />
+                <strong>{status}</strong> par l'utilisateur <strong>{self.env.user.name}</strong>.<br />
+                {body_refus}
+                <br />
                 Cordialement,
             </div>
         """
