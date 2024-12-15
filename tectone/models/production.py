@@ -574,9 +574,9 @@ class production_bordereau(models.Model):
                              string="Etat", track_visibility='onchange')
 
     def get_emails_sent_crt(self, emails = []):
-        self._cr.execute("""select email,job.name from production_employee emp
+        self._cr.execute("""select email from production_employee emp
                             inner join production_job job on job.id=emp.job_id
-                            where job.name like 'CRT'""")
+                            where job.name like 'CRT' or job.name like 'Ing%' or job.name like 'Adm%'""")
         for res in self._cr.fetchall():
             emails.append(res[0])
         self._cr.execute("""select email from production_employee where id=""" + str(self.manager_id.id))
@@ -932,9 +932,9 @@ class production_bordereau_line(models.Model):
 
     def get_emails_validation(self):
         emails = []
-        self._cr.execute("""select email,job.name from production_employee emp
+        self._cr.execute("""select email from production_employee emp
                             inner join production_job job on job.id=emp.job_id
-                            where job.name like 'CRT'""")
+                            where job.name like 'CRT' or job.name like 'Ing%' or job.name like 'Adm%'""")
         for res in self._cr.fetchall():
             emails.append(res[0])
         self._cr.execute("""select email from production_employee where id=""" + str(self.bordereau_id.employee_id.id))
