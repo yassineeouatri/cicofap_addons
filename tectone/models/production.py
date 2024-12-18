@@ -8,14 +8,16 @@ from odoo import api, models, fields, _, SUPERUSER_ID
 from odoo.exceptions import AccessError, ValidationError, UserError
 from datetime import datetime
 
-
 SERVER_ADRESS = 'http://192.168.0.35'
 SERVER_ADRESS = 'http://localhost:8069'
+SERVER_ADRESS = 'http://vps-3c2995a0.vps.ovh.net:8069'
 EMAIL_FROM = 'tectonegroup@outlook.com'
 LOCAL_DIRECTORY = "C://Program Files//Odoo15//server//odoo//addons//web//static//reports"
-LOCAL_REPORTS_DIRECTORY = "/web/static/reports/"
 LOCAL_DIRECTORY = "C://Users//Yassine//PycharmProjects//cicofap//Scripts//odoo//addons//web//static//reporting//"
+LOCAL_DIRECTORY = "/opt/odoo/odoo/addons/web/static/report"
+LOCAL_REPORTS_DIRECTORY = "/web/static/reports/"
 LOCAL_REPORTS_DIRECTORY = "web/static/reporting/"
+LOCAL_REPORTS_DIRECTORY = "web/static/report/"
 
 class production_job(models.Model):
     _name = 'production.job'
@@ -740,9 +742,14 @@ class production_bordereau(models.Model):
             if rec.name:
                 emails.append(rec.name)
         emails = self.get_emails_sent_client(emails)
+        emails_cc = []
+        for rec in self.affaire_id.email_cc_ids:
+            if rec.name:
+                emails_cc.append(rec.name)
+
         attachments = []
-        attachments.append(self.generate_bordereau_attachement(order=order, send_crt=Tr))
-        body1 = "<table style='border-collapse: collapse;'>"
+        attachments.append(self.generate_bordereau_attachement(order=order, send_crt=True))
+        body1 = "<ul>"
         for rec in self.line_ids:
             if rec.state == 'validate':
                 emetteur = rec.document_id.emetteur_id.name if rec.document_id.emetteur_id else ''
@@ -751,25 +758,26 @@ class production_bordereau(models.Model):
                 ouvrage = rec.document_id.ouvrage_id.name if rec.document_id.ouvrage_id else ''
                 identifiant = rec.document_id.type_id.name if rec.document_id.type_id else ''
                 name = rec.document_id.name if rec.document_id.name else ''
-
-                body1 += "<tr>" \
-                         "<td style='text-align: center;border: 1px solid;padding: 10px;'>" + str(emetteur) + "</td>" + \
-                         "<td style='text-align: center;border: 1px solid;padding: 10px;'>" + str(zone) + "</td>" + \
-                         "<td style='text-align: center;border: 1px solid;padding: 10px;'>" + str(phase) + "</td>" + \
-                         "<td style='text-align: center;border: 1px solid;padding: 10px;'>" + str(ouvrage) + "</td>" + \
-                         "<td style='text-align: center;border: 1px solid;padding: 10px;'>" + str(identifiant) + "</td>" + \
-                         "<td style='text-align: center;border: 1px solid;padding: 10px;'>" + str(rec.document_id.numero) + "</td>" + \
-                         "<td style='text-align: center;border: 1px solid;padding: 10px;'>" + str(rec.document_id.indice) + "</td>" + \
-                         "</tr>"
-        body1 += "</table>"
+                if rec.document_id.full_name:
+                    attach_data = {
+                        'name': rec.document_id.filename,
+                        'datas': rec.document_id.file,
+                        'res_model': 'production.document',
+                        'res_id': rec.document_id.id,
+                        "type": "binary",
+                    }
+                    attach_id = self.env['ir.attachment'].create(attach_data)
+                    attachments.append(attach_id.id)
+                    body1 += f"<li>{rec.document_id.full_name}</li>"
+        body1 += "</ul>"
         body = """<div style="margin: 0px; padding: 0px; font-size: 13px;">
                             Bonjour,
                             <br /><br />
-                            Veuillez trouver ci-joint le bordereau d'envoi BE TECTONE N°"""+str(order)+""" relatifs aux documents:
+                            Veuillez trouver ci-joint le bordereau d'envoi BE TECTONE N°"""+str(order)+""" et les pièces jointes correspondant aux documents suivants:
                             <br /><br />
                             """ + body1 + """
                             <br />
-                            Nous vous souhaitons bonne réception de ces éléments.
+                            Nous vous souhaitons une bonne réception de ces éléments.
                             <br /><br />
                             Cordialement,
                     </div>"""
@@ -777,6 +785,7 @@ class production_bordereau(models.Model):
             'subject': f"{self.affaire_id.full_name} - BE N°{order}",
             'email_from': EMAIL_FROM,
             'email_to': emails,
+            'email_cc': emails_cc,
             'body_html': body,
             'model': 'production.bordereau',  # Modèle concerné
             'attachment_ids': [(6, 0, attachments)],
