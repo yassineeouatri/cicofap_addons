@@ -5,10 +5,16 @@ from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
 PASSWORD = "cestsecret"
-#LOCAL_DIRECTORY = "C://Program Files//Odoo15//server//odoo//addons//web//static//reports//"
-LOCAL_REPORTS_DIRECTORY = "/web/static/reports/"
+SERVER_ADRESS = 'http://192.168.0.35'
+SERVER_ADRESS = 'http://localhost:8069'
+SERVER_ADRESS = 'http://vps-3c2995a0.vps.ovh.net:8069'
+EMAIL_FROM = 'tectonegroup@outlook.com'
+LOCAL_DIRECTORY = "C://Program Files//Odoo15//server//odoo//addons//web//static//reports"
 LOCAL_DIRECTORY = "C://Users//Yassine//PycharmProjects//cicofap//Scripts//odoo//addons//web//static//reporting//"
+LOCAL_DIRECTORY = "/opt/odoo/odoo/addons/web/static/report/"
+LOCAL_REPORTS_DIRECTORY = "/web/static/reports/"
 LOCAL_REPORTS_DIRECTORY = "web/static/reporting/"
+LOCAL_REPORTS_DIRECTORY = "web/static/report/"
 
 class ProductionReport(models.TransientModel):
     _name = "production.report"
