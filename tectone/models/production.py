@@ -819,6 +819,10 @@ class production_bordereau(models.Model):
         path_file = os.path.join(LOCAL_DIRECTORY, filename)
         workbook = openpyxl.load_workbook(path_file)
         worksheet = workbook['Modèle BE']
+        # Activer la protection avec un mot de passe
+        PASSWORD = "cestsecret"
+        worksheet.protection.password = PASSWORD
+        worksheet.protection.enable()
         if numero:
             order = numero
         elif self.order:
