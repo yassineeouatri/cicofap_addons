@@ -7,7 +7,7 @@
         <field name="res_model">res.partner</field>
         <field name="view_mode">kanban,tree,form</field>
         <field name="context">{'search_default_customer': 1,'default_customer': 1, 'default_is_company': True}</field>
-        <field name="domain">[('customer', '=', True)]</field>
+        <field name="domain">[('is_company', '=', True)]</field>
         <field name="help" type="html">
           <p class="o_view_nocontent_smiling_face">
               Créer des clients
@@ -782,7 +782,7 @@
                                         <field name="validate_ing"/>
                                         <field name="validate_crt"/>
                                         <field name="state" invisible="1"/>
-                                        <button name="action_draft" class="fa fa-trash" attrs="{'invisible': [('state', '!=', 'draft')]}" string=" Enlever du bordereau" type="object" groups="tectone.group_production_projeteur,tectone.group_production_ingenieur,tectone.group_production_admin"/>
+                                        <button name="action_draft" class="fa fa-trash" attrs="{'invisible': [('state', '=', 'sent_client')]}" string=" Enlever du bordereau" type="object" groups="tectone.group_production_projeteur,tectone.group_production_ingenieur,tectone.group_production_admin"/>
                                         <button name="action_ing" class="fa fa-check blue_color_button" attrs="{'invisible': ['|', ('state', '!=', 'sent_crt'), ('validate_ing', '=', True)]}" string=" Validation de l'ingénieur" type="object" groups="tectone.group_production_ingenieur,tectone.group_production_admin"/>
                                         <button name="action_crt" class="fa fa-check green_color_button" attrs="{'invisible': ['|', ('state', '!=', 'sent_crt'), ('validate_crt', '=', True)]}" string=" Validation de la CRT" type="object" groups="tectone.group_production_transmission,tectone.group_production_admin"/>
                                     </tree>
@@ -836,6 +836,24 @@
             <field name="view_mode">form</field>
             <field name="view_id" ref="production_bordereau_form_view"/>
             <field name="act_window_id" ref="production_bordereau_action"/>
+        </record>
+        <record id="production_bordereau_line_draft_form_view" model="ir.ui.view">
+            <field name="name">production.bordereau.draft.ing</field>
+            <field name="model">production.bordereau.line</field>
+            <field name="arch" type="xml">
+                <form string='Bordereau'  create="false" delete="false">
+                    <sheet>
+                    	<group>
+                            <h3>Voulez-vous enlever de document?</h3>
+                        </group>
+                        <footer>
+                            <button name="action_draft_document" string="Valider" type="object" class="oe_highlight"/>
+                            or
+                            <button string="Annuler" class="oe_link" special="cancel" />
+                       </footer>
+                    </sheet>
+                </form>
+            </field>
         </record>
         <record id="production_bordereau_line_ing_form_view" model="ir.ui.view">
             <field name="name">production.bordereau.line.ing</field>

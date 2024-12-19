@@ -1014,7 +1014,80 @@ class production_bordereau_line(models.Model):
 
         return True
 
+    def get_emails_draft(self):
+        emails = []
+        self._cr.execute("""select email from production_employee where id=""" + str(self.bordereau_id.employee_id.id))
+        for res in self._cr.fetchall():
+            emails.append(res[0])
+        self._cr.execute("""select email from production_employee where id=""" + str(self.bordereau_id.manager_id.id))
+        for res in self._cr.fetchall():
+            emails.append(res[0])
+        emails = list(set(emails))
+        emails = ','.join(emails)
+        return  emails
+
+    def send_email_draft(self):
+        """
+        Envoie un e-mail de draft avec le statut du document.
+        """
+        # Récupérer les e-mails des destinataires
+        emails = self.get_emails_draft()
+        if not emails:
+            raise UserError(_("Aucun e-mail n'a été trouvé pour les destinataires."))
+
+        # Construire le corps de l'e-mail
+        body_html = f"""
+            <div style="margin: 0px; padding: 0px; font-size: 13px;">
+                Bonjour,<br /><br />
+                Le document <strong>{self.document_id.full_name}</strong> a été 
+                <strong>enlevé</strong> par l'utilisateur <strong>{self.env.user.name}</strong>.<br />
+                <br />
+                Cordialement,
+            </div>
+        """
+
+        # Préparer les valeurs de l'e-mail
+        email_values = {
+            'subject': f"{self.document_id.full_name} - Document enlevé du bordereau",
+            'email_from': EMAIL_FROM,  # Fallback si l'utilisateur n'a pas d'e-mail
+            'email_to': emails,
+            'body_html': body_html,
+            'model': 'production.document',
+            'attachment_ids': [],
+        }
+
+        # Créer et envoyer l'e-mail
+        mail = self.env['mail.mail'].create(email_values)
+        if mail:
+            mail.send()
+
+        return True
+
+    def action_draft_document(self):
+        self.send_email_draft()
+
+        document_obj = self.env['production.document'].search([('id', '=', self.document_id.id)])
+        if document_obj:
+            document_obj.write({'state': 'draft', 'bordereau_id': None})
+            self.unlink()
+        return True
+
     def action_draft(self):
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "production.bordereau.line",
+            "view_mode": "form",
+            "view_type": "form",
+            "res_id": self.id,
+            "views": [
+                (
+                    self.env.ref("tectone.production_bordereau_line_draft_form_view").id,
+                    "form",
+                )
+            ],
+            "target": "new",
+            "flags": {"form": {"action_buttons": True}},
+        }
         document_obj = self.env['production.document'].search([('id', '=', self.document_id.id)])
         if document_obj:
             document_obj.write({'state': 'draft', 'bordereau_id': None})
@@ -1118,7 +1191,7 @@ class production_pointage(models.Model):
         for record in self:
             if record.state not in ('draft'):
                 raise UserError("Vous ne pouvez pas supprimer un document qui n'est pas à l'état de brouillon!")
-        return super(production_document, self).unlink()
+        return super(production_pointage, self).unlink()
 
     def action_add_pointage(self):
         return {
@@ -1313,7 +1386,7 @@ class production_tbd(models.Model):
                                 case when t2.nb_hour_proj is null then 0 else t2.nb_hour_proj end
                                 from production_document_type pdt
                                 left join(
-                                select pd.type_id,t1.affaire_id,t1.document_id,t1.nb_hour_ing,nb_hour_proj from production_document pd
+                                select pd.type_id,t1.affaire_id,sum(t1.nb_hour_ing) as nb_hour_ing,sum(nb_hour_proj) as nb_hour_proj from production_document pd
                                 inner join(
                                 select b.affaire_id,b.document_id,a.employee_id,
                                     sum(case when job.name like 'Ing%' then b.hour else 0 end) as nb_hour_ing,
@@ -1326,7 +1399,8 @@ class production_tbd(models.Model):
                                 and a.state = 'sent'
                                 and b.affaire_id={}
                                 group by b.affaire_id,b.document_id,a.employee_id
-                                ) as t1 on t1.document_id=pd.id) as t2
+                                ) as t1 on t1.document_id=pd.id
+								group by pd.type_id,t1.affaire_id) as t2
                                 on t2.type_id = pdt.id
                                 order by pdt.sequence""".format(affaire_id))
             for row in self._cr.fetchall():
