@@ -133,4 +133,5 @@
 	<menuitem id="menu_search_product_template" action="search_product_template_action" parent="menu_action_product_template" name="Rechercher les articles" sequence="4"/>
 	<menuitem id="menu_action_product_template_search" parent="cicofap.menu_cicofap_product_root" name="Recherche" sequence="3"/>
 	<menuitem id="menu_search_product_template_oem" action="search_product_template_action" parent="menu_action_product_template_search" name="Rechercher par OEM/CROSS" sequence="4"/>
+	<menuitem id="menu_search_product_template_oem_commercial" action="search_product_template_action" parent="cicofap.menu_cicofap_commercial_root" name="Rechercher par OEM/CROSS" sequence="4"/>
 </odoo>
