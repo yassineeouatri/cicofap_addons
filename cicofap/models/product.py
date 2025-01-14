@@ -47,7 +47,7 @@ class product_template(models.Model):
         if joined:
             tax_string = f"{', '.join(joined)}"
         else:
-            tax_string = " "
+            tax_string = "0.00 DH"
         return tax_string
 
     @api.depends('compatibility_ids')
