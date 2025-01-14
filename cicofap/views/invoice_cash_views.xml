@@ -1,13 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <record id="view_invoice_cash_search" model="ir.ui.view">
+            <field name="name">invoice.cash.search</field>
+            <field name="model">invoice.cash</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="partner_id"/>
+                    <group expand="0" string="Grouper par">
+                        <filter string="Client" name="groupby_partner_id" domain="[]" context="{'group_by': 'partner_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
         <record id="view_invoice_cash_tree" model="ir.ui.view">
             <field name="name">invoice.cash.tree</field>
             <field name="model">invoice.cash</field>
             <field name="arch" type="xml">
                 <tree string="Factures" decoration-success="state == 'done'" decoration-muted="state == 'cancel'">
                     <field name="name" string="N° Cash"/>
-                    <field name="partner_id" string="Article"/>
+                    <field name="partner_id" string="Client"/>
                     <field name="date" string="Date"/>
                     <field name="price_untaxed" sum="Montant HT" optional="show"/>
                     <field name="price_tax" sum="TVA" optional="show"/>
