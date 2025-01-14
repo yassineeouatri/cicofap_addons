@@ -243,6 +243,14 @@
             <field name="arch" type="xml">
                 <form>
                     <sheet>
+                        <div name="button_box" class="oe_button_box">
+                                <button type="object"
+                                name="action_view_compatibility"
+                                class="oe_stat_button"
+                                icon="fa-pencil-square-o">
+                                <field string="Compatibilités" name="compatibility_count" widget="statinfo"/>
+                            </button>
+                        </div>
                         <group>
                             <group>
                                 <field name="name"/>
@@ -274,16 +282,6 @@
                                 <field name="width"/>
                                 <field name="epaisseur"/>
                             </group>
-                        </group>
-                    </page>
-                            <page string="Compatibilité">
-                        <group>
-                            <field name="compatibility_ids" colspan="4" nolabel="1" mode="tree" context="{'default_template_id': active_id}">
-                                <tree string="Compatibilité" editable="bottom">
-                                    <field name="template_id" invisible="1" required="1"/>
-                                    <field name="name"/>
-                                </tree>
-                            </field>
                         </group>
                     </page>
                         </notebook>
@@ -335,6 +333,14 @@
                       <button name="action_product_template_add" string="Ajouter à la commande" icon="fa-plus" type="object" class="btn-primary"/>
                     </header>
                     <sheet>
+                        <div name="button_box" class="oe_button_box">
+                                <button type="object"
+                                name="action_view_compatibility"
+                                class="oe_stat_button"
+                                icon="fa-pencil-square-o">
+                                <field string="Compatibilités" name="compatibility_count" widget="statinfo"/>
+                            </button>
+                        </div>
                         <field name="id" invisible="True"/>
                         <field name="image_1920" widget="image" class="oe_avatar" options="{'preview_image': 'image_128'}"/>
                         <div class="oe_title">
@@ -396,16 +402,6 @@
                                     </group>
                                 </group>
                             </page>
-                            <page string="Compatibilité">
-                                <group>
-                                    <field name="compatibility_ids" colspan="4" nolabel="1" mode="tree" context="{'default_template_id': active_id}">
-                                        <tree string="Compatibilité" editable="bottom">
-                                            <field name="template_id" invisible="1" required="1"/>
-                                            <field name="name"/>
-                                        </tree>
-                                    </field>
-                                </group>
-                            </page>
                         </notebook>
                     </sheet>
                 </form>
@@ -465,6 +461,7 @@
                     <field name="detailed_type" optional="hide"/>
                     <field name="type" optional="hide" readonly="1"/>
                     <field name="list_price" widget='monetary' options="{'currency_field': 'currency_id', 'field_digits': True}" optional="show"/>
+                    <field name="tax_string" string="TTC"/>
                     <field name="currency_id" invisible="1"/>
                     <field name="qty_available" optional="show"/>
                     <field name="virtual_available" optional="show"/>
@@ -482,6 +479,14 @@
                       <button name="action_product_template_add" string="Ajouter à la commande" icon="fa-plus" type="object" class="btn-primary"/>
                     </header>
                     <sheet>
+                        <div name="button_box" class="oe_button_box">
+                                <button type="object"
+                                name="action_view_compatibility"
+                                class="oe_stat_button"
+                                icon="fa-pencil-square-o">
+                                <field string="Compatibilités" name="compatibility_count" widget="statinfo"/>
+                            </button>
+                        </div>
                         <field name="id" invisible="True"/>
                         <field name="image_1920" widget="image" class="oe_avatar" options="{'preview_image': 'image_128'}"/>
                         <div class="oe_title">
@@ -538,16 +543,6 @@
                                         <field name="width"/>
                                         <field name="epaisseur"/>
                                     </group>
-                                </group>
-                            </page>
-                            <page string="Compatibilité">
-                                <group>
-                                    <field name="compatibility_ids" colspan="4" nolabel="1" mode="tree" context="{'default_template_id': active_id}">
-                                        <tree string="Compatibilité" editable="bottom">
-                                            <field name="template_id" invisible="1" required="1"/>
-                                            <field name="name"/>
-                                        </tree>
-                                    </field>
                                 </group>
                             </page>
                         </notebook>
@@ -616,6 +611,14 @@
             <field name="arch" type="xml">
                 <form>
                     <sheet>
+                        <div name="button_box" class="oe_button_box">
+                                <button type="object"
+                                name="action_view_compatibility"
+                                class="oe_stat_button"
+                                icon="fa-pencil-square-o">
+                                <field string="Compatibilités" name="compatibility_count" widget="statinfo"/>
+                            </button>
+                        </div>
                         <group>
                             <group>
                                 <field name="name"/>
@@ -647,16 +650,6 @@
                                 <field name="width"/>
                                 <field name="epaisseur"/>
                             </group>
-                        </group>
-                    </page>
-                            <page string="Compatibilité">
-                        <group>
-                            <field name="compatibility_ids" colspan="4" nolabel="1" mode="tree" context="{'default_template_id': active_id}">
-                                <tree string="Compatibilité" editable="bottom">
-                                    <field name="template_id" invisible="1" required="1"/>
-                                    <field name="name"/>
-                                </tree>
-                            </field>
                         </group>
                     </page>
                         </notebook>
@@ -706,6 +699,14 @@
             <field name="arch" type="xml">
                 <form>
                     <sheet>
+                        <div name="button_box" class="oe_button_box">
+                                <button type="object"
+                                name="action_view_compatibility"
+                                class="oe_stat_button"
+                                icon="fa-pencil-square-o">
+                                <field string="Compatibilités" name="compatibility_count" widget="statinfo"/>
+                            </button>
+                        </div>
                         <field name="id" invisible="True"/>
                         <field name="image_1920" widget="image" class="oe_avatar" options="{'preview_image': 'image_128'}"/>
                         <div class="oe_title">
@@ -768,17 +769,6 @@
                                         <field name="width"/>
                                         <field name="epaisseur"/>
                                     </group>
-                                </group>
-                            </page>
-                            <page string="Compatibilité">
-                                <group>
-                                    <field name="compatibility_ids" colspan="4" nolabel="1" mode="tree" context="{'default_template_id': active_id}" readonly="1">
-                                        <tree string="Compatibilité" editable="bottom">
-                                            <field name="template_id" invisible="1" required="1" widget="selection"/>
-                                            <field name="name"/>
-                                        </tree>
-                                        <form><group><field name="name"/></group></form>
-                                    </field>
                                 </group>
                             </page>
                         </notebook>
