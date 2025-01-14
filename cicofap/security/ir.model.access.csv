@@ -1,6 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_product_transport_user,access_product_transport_user,cicofap.model_product_transport,base.group_user,1,1,1,1
-access_product_commercial_user,access_product_commercial_user,cicofap.model_product_commercial,base.group_user,1,1,1,1
+access_product_commercial_user,access_product_commercial_user,cicofap.model_product_commercial,base.group_user,1,0,0,0
 access_stock_move_user,sale.stock.move.user,stock.model_stock_move,base.group_user,1,0,0,0
 access_stock_move_line_user,sale.stock.move.line.user,stock.model_stock_move_line,base.group_user,1,0,0,0
 access_product_marque_user,access_product_marque_user,cicofap.model_product_marque,base.group_user,1,1,1,1
@@ -22,6 +22,7 @@ access_invoice_cash_payment_register_admin,invoice_cash_payment_register group_a
 access_invoice_cash_admin,invoice_cash group_admin,cicofap.model_invoice_cash,cicofap.group_cicofap_admin,1,1,1,1
 access_invoice_cash_line_admin,invoice_cash_line group_admin,cicofap.model_invoice_cash_line,cicofap.group_cicofap_admin,1,1,1,1
 access_invoice_cash_payment_admin,invoice_cash_payment group_admin,cicofap.model_invoice_cash_payment,cicofap.group_cicofap_admin,1,1,1,1
+access_product_commercial_admin,access_product_commercial group_admin,cicofap.model_product_commercial,cicofap.group_cicofap_admin,1,1,1,1
 access_invoice_cash_m1,invoice_cash group_m1,cicofap.model_invoice_cash,cicofap.group_cicofap_m1,1,1,1,1
 access_invoice_cash_line_m1,invoice_cash_line group_m1,cicofap.model_invoice_cash_line,cicofap.group_cicofap_m1,1,1,1,1
 access_invoice_cash_payment_m1,invoice_cash_payment group_m1,cicofap.model_invoice_cash_payment,cicofap.group_cicofap_m1,1,1,1,1
@@ -138,6 +139,7 @@ access_account_move_line_customer,account.move.line.customer,account.model_accou
 access_account_account_tag_customer,account.account.tag.customer,account.model_account_account_tag,cicofap.group_cicofap_customer,1,0,0,0
 access_stock_warehouse_orderpoint_customer,access_stock_warehouse_orderpoint_customer,stock.model_stock_warehouse_orderpoint,cicofap.group_cicofap_customer,1,1,1,1
 access_res_partner_commercial,res.partner.commercial,base.model_res_partner,cicofap.group_cicofap_commercial,1,1,0,0
+access_product_commercial_commercial,access_product_commercial_commercial,cicofap.model_product_commercial,cicofap.group_cicofap_commercial,1,0,0,0
 access_product_template_compatibility_commercial,access_product_template_compatibility_commercial,cicofap.model_product_template_compatibility,cicofap.group_cicofap_commercial,1,0,0,0
 access_account_payment_commercial,account.payment.commercial,account.model_account_payment,cicofap.group_cicofap_commercial,1,0,0,0
 access_res_users_commercial,res.users.commercial,base.model_res_users,cicofap.group_cicofap_commercial,1,1,0,0
