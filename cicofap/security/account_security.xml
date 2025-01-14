@@ -138,6 +138,12 @@
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('cicofap.group_cicofap_admin'))]"/>
         </record>
+        <record id="cicofap_commercial_admin" model="ir.rule">
+            <field name="name">Commercials Access for Admin</field>
+            <field name="model_id" ref="cicofap.model_product_commercial"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('cicofap.group_cicofap_admin'))]"/>
+        </record>
         <!-- Rules for M1 -->
         <record id="cicofap_m1_products" model="ir.rule">
             <field name="name">Access to products for M1</field>
