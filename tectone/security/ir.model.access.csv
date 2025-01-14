@@ -12,7 +12,7 @@ access_production_affaire_invoice_user,production.affaire.invoice user,model_pro
 access_production_affaire_payment_user,production.affaire.payment user,model_production_affaire_payment,base.group_user,1,1,1,1
 access_production_affaire_document_user,production.affaire.document user,model_production_affaire_document,base.group_user,1,1,1,1
 access_production_affaire_document_type_user,production.affaire.document.type user,model_production_affaire_document_type,base.group_user,1,1,1,1
-access_production_document_user,production.document user,model_production_document,base.group_user,1,1,1,0
+access_production_document_user,production.document user,model_production_document,base.group_user,1,1,1,1
 access_production_document_indice_user,production.document.indice user,model_production_document_indice,base.group_user,1,1,1,1
 access_production_document_file_user,production.document.file user,model_production_document_file,base.group_user,1,1,1,1
 access_production_document_note_user,production.document.note user,model_production_document_note,base.group_user,1,1,1,1

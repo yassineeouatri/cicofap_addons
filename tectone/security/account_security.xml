@@ -66,7 +66,7 @@
         <record id="production_pointage_ingenieur_rule" model="ir.rule">
             <field name="name">Production Pointage Ingénieur rule</field>
             <field name="model_id" ref="model_production_pointage"/>
-            <field name="domain_force">['|', ('employee_id.user_id.id','=',user.id), ('employee_id.job_id.name','ilike','Projeteur')]</field>
+            <field name="domain_force">[('employee_id.user_id.id','=',user.id)]</field>
             <field name="groups" eval="[(4, ref('tectone.group_production_ingenieur'))]"/>
         </record>
         <!-- Rules for transmission group -->

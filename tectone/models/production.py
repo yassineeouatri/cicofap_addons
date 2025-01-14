@@ -293,9 +293,9 @@ class production_document(models.Model):
         return rslt
 
     def unlink(self):
-        """for record in self:
+        for record in self:
             if record.state not in ('draft'):
-                raise UserError("Vous ne pouvez pas supprimer un document qui n'est pas à l'état de brouillon!")"""
+                raise UserError("Vous ne pouvez pas supprimer un document qui n'est pas à l'état de brouillon!")
         return super(production_document, self).unlink()
 
     def send_message(self, bordereau_obj, partner_id):

@@ -6,6 +6,7 @@
     'category': '',
     'description': """
     """,
+    "author" : "Yassine Elouatri",
     'summary': 'Tectone Production Module',
     'website': '',
     'depends': ['base_setup', 'base', 'mail'],

@@ -17,8 +17,8 @@ class production_document_file_add(models.Model):
         document_obj = self.env['production.document'].search([('id', '=', self.document_id.id)],order='indice desc', limit=1)
         if document_obj:
             document_name = os.path.splitext(self.filename)[0]
-            document_titre = self.document_id.name if self.document_id.name else ''
-            document_code = f'{self.document_id.full_name}-{document_titre}'
+            document_titre = f'-{self.document_id.name}' if self.document_id.name else ''
+            document_code = f'{self.document_id.full_name}{document_titre}'
             if document_name != document_code:
                 raise UserError(f"La nom du document ajouté <{document_name}> doit correspondre à la codification actuelle du document <{document_code}>!")
 
