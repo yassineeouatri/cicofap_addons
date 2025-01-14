@@ -148,8 +148,8 @@
             <field name="model">product.template</field>
             <field name="inherit_id" ref="product.product_template_tree_view"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='list_price']" position="attributes">
-                    <attribute name="groups"></attribute>
+                <xpath expr="//field[@name='list_price']" position="replace">
+                    <field name="ttc_string" string="Prix de vent (TTC)" optional="show"/>
                 </xpath>
                 <xpath expr="//field[@name='standard_price']" position="attributes">
                     <attribute name="groups"></attribute>
@@ -315,7 +315,7 @@
                     <field name="categ_id" optional="hide"/>
                     <field name="detailed_type" optional="hide"/>
                     <field name="type" optional="hide" readonly="1"/>
-                    <field name="list_price" widget='monetary' options="{'currency_field': 'currency_id', 'field_digits': True}" optional="show"/>
+                    <field name="ttc_string" string="Prix de vent (TTC)" optional="show"/>
                     <field name="currency_id" invisible="1"/>
                     <field name="qty_available" optional="show"/>
                     <field name="virtual_available" optional="show"/>
@@ -460,8 +460,7 @@
                     <field name="categ_id" optional="hide"/>
                     <field name="detailed_type" optional="hide"/>
                     <field name="type" optional="hide" readonly="1"/>
-                    <field name="list_price" widget='monetary' options="{'currency_field': 'currency_id', 'field_digits': True}" optional="show"/>
-                    <field name="tax_string" string="TTC"/>
+                    <field name="ttc_string" string="Prix de vent (TTC)" optional="show"/>
                     <field name="currency_id" invisible="1"/>
                     <field name="qty_available" optional="show"/>
                     <field name="virtual_available" optional="show"/>

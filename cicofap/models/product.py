@@ -8,6 +8,7 @@ from collections import defaultdict
 from odoo import api, fields, models, tools, _, SUPERUSER_ID
 from odoo.exceptions import ValidationError, RedirectWarning, UserError
 from odoo.osv import expression
+from odoo.tools import format_amount
 
 _logger = logging.getLogger(__name__)
 
@@ -26,6 +27,28 @@ class product_template(models.Model):
     compatibility_ids = fields.One2many('product.template.compatibility', 'template_id', 'Compatibilité')
     categ_type = fields.Selection([('siege', 'SIEGE'), ('radiateur', 'RADIATEUR')], compute='_compute_categ_type', string="Catégorie", store=True)
     compatibility_count = fields.Integer(compute='_product_template_compatibility_count', string='# Compatibilities')
+    ttc_string = fields.Char(compute='_compute_ttc')
+
+    @api.depends('taxes_id', 'list_price')
+    def _compute_ttc(self):
+        for record in self:
+            record.ttc_string = record._construct_ttc(record.list_price)
+
+    def _construct_ttc(self, price):
+        currency = self.currency_id
+        res = self.taxes_id.compute_all(price, product=self, partner=self.env['res.partner'])
+        joined = []
+        included = res['total_included']
+        if currency.compare_amounts(included, price):
+            joined.append(_('%s', format_amount(self.env, included, currency)))
+        excluded = res['total_excluded']
+        if currency.compare_amounts(excluded, price):
+            joined.append(_('%s', format_amount(self.env, excluded, currency)))
+        if joined:
+            tax_string = f"{', '.join(joined)}"
+        else:
+            tax_string = " "
+        return tax_string
 
     @api.depends('compatibility_ids')
     def _product_template_compatibility_count(self):
