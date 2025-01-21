@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright (C) 2015 DevIntelle Consulting Service Pvt.Ltd (<http://www.devintellecs.com>).
+
+For Module Support : devintelle@gmail.com  or Skype : devintelle
+ -->
+<odoo>
+	<record id="move_inherit" model="ir.ui.view">
+	    <field name="name">account.move.inherit</field>
+	    <field name="model">account.move</field>
+	    <field name="inherit_id" ref="account.view_move_form"/>
+	    <field name="arch" type="xml">
+			 <xpath expr="//header" position="inside">
+	           <button type="action" name="%(dev_import_invoice_line.action_import_invoice_lines)d"  
+	           attrs="{'invisible': [('state', 'in', ('posted'))]}" class="oe_highlight" string="Import Invoice Line"/>
+	        </xpath>
+	    </field>
+	</record>
+</odoo>
+
