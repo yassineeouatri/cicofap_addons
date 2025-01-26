@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+
+        <!-- Cashs -->
         <record id="view_invoice_cash_search" model="ir.ui.view">
             <field name="name">invoice.cash.search</field>
             <field name="model">invoice.cash</field>
@@ -105,35 +107,48 @@
                                     <field name="price_due" widget="monetary"/>
                                 </group>
                             </page>
-                            <page id="payment_tab" string="Lignes de paiement" groups="cicofap.group_cicofap_admin" >
+                            <page id="payment_tab" string="Lignes de paiement" groups="cicofap.group_cicofap_admin">
                                 <field name="payment_ids"
                                        widget="section_and_note_one2many"
                                        mode="tree" >
-                                    <tree editable="bottom" string="Paiements" >
+                                    <tree editable="bottom" string="Paiements" create="false" delete="false">
                                         <!-- Displayed fields -->
                                         <field name="cash_id" invisible="1"/>
+                                        <field name="name"/>
                                         <field name="date" optional="show"/>
                                         <field name="currency_id" invisible="1"/>
                                         <field name="payment_method"/>
                                         <field name="no_payment"/>
                                         <field name="payment_filename"/>
                                         <field name="amount"/>
+                                        <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-success="state == 'posted'"/>
                                     </tree>
                                     <form string="Paiements" >
-                                        <group>
+                                        <header>
+                                            <button name="action_post" string="Confirmer" type="object" class="oe_highlight"
+                                                    attrs="{'invisible': [('state', '!=', 'draft')]}" data-hotkey="v"/>
+                                            <button name="action_draft" string="Remettre en brouillon" type="object" class="btn btn-secondary"
+                                                    attrs="{'invisible': [('state', 'not in', ('posted', 'cancel'))]}" data-hotkey="w"/>
+                                            <button name="action_cancel" string="Annuler" type="object"
+                                                    attrs="{'invisible': [('state', '!=', 'draft')]}" data-hotkey="z"/>
+                                            <field name="state" widget="statusbar" statusbar_visible="draft,posted"/>
+                                        </header>
+                                        <sheet>
+                                            <group>
                                             <group>
                                                 <field name="cash_id" invisible="1"/>
-                                                <field name="date" optional="show"/>
+                                                <field name="date" attrs="{'readonly': [('state','!=', 'draft')]}"/>
                                                 <field name="currency_id" invisible="1"/>
-                                                <field name="payment_method"/>
-                                                <field name="no_payment"/>
-                                                <field name="amount"/>
+                                                <field name="payment_method" attrs="{'readonly': [('state','!=', 'draft')]}"/>
+                                                <field name="no_payment" attrs="{'readonly': [('state','!=', 'draft')]}"/>
+                                                <field name="amount" attrs="{'readonly': [('state','!=', 'draft')]}"/>
                                             </group>
                                             <group>
-                                                <field name="payment_file" filename="payment_filename"/>
+                                                <field name="payment_file" filename="payment_filename" attrs="{'readonly': [('state','!=', 'draft')]}"/>
                                                 <field name="payment_filename" invisible="1"/>
                                             </group>
                                         </group>
+                                        </sheet>
 
                                     </form>
                                 </field>
@@ -149,6 +164,82 @@
             <field name="res_model">invoice.cash</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="view_invoice_cash_tree"/>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>
+        </record>
+
+        <!-- Cash payments -->
+        <record id="view_invoice_cash_payment_search" model="ir.ui.view">
+            <field name="name">invoice.cash.payment.search</field>
+            <field name="model">invoice.cash.payment</field>
+            <field name="arch" type="xml">
+                <search>
+                    <filter string="Brouillon" name="filter_draft" domain="[('state', '=', 'draft')]"/>
+                    <filter string="Annulé" name="filter_cancel" domain="[('state', '=', 'cancel')]"/>
+                    <filter string="Comptabilisé" name="filter_posted" domain="[('state', '=', 'posted')]"/>
+                    <separator/>
+                    <filter string="Mois en cours" name="filter_current_month" domain="[('date', '&gt;=', (context_today().replace(day=1)).strftime('%Y-%m-%d')), ('date', '&lt;', (context_today().replace(day=28) + relativedelta(day=1, months=1)).strftime('%Y-%m-%d'))]"/>
+                    <filter string="Année en cours" name="filter_current_year" domain="[('date', '&gt;=', (context_today().replace(month=1, day=1)).strftime('%Y-%m-%d')), ('date', '&lt;', (context_today().replace(year=context_today().year+1, month=1, day=1)).strftime('%Y-%m-%d'))]"/>
+                    <group expand="0" string="Grouper par">
+                        <filter string="Types de paiment" name="groupby_payment_method" domain="[]" context="{'group_by': 'payment_method'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        <record id="view_invoice_cash_payment_tree" model="ir.ui.view">
+            <field name="name">invoice.cash.payment.tree</field>
+            <field name="model">invoice.cash.payment</field>
+            <field name="arch" type="xml">
+                <tree string="Cash payments" decoration-info="state == 'draft'" decoration-success="state == 'posted'">
+                    <field name="name"/>
+                    <field name="date" string="Date"/>
+                    <field name="amount" sum="Montant"/>
+                    <field name="payment_method"/>
+                    <field name="no_payment" sum="Montant HT" optional="show"/>
+                    <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-success="state == 'posted'"/>
+                  </tree>
+            </field>
+        </record>
+        <record id="view_invoice_cash_payment_form" model="ir.ui.view">
+            <field name="name">invoice.cash.payment.form</field>
+            <field name="model">invoice.cash.payment</field>
+            <field name="arch" type="xml">
+                <form string="Account Entry">
+                    <header>
+                        <button name="action_post" string="Confirmer" type="object" class="oe_highlight"
+                                attrs="{'invisible': [('state', '!=', 'draft')]}" data-hotkey="v"/>
+                        <button name="action_draft" string="Remettre en brouillon" type="object" class="btn btn-secondary"
+                                attrs="{'invisible': [('state', 'not in', ('posted', 'cancel'))]}" data-hotkey="w"/>
+                        <button name="action_cancel" string="Annuler" type="object"
+                                attrs="{'invisible': [('state', '!=', 'draft')]}" data-hotkey="z"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,posted"/>
+                    </header>
+                    <sheet>
+                        <div name="button_box" class="oe_button_box">
+                        </div>
+                        <group>
+                            <group>
+                                <field name="name" invisible="1" attrs="{'readonly': [('state','!=', 'draft')]}"/>
+                                <field name="date" attrs="{'readonly': [('state','!=', 'draft')]}"/>
+                                <field name="payment_file" filename="payment_filename" attrs="{'readonly': [('state','!=', 'draft')]}"/>
+                                <field name="payment_filename" invisible="1" attrs="{'readonly': [('state','!=', 'draft')]}"/>
+                            </group>
+                            <group>
+                                <field name="amount" sum="Montant" attrs="{'readonly': [('state','!=', 'draft')]}"/>
+                                <field name="payment_method" attrs="{'readonly': [('state','!=', 'draft')]}"/>
+                                <field name="no_payment" optional="show" attrs="{'readonly': [('state','!=', 'draft')]}"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <!-- ACTIONS -->
+        <record id="action_invoice_cash_payment" model="ir.actions.act_window">
+            <field name="name">Paiments des cashs</field>
+            <field name="res_model">invoice.cash.payment</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_invoice_cash_payment_tree"/>
             <field name="domain">[]</field>
             <field name="context">{}</field>
         </record>

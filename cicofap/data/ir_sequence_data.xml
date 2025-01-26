@@ -2,10 +2,18 @@
 <odoo>
     <data noupdate="1">
 
-        <!-- Sequences for sale.order -->
+        <!-- Sequences for invoice.cash -->
         <record id="seq_invoice_cash" model="ir.sequence">
             <field name="name">Cash</field>
             <field name="code">invoice.cash</field>
+            <field name="prefix">C</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <!-- Sequences for invoice.cash.payment -->
+        <record id="seq_invoice_cash_payment" model="ir.sequence">
+            <field name="name">Cashs Payment</field>
+            <field name="code">invoice.cash.payment</field>
             <field name="prefix">C</field>
             <field name="padding">5</field>
             <field name="company_id" eval="False"/>

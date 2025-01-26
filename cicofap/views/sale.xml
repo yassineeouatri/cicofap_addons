@@ -621,6 +621,101 @@
                     <sheet>
                         <div name="button_box" position="inside" class="oe_button_box">
                             <button type="object"
+                                name="action_view_sale_order_month"
+                                class="oe_stat_button"
+                                icon="fa-usd">
+                                <field string="Ventes" name="sale_order_count" widget="statinfo"/>
+                            </button>
+                            <button type="object"
+                                name="action_view_cash"
+                                class="oe_stat_button"
+                                icon="fa-pencil-square-o">
+                                <div class="o_form_field o_stat_info">
+                                    <span class="o_stat_value">
+                                        <field name="currency_id" invisible="1"/>
+                                        <field name="total_cashed" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                    </span>
+                                    <span class="o_stat_text">Total Cash</span>
+                                </div>
+                            </button>
+                            <button type="object"
+                                name="action_view_invoice"
+                                class="oe_stat_button"
+                                icon="fa-pencil-square-o">
+                                <div class="o_form_field o_stat_info">
+                                    <span class="o_stat_value">
+                                        <field name="currency_id" invisible="1"/>
+                                        <field name="total_invoiced" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                    </span>
+                                    <span class="o_stat_text">Total Facturé</span>
+                                </div>
+                            </button>
+                            <button type="object"
+                                name="action_view_sale_order"
+                                class="oe_stat_button"
+                                icon="fa-pencil-square-o">
+                                <div class="o_form_field o_stat_info">
+                                    <span class="o_stat_value">
+                                        <field name="currency_id" invisible="1"/>
+                                        <field name="total" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                    </span>
+                                    <span class="o_stat_text">Total facturé annuel</span>
+                                </div>
+                            </button>
+                        </div>
+                        <field name="avatar_128" invisible="1"/>
+                        <field name="image_1920" widget='image' class="oe_avatar" options='{"preview_image": "avatar_128"}'/>
+                        <div class="oe_title mb24">
+                            <h1>
+                                <field class="o_text_overflow" name="name" default_focus="1" placeholder="e.g. Brandom Freeman"/>
+                            </h1>
+                    </div>
+                        <group>
+                            <group>
+                                <span class="o_form_label o_td_label" name="address_name">
+                                    <b>Adresse</b>
+                                </span>
+                                <div class="o_address_format">
+                                    <field name="street" placeholder="Rue..." class="o_address_street"/>
+                                    <field name="street2" placeholder="Rue 2..." class="o_address_street"/>
+                                    <field name="city" placeholder="Ville" class="o_address_city"/>
+                                    <field name="state_id" class="o_address_state" placeholder="State" options="{'no_open': True, 'no_quick_create': True}"/>
+                                    <field name="zip" placeholder="ZIP" class="o_address_zip"/>
+                                    <field name="country_id" placeholder="Pays" class="o_address_country" options='{"no_open": True, "no_create": True}'/>
+                                </div>
+                                <field name="total" widget='monetary' options="{'currency_field': 'currency_id'}" string="Total"/>
+                                <field name="total_payed" widget='monetary' options="{'currency_field': 'currency_id'}" string="Total payé"/>
+                            </group>
+                            <group>
+                                <field name="phone" widget="phone"/>
+                                <field name="mobile" widget="phone"/>
+                                <field name="email" widget="email" context="{'gravatar_image': True}"/>
+                                <field name="website" string="Website" widget="url" placeholder="e.g. https://www.odoo.com"/>
+                                <field name="zone"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Informations sur les factures">
+                                <field name="total_invoiced" widget='monetary' options="{'currency_field': 'currency_id'}" string="Total Facturé"/>
+                                <field name="total_invoiced_payed" widget='monetary' options="{'currency_field': 'currency_id'}" string="Montant payé"/>
+                            </group>
+                            <group string="Informations sur le cash">
+                                <field name="total_cashed" widget='monetary' options="{'currency_field': 'currency_id'}" string="Total cash"/>
+                                <field name="total_cash_payed" widget='monetary' options="{'currency_field': 'currency_id'}" string="Cash payé"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="my_product_commercial_form_view" model="ir.ui.view">
+            <field name="name">my.product.commercial.form</field>
+            <field name="model">product.commercial</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <div name="button_box" position="inside" class="oe_button_box">
+                            <button type="object"
                                 name="action_view_sale_order"
                                 class="oe_stat_button"
                                 icon="fa-usd">
@@ -722,6 +817,45 @@
                 </p>
             </field>
         </record>
+        <record id="action_product_commercial_tree" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="product_commercial_tree_view"/>
+            <field name="act_window_id" ref="action_product_commercial"/>
+        </record>
+        <record id="action_product_commercial_form" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="product_commercial_form_view"/>
+            <field name="act_window_id" ref="action_product_commercial"/>
+        </record>
+        <record id="my_action_product_commercial" model="ir.actions.act_window">
+            <field name="name">Ma fiche</field>
+            <field name="res_model">product.commercial</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[]</field>
+            <field name="view_id" ref="product_commercial_tree_view"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_empty_folder">
+                    Ajouter une nouveau commercial
+                </p>
+            </field>
+        </record>
+        <record id="my_action_product_commercial_tree" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="product_commercial_tree_view"/>
+            <field name="act_window_id" ref="my_action_product_commercial"/>
+        </record>
+        <record id="my_action_product_commercial_form" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="my_product_commercial_form_view"/>
+            <field name="act_window_id" ref="my_action_product_commercial"/>
+        </record>
+
     <!-- product transport -->
         <record id="product_transport_tree_view" model="ir.ui.view">
             <field name="name">product.transport.tree</field>

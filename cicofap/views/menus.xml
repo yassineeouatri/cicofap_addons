@@ -69,6 +69,7 @@
     <!-- accounting menu -->
     <menuitem id="account.menu_finance" name="Accounting" sequence="55" groups="cicofap.group_cicofap_account"/>
     <menuitem id="menu_cicofap_invoice_cash" name="Cash" sequence="55" action="action_invoice_cash" parent="account.menu_finance_receivables" groups="cicofap.group_cicofap_admin"/>
+    <menuitem id="menu_cicofap_invoice_cash_payment" name="Paiments des cashs" sequence="55" action="action_invoice_cash_payment" parent="account.menu_finance_receivables" groups="cicofap.group_cicofap_admin"/>
 
     <menuitem id="menu_cicofap_customer_root" name="Espace Client" sequence="20" web_icon="cicofap,static/description/customer.png" groups="cicofap.group_cicofap_customer"/>
     <menuitem id="menu_cicofap_res_partner_customer" name="Ma fiche" action="action_customer_partner" parent="menu_cicofap_customer_root" sequence="1"/>
@@ -76,6 +77,7 @@
     <menuitem id="menu_sale_quotations_customer" name="Commandes" action="action_cicofap_sale_order_customer" parent="menu_cicofap_customer_root" sequence="3"/>
 
     <menuitem id="menu_cicofap_commercial_root" name="Espace commercial" sequence="25" web_icon="cicofap,static/description/customer.png" groups="cicofap.group_cicofap_commercial"/>
-    <menuitem id="menu_cicofap_product_template_commercial" name="Articles" action="action_cicofap_product_template_commercial" parent="menu_cicofap_commercial_root" sequence="1"/>
-    <menuitem id="menu_sale_quotations_commercial" name="Commandes" action="action_cicofap_sale_order_commercial" parent="menu_cicofap_commercial_root" sequence="2"/>
+    <menuitem id="menu_cicofap_my_product_commercial" name="Ma fiche" action="my_action_product_commercial" parent="menu_cicofap_commercial_root" sequence="1"/>
+    <menuitem id="menu_cicofap_product_template_commercial" name="Articles" action="action_cicofap_product_template_commercial" parent="menu_cicofap_commercial_root" sequence="2"/>
+    <menuitem id="menu_sale_quotations_commercial" name="Commandes" action="action_cicofap_sale_order_commercial" parent="menu_cicofap_commercial_root" sequence="3"/>
 </odoo>

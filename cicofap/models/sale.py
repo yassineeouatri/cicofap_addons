@@ -3,6 +3,25 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+from datetime import  datetime, date
+import calendar
+
+current_year = datetime.now().year
+start_date = datetime.strptime(f"{current_year}-01-01", "%Y-%m-%d").date()
+end_date = datetime.strptime(f"{current_year}-12-31", "%Y-%m-%d").date()
+
+import calendar
+
+# Obtenir la date d'aujourd'hui
+today = date.today()
+# Date de début du mois
+month_start_date = today.replace(day=1)
+# Date de fin du mois
+last_day = calendar.monthrange(today.year, today.month)[1]  # Retourne le dernier jour du mois
+month_end_date = today.replace(day=last_day)
+
+month_start_date_string = month_start_date.strftime('%Y-%m-%d')
+month_end_date_string = month_end_date.strftime('%Y-%m-%d')
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
@@ -131,7 +150,17 @@ class product_commercial(models.Model):
     def action_view_sale_order(self):
         self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id("sale.action_quotations_with_onboarding")
-        action['domain'] = [('commercial_id', '=', self.id)]
+        action['domain'] = [('commercial_id', '=', self.id),
+                            ('date_order', '>=', f'{current_year}-01-01'),
+                            ('date_order', '<=', f'{current_year}-12-31')]
+        return action
+
+    def action_view_sale_order_month(self):
+        self.ensure_one()
+        action = self.env["ir.actions.actions"]._for_xml_id("sale.action_quotations_with_onboarding")
+        action['domain'] = [('commercial_id', '=', self.id),
+                            ('date_order', '>=', month_start_date_string),
+                            ('date_order', '<=', month_end_date_string)]
         return action
 
     def action_view_payment(self):
@@ -146,7 +175,11 @@ class product_commercial(models.Model):
     @api.depends('sale_order_ids')
     def _compute_sale_order_count(self):
         for partner in self:
-            partner.sale_order_count = len(partner.sale_order_ids)
+            count = 0
+            for order in partner.sale_order_ids:
+                if order.date_order and month_start_date <= order.date_order.date() <= month_end_date:
+                    count += 1
+            partner.sale_order_count = count
 
     @api.depends('sale_order_ids')
     def _compute_invoice_count(self):
@@ -165,6 +198,11 @@ class product_commercial(models.Model):
             total = 0
             total_invoiced = 0
             total_invoiced_payed = 0
+            month_total_invoiced = 0
+            month_total_invoiced_payed = 0
+            year_total_invoiced = 0
+            year_total_invoiced_payed = 0
+
             _invoices = []
             for order in record.sale_order_ids:
                 invoices = order.order_line.invoice_lines.move_id.filtered(
@@ -173,33 +211,71 @@ class product_commercial(models.Model):
             for _invoice in _invoices:
                 for _invoice_line in _invoice.invoice_line_ids:
                     total_invoiced += _invoice_line.price_total
+            # compute total invoiced monthly
+            _invoices = []
+            for order in record.sale_order_ids:
+                if order.date_order and month_start_date <= order.date_order.date() <= month_end_date:
+                    invoices = order.order_line.invoice_lines.move_id.filtered(
+                        lambda r: r.move_type in ('out_invoice', 'out_refund'))
+                    _invoices.extend(invoices)
+            for _invoice in _invoices:
+                for _invoice_line in _invoice.invoice_line_ids:
+                    month_total_invoiced += _invoice_line.price_total
+
+            # compute total invoiced year
+            _invoices = []
+            for order in record.sale_order_ids:
+                if order.date_order and start_date <= order.date_order.date() <= end_date:
+                    invoices = order.order_line.invoice_lines.move_id.filtered(
+                        lambda r: r.move_type in ('out_invoice', 'out_refund'))
+                    _invoices.extend(invoices)
+            for _invoice in _invoices:
+                for _invoice_line in _invoice.invoice_line_ids:
+                    year_total_invoiced += _invoice_line.price_total
+
             for partner in self.partner_ids:
                 for payment in self.env['account.payment'].search([('partner_id', '=', partner.id), ('state', '=', 'posted')]):
+                    if payment.invoice_date and month_start_date <= payment.invoice_date <= month_end_date:
+                        month_total_invoiced_payed += payment.amount
+                    if payment.invoice_date and start_date <= payment.invoice_date <= end_date:
+                        year_total_invoiced_payed += payment.amount
                     total_invoiced_payed += payment.amount
+
             total_cashed = 0
+            month_total_cashed = 0
+            month_total_cash_payed = 0
+            year_total_cashed = 0
+            year_total_cash_payed = 0
             total_cash_payed = 0
             _cashs = []
             for order in self.sale_order_ids:
                 for cash in order.cash_ids:
                     _cashs.append(cash)
             for _cash in _cashs:
+                if _cash.date and month_start_date <= _cash.date <= month_end_date:
+                    month_total_cashed += _cash.price_total
+                    month_total_cash_payed += _cash.price_payed
+                if _cash.date and start_date <= _cash.date <= end_date:
+                    year_total_cashed += _cash.price_total
+                    year_total_cash_payed += _cash.price_payed
                 total_cashed += _cash.price_total
                 total_cash_payed += _cash.price_payed
 
-            record.total_invoiced = total_invoiced
-            record.total_invoiced_payed = total_invoiced_payed
-            record.total_cashed = total_cashed
-            record.total_cash_payed = total_cash_payed
-            record.total = total_invoiced + total_cashed
-            record.total_payed = total_invoiced_payed + total_cash_payed
+            record.total_invoiced = month_total_invoiced
+            record.total_invoiced_payed = month_total_invoiced_payed
+            record.total_cashed = month_total_cashed
+            record.total_cash_payed = month_total_cash_payed
+            record.total = year_total_invoiced + year_total_cashed
+            record.total_payed = year_total_invoiced_payed + year_total_cash_payed
 
     def action_view_invoice(self):
         self.ensure_one()
         _invoices = []
         for order in self.sale_order_ids:
-            invoices = order.order_line.invoice_lines.move_id.filtered(
-                lambda r: r.move_type in ('out_invoice', 'out_refund'))
-            _invoices.extend(invoices)
+            if order.date_order and month_start_date <= order.date_order.date() <= month_end_date:
+                invoices = order.order_line.invoice_lines.move_id.filtered(
+                    lambda r: r.move_type in ('out_invoice', 'out_refund'))
+                _invoices.extend(invoices)
         invoice_ids = [_invoice.id for _invoice in _invoices]
         result = {
             "type": "ir.actions.act_window",
@@ -216,7 +292,8 @@ class product_commercial(models.Model):
         _cashs = []
         for order in self.sale_order_ids:
             for cash in order.cash_ids:
-                _cashs.append(cash)
+                if cash.date and month_start_date <= cash.date <= month_end_date:
+                    _cashs.append(cash)
         cash_ids = [_cash.id for _cash in _cashs]
         result = {
             "type": "ir.actions.act_window",

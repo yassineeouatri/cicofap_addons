@@ -43,15 +43,14 @@ class InvoiceCash(models.Model):
     line_ids = fields.One2many('invoice.cash.line', 'line_id', string='Lines', copy=True, readonly=True, states={'draft': [('readonly', False)]})
     payment_ids = fields.One2many('invoice.cash.payment', 'cash_id', string='Cashs', copy=True, readonly=True, states={'draft': [('readonly', False)]})
     partner_id = fields.Many2one('res.partner', readonly=True, tracking=True, states={'draft': [('readonly', False)]}, string='Client')
-    payment_state = fields.Selection(PAYMENT_STATE_SELECTION, string="Etat du paiement", store=True,
-                                     readonly=True, copy=False, tracking=True, compute='_compute_amount')
+    payment_state = fields.Selection(PAYMENT_STATE_SELECTION, string="Etat du paiement", readonly=True, compute='_compute_amount')
     discount = fields.Float(string='Remise (%)', digits='Discount', default=0.0)
     # === Amount fields ===
-    price_untaxed = fields.Monetary(string='Montant HT', store=True, readonly=True, currency_field='currency_id', compute='_compute_amount')
-    price_tax = fields.Monetary(string='TVA', store=True, readonly=True, currency_field='currency_id', compute='_compute_amount')
-    price_total = fields.Monetary(string='Montant TTC', store=True, readonly=True, currency_field='currency_id', compute='_compute_amount')
-    price_payed = fields.Monetary(string='Montant Payé', store=True, readonly=True, currency_field='currency_id', compute='_compute_amount')
-    price_due = fields.Monetary(string='Montant Restant', store=True, readonly=True, currency_field='currency_id', compute='_compute_amount')
+    price_untaxed = fields.Monetary(string='Montant HT', readonly=True, currency_field='currency_id', compute='_compute_amount')
+    price_tax = fields.Monetary(string='TVA', store=True, currency_field='currency_id', compute='_compute_amount')
+    price_total = fields.Monetary(string='Montant TTC', readonly=True, currency_field='currency_id', compute='_compute_amount')
+    price_payed = fields.Monetary(string='Montant Payé', readonly=True, currency_field='currency_id', compute='_compute_amount')
+    price_due = fields.Monetary(string='Montant Restant', readonly=True, currency_field='currency_id', compute='_compute_amount')
 
     @api.model
     def create(self, vals):
@@ -61,15 +60,15 @@ class InvoiceCash(models.Model):
         result = super(InvoiceCash, self).create(vals)
         return result
 
-    @api.depends('line_ids', 'payment_ids')
     def _compute_amount(self):
         for record in self:
             total = sum([line.price_total for line in record.line_ids])
             record.price_untaxed = sum([line.price_untaxed for line in record.line_ids])
             record.price_tax = sum([line.price_tax for line in record.line_ids])
             record.price_total = sum([line.price_total for line in record.line_ids])
-            record.price_payed = sum([line.amount for line in record.payment_ids])
-            record.price_due = sum([line.price_total for line in record.line_ids]) - sum([line.amount for line in record.payment_ids])
+            record.price_payed = sum([line.amount for line in record.payment_ids if line.state == 'posted'])
+            record.price_due = sum([line.price_total for line in record.line_ids]) - sum([line.amount for line in record.payment_ids if line.state == 'posted'])
+
             if record.price_payed == 0:
                 record.payment_state = 'not_paid'
             elif record.price_payed >= record.price_total:
@@ -131,12 +130,12 @@ class InvoiceCashLine(models.Model):
             record.price_tax = price_tax
             record.price_total = price_tax + price_untaxed
 
-
 class InvoiceCashPayment(models.Model):
     _name = "invoice.cash.payment"
     _description = "Lignes de paiements"
     _order = "date desc"
 
+    name = fields.Char('Numéro', default=lambda self: _('New'))
     cash_id = fields.Many2one('invoice.cash', string='Cash', index=True, required=True, readonly=True, auto_join=True, ondelete="cascade")
     date = fields.Date('Date de paiement', default=fields.Date.context_today)
     currency_id = fields.Many2one('res.currency', related='cash_id.currency_id', store=True, readonly=True)
@@ -147,3 +146,22 @@ class InvoiceCashPayment(models.Model):
     no_payment = fields.Char('N° Payment')
     payment_file = fields.Binary(string="Fichier")
     payment_filename = fields.Char("Nom du fichier")
+    state = fields.Selection([('draft', 'Brouillon'), ('posted', 'Comptabilisé'), ('cancel', 'Annulé')], 'Etat', default='draft')
+
+    @api.model
+    def create(self, vals):
+        if vals.get('name', _('New')) == _('New'):
+            vals['name'] = self.env['ir.sequence'].next_by_code('invoice.cash.payment') or _('New')
+
+        result = super(InvoiceCashPayment, self).create(vals)
+        return result
+    def action_post(self):
+        self.write({'state': 'posted'})
+        if self.name == _('New'):
+            self.write({'name': self.env['ir.sequence'].next_by_code('invoice.cash.payment') or _('New')})
+
+    def action_cancel(self):
+        self.write({'state': 'cancel'})
+
+    def action_draft(self):
+        self.write({'state': 'draft'})
