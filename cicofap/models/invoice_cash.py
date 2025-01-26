@@ -155,10 +155,12 @@ class InvoiceCashPayment(models.Model):
 
         result = super(InvoiceCashPayment, self).create(vals)
         return result
+
     def action_post(self):
-        self.write({'state': 'posted'})
-        if self.name == _('New'):
-            self.write({'name': self.env['ir.sequence'].next_by_code('invoice.cash.payment') or _('New')})
+        for record in self:
+            record.write({'state': 'posted'})
+            if record.name == _('New'):
+                record.write({'name': self.env['ir.sequence'].next_by_code('invoice.cash.payment') or _('New')})
 
     def action_cancel(self):
         self.write({'state': 'cancel'})
