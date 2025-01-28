@@ -21,27 +21,34 @@ from odoo.exceptions import ValidationError
 class import_inventory_lines(models.TransientModel):
     _name = "import.invoice.lines"
 
-    file_type = fields.Selection([ ('csv', 'CSV'),('excel', 'Excel')],
-                                 string='File Type', default='csv')
-    select_file = fields.Binary(string='File')
-    excel_file = fields.Binary(string='Download Sample file', readonly=True)
-    file_name = fields.Char('Excel Name', size=64)
-    csv_file_name = fields.Char(string='File Name')
-    import_by = fields.Selection(selection=[('name', 'Name'),('internal_ref', 'Interntl ref'),('barcode','Barcode')], default='name', required=True,
-                                   string='Product Import by')
+    file_type = fields.Selection([('excel', 'Excel')],
+                                 string='Type du fichier', default='excel')
+    select_file = fields.Binary(string='Fichier')
+    excel_file = fields.Binary(string='Télécharger un exemple de fichier', readonly=True)
+    file_name = fields.Char('Nom du fichier', size=64)
+    csv_file_name = fields.Char(string='Nom du fichier')
+    import_by = fields.Selection(selection=[('internal_ref', 'Code')], default='internal_ref', required=True,
+                                   string='Importer les produits par')
+
+    def isfloat(self, num):
+        try:
+            if num.startswith('0'):
+                return False
+            float(num)
+            return True
+        except ValueError:
+            return False
+
     def print_report(self):
-        if self.file_type == 'csv':
-            result = self._generate_csv_report()
-        elif self.file_type == 'excel':
-            result = self.generate_excel_report()
+        result = self.generate_excel_report()
         return result
 
     def _generate_csv_report(self):
         filename = 'Sample_Invoice.csv'
         csv_content = [
-            ['Name', 'Internal ref', 'Barcode', 'Description', 'Qty', 'Price'],
-            ['Storage Box', 'E-COM08', '5675', 'black-brown: Box', '1', '200'],
-            ['Office Design Software', 'FURN_9999', '1234', 'white Down', '2', '100']
+            ['Code', 'Description', 'Qty', 'Price'],
+            ['5675', 'black-brown: Box', '1', '200'],
+            ['1234', 'white Down', '2', '100']
         ]
 
         output = StringIO()
@@ -64,38 +71,36 @@ class import_inventory_lines(models.TransientModel):
         }
 
     def generate_excel_report(self):
-        filename = 'Sample Invoice.xls'
+        filename = 'Exemple format.xls'
         workbook = xlwt.Workbook()
         worksheet = workbook.add_sheet('Line')
         worksheet.col(0).width = 4500
         worksheet.col(1).width = 4000
         worksheet.col(2).width = 4000
         worksheet.col(3).width = 4500
+        worksheet.col(4).width = 4500
         font_style = easyxf(
             'font:height 215;pattern: pattern solid, fore_color gray25; font:bold True;align: vert center, horiz left;')
 
-        worksheet.write(0, 0, 'Product Name',font_style)
-        worksheet.write(0, 1, 'Interntl ref',font_style)
-        worksheet.write(0, 2, 'Barcode',font_style)
-        worksheet.write(0, 3, 'Description',font_style)
-        worksheet.write(0, 4, 'Qty',font_style)
-        worksheet.write(0, 5, 'Price',font_style)
+        worksheet.write(0, 0, 'Code',font_style)
+        worksheet.write(0, 1, 'Qty',font_style)
+        worksheet.write(0, 2, 'Prix',font_style)
+        worksheet.write(0, 3, 'TVA', font_style)
+        worksheet.write(0, 4, 'Remise', font_style)
 
         counter = 1
-        worksheet.write(1, 0, 'Storage Box')
-        worksheet.write(1,  1, 'E-COM08')
-        worksheet.write(1, 2, '5675')
-        worksheet.write(1, 3, 'black-brown: Box')
-        worksheet.write(1,  4, '1')
-        worksheet.write(1, 5, '200')
+        worksheet.write(1, 0, '01M325429')
+        worksheet.write(1, 1, '1')
+        worksheet.write(1, 2, '200')
+        worksheet.write(1, 3, 'TVA 20%')
+        worksheet.write(1, 4, '0')
 
         counter = 1
-        worksheet.write(2, 0, 'Office Design Software')
-        worksheet.write(2, 1, 'FURN_9999')
-        worksheet.write(2, 2, '1234')
-        worksheet.write(2, 3, 'white Down')
-        worksheet.write(2, 4, '2')
-        worksheet.write(2, 5, '100')
+        worksheet.write(2, 0, '01342')
+        worksheet.write(2, 1, '2')
+        worksheet.write(2, 2, '100')
+        worksheet.write(2, 3, 'TVA 20%')
+        worksheet.write(2, 4, '10')
 
         fp = BytesIO()
         workbook.save(fp)
@@ -146,10 +151,22 @@ class import_inventory_lines(models.TransientModel):
             if self.import_by == 'name':
                 domain = [('name', '=', line[0])]
             elif self.import_by == 'internal_ref':
-                domain = [('default_code', '=', line[1])]
+                code = line[0]
+                if self.isfloat(code):
+                    if float(code) == int(float(code)):
+                        code = str(int(float(code)))
+                domain = [('default_code', '=', code)]
             else :
-                domain = [('barcode', '=', str(line[2]))]
+                domain = [('barcode', '=', str(line[0]))]
+
             product_id = self.env['product.product'].search(domain)
+
+            tax_id_lst = []
+            if line[3]:
+                tax_names = line[3]
+                tax = self.env['account.tax'].search([('name', '=', tax_names), ('type_tax_use', '=', 'sale')])
+                if tax:
+                    tax_id_lst.append(tax.id)
 
             if product_id:
                 existing_line_ids = move_id.invoice_line_ids.filtered(
@@ -165,17 +182,18 @@ class import_inventory_lines(models.TransientModel):
                     vals = [(0,0,{
                     
                         'product_id': product_id.id or False,
-                        'name': line[3] or '',
-                        'quantity': float(line[4]) or 0.0,
-                        'price_unit': float(line[5]) or 0.0,
+                        'name': product_id.default_code or '',
+                        'quantity': float(line[1]) or 0.0,
+                        'price_unit': float(line[2]) or 0.0,
                         'product_uom_id': product_id and product_id.uom_id and product_id.uom_id.id,
+                        'tax_ids': [(6, 0, tax_id_lst)],
+                        'discount': float(line[4]) or 0.0
                     })]
                     move_id.invoice_line_ids = vals
             else:
                 if not note:
-                    note = "Product Not found in uploaded File.\n"
-                note += "Line no :" + str(count) + " Product :" + str(
-                    line[0]) + "\n"
+                    note = "Produit non trouvé.\n"
+                note += "Ligne N° :" + str(count) + " Produit :" + str(line[0]) + "\n"
         if note:
             log_id = self.env['invoice.log'].create({'name': note})
             return {

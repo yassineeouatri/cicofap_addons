@@ -11,7 +11,7 @@ For Module Support : devintelle@gmail.com  or Skype : devintelle
         <field name="arch" type="xml">
             <form string="Import Invoice Lines">
                 <p class="oe_grey">
-                    Upload CSV or XSL file for Invoice Line.
+                    Charger un fichier excel pour importer les lignes de facture
                 </p>
                 <group>
                    <group>
@@ -21,22 +21,22 @@ For Module Support : devintelle@gmail.com  or Skype : devintelle
                     </group>
                     <group>
 		            <field name="import_by" widget="radio"/>
-		             <button type="object" name="print_report" class="oe_highlight" string="Download Sample File"/>
+		             <button type="object" name="print_report" class="oe_highlight" string="Télécharger un exemple de fichier"/>
 		            <field name="excel_file"  invisible="1" readonly="1" filename="file_name"/>
                            <field name="file_name" invisible="1"/>
                     </group>
                 </group>
                 <footer>
-                    <button name="import_line" string="Import Line" type="object" class="btn-primary"/>
+                    <button name="import_line" string="Importer" type="object" class="btn-primary"/>
                     or
-                    <button string="Cancel" class="btn-default" special="cancel"/>
+                    <button string="Annuler" class="btn-default" special="cancel"/>
                 </footer>
             </form>
         </field>
     </record>
 
     <record id="action_import_invoice_lines" model="ir.actions.act_window">
-        <field name="name">Import Invoice Lines</field>
+        <field name="name">Importer les lignes de facture</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">import.invoice.lines</field>
         <field name="view_mode">form</field>
@@ -53,7 +53,7 @@ For Module Support : devintelle@gmail.com  or Skype : devintelle
                     <field name="name" readonly="1"/>
                 </group>
                 <footer>
-                    <button string="Cancel" class="btn-default" special="cancel"/>
+                    <button string="Annuler" class="btn-default" special="cancel"/>
                 </footer>
             </form>
         </field>
