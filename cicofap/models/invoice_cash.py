@@ -139,7 +139,7 @@ class InvoiceCashPayment(models.Model):
     cash_id = fields.Many2one('invoice.cash', string='Cash', index=True, required=True, readonly=True, auto_join=True, ondelete="cascade")
     date = fields.Date('Date de paiement', default=fields.Date.context_today)
     currency_id = fields.Many2one('res.currency', related='cash_id.currency_id', store=True, readonly=True)
-    amount = fields.Monetary('Montant', currency_field='currency_id' )
+    amount = fields.Monetary('Montant', currency_field='currency_id')
     payment_method = fields.Selection(
         [('virement', 'Virement'), ('cheque', 'Chèque'), ('cash', 'Espèce'), ('traite', 'Traite')],
         'Mode de paiement')

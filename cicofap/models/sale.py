@@ -252,14 +252,15 @@ class product_commercial(models.Model):
                 for cash in order.cash_ids:
                     _cashs.append(cash)
             for _cash in _cashs:
-                if _cash.date and month_start_date <= _cash.date <= month_end_date:
-                    month_total_cashed += _cash.price_total
-                    month_total_cash_payed += _cash.price_payed
-                if _cash.date and start_date <= _cash.date <= end_date:
-                    year_total_cashed += _cash.price_total
-                    year_total_cash_payed += _cash.price_payed
-                total_cashed += _cash.price_total
-                total_cash_payed += _cash.price_payed
+                if _cash.state == 'done':
+                    if _cash.date and month_start_date <= _cash.date <= month_end_date:
+                        month_total_cashed += _cash.price_total
+                        month_total_cash_payed += _cash.price_payed
+                    if _cash.date and start_date <= _cash.date <= end_date:
+                        year_total_cashed += _cash.price_total
+                        year_total_cash_payed += _cash.price_payed
+                    total_cashed += _cash.price_total
+                    total_cash_payed += _cash.price_payed
 
             record.total_invoiced = month_total_invoiced
             record.total_invoiced_payed = month_total_invoiced_payed
@@ -289,21 +290,29 @@ class product_commercial(models.Model):
 
     def action_view_cash(self):
         self.ensure_one()
+        action = self.env["ir.actions.actions"]._for_xml_id("cicofap.action_invoice_cash")
         _cashs = []
         for order in self.sale_order_ids:
             for cash in order.cash_ids:
                 if cash.date and month_start_date <= cash.date <= month_end_date:
                     _cashs.append(cash)
         cash_ids = [_cash.id for _cash in _cashs]
-        result = {
-            "type": "ir.actions.act_window",
-            "res_model": "invoice.cash",
-            "domain": [('id', 'in', cash_ids)],
-            "context": {"create": False},
-            "name": "Cash",
-            'view_mode': 'tree,form',
-        }
-        return result
+        action['domain'] = [('id', 'in', cash_ids)]
+        action['context'] = {'search_default_filter_current_month': True, 'search_default_filter_done': True}
+        return action
+
+    def action_view_cash_payments(self):
+        self.ensure_one()
+        action = self.env["ir.actions.actions"]._for_xml_id("cicofap.action_invoice_cash_payment")
+        _cashs = []
+        for order in self.sale_order_ids:
+            for cash in order.cash_ids:
+                if cash.date and month_start_date <= cash.date <= month_end_date:
+                    _cashs.append(cash)
+        cash_ids = [_cash.id for _cash in _cashs]
+        action['domain'] = [('cash_id', 'in', cash_ids)]
+        action['context'] = {'search_default_filter_current_month': True, 'search_default_filter_posted': True}
+        return action
 
     def _get_company_currency(self):
         for record in self:

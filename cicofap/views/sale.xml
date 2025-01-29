@@ -639,6 +639,18 @@
                                 </div>
                             </button>
                             <button type="object"
+                                name="action_view_cash_payments"
+                                class="oe_stat_button"
+                                icon="fa-pencil-square-o">
+                                <div class="o_form_field o_stat_info">
+                                    <span class="o_stat_value">
+                                        <field name="currency_id" invisible="1"/>
+                                        <field name="total_cash_payed" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                    </span>
+                                    <span class="o_stat_text">Total Cash Payé</span>
+                                </div>
+                            </button>
+                            <button type="object"
                                 name="action_view_invoice"
                                 class="oe_stat_button"
                                 icon="fa-pencil-square-o">
@@ -648,18 +660,6 @@
                                         <field name="total_invoiced" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                                     </span>
                                     <span class="o_stat_text">Total Facturé</span>
-                                </div>
-                            </button>
-                            <button type="object"
-                                name="action_view_sale_order"
-                                class="oe_stat_button"
-                                icon="fa-pencil-square-o">
-                                <div class="o_form_field o_stat_info">
-                                    <span class="o_stat_value">
-                                        <field name="currency_id" invisible="1"/>
-                                        <field name="total" widget='monetary' options="{'currency_field': 'currency_id'}"/>
-                                    </span>
-                                    <span class="o_stat_text">Total facturé annuel</span>
                                 </div>
                             </button>
                         </div>
@@ -743,6 +743,18 @@
                                         <field name="total_cashed" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                                     </span>
                                     <span class="o_stat_text">Total Cash</span>
+                                </div>
+                            </button>
+                            <button type="object"
+                                name="action_view_cash_payments"
+                                class="oe_stat_button"
+                                icon="fa-pencil-square-o">
+                                <div class="o_form_field o_stat_info">
+                                    <span class="o_stat_value">
+                                        <field name="currency_id" invisible="1"/>
+                                        <field name="total_cash_payed" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                    </span>
+                                    <span class="o_stat_text">Total Cash Payé</span>
                                 </div>
                             </button>
                             <button type="object"
