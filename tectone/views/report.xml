@@ -40,11 +40,6 @@
             </div>
         </xpath>
     </template>
-
-    <template id="internal_layout_tectone" inherit_id="web.internal_layout">
-        <xpath expr="//div[1]" position="replace">
-        </xpath>
-    </template>
     <template id="report_production_bordereau_document">
          <t t-call="web.external_layout_standard">
                 <t t-set="o" t-value="o.with_context(lang=lang)" />
@@ -67,11 +62,11 @@
                             <table class="o_event_table table">
                                 <thead>
                                     <tr>
-                                        <th class="text-center" colspan="5" style="border: 1px solid; width: 50%">Codifications Identification document</th>
+                                        <th class="text-center" colspan="7" style="border: 1px solid; width: 50%">Codifications Identification document</th>
                                         <th class="text-center" rowspan="2" style="vertical-align:middle; border: 1px solid">Titre du document</th>
                                     </tr>
                                     <tr>
-                                        <th class="text-center" colspan="4" style="border: 1px solid">Numéro Document</th>
+                                        <th class="text-center" colspan="6" style="border: 1px solid">Numéro Document</th>
                                         <th class="text-center" style="border: 1px solid">Rev</th>
                                     </tr>
                                 </thead>
@@ -81,8 +76,10 @@
                                             <tr>
                                                 <td class="text-center" style="border: 1px solid"><span t-field="line.document_id.emetteur_id.name"/></td>
                                                 <td class="text-center" style="border: 1px solid"><span t-field="line.document_id.phase_id.name"/></td>
+                                                <td class="text-center" style="border: 1px solid"><span t-field="line.document_id.zone_id.name"/></td>
+                                                <td class="text-center" style="border: 1px solid"><span t-field="line.document_id.ouvrage_id.name"/></td>
                                                 <td class="text-center" style="border: 1px solid"><span t-field="line.document_id.type_id.name"/></td>
-                                                <td class="text-center" style="border: 1px solid"><span t-field="line.order"/></td>
+                                                <td class="text-center" style="border: 1px solid"><span t-field="line.document_id.numero"/></td>
                                                 <td class="text-center" style="border: 1px solid"><span t-field="line.document_id.indice"/></td>
                                                 <td style="border: 1px solid"><span t-field="line.document_id.name"/></td>
                                             </tr>
@@ -98,6 +95,8 @@
                                         <td style="border: 1px solid"></td>
                                         <td style="border: 1px solid"></td>
                                         <td style="border: 1px solid"></td>
+                                         <td style="border: 1px solid"></td>
+                                         <td style="border: 1px solid"></td>
                                     </tr>
                                     </t>
                                 </span>
@@ -182,4 +181,15 @@
             </t>
         </t>
     </template>
+
+    <!-- Report Action for Bordereau -->
+    <record id="action_report_bordereau" model="ir.actions.report">
+        <field name="name">Production Bordereau</field>
+        <field name="model">production.bordereau</field> <!-- This is the model you are generating the report for -->
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">tectone.report_production_bordereau</field> <!-- The ID of the QWeb template -->
+        <field name="report_file">tectone.report_production_bordereau</field> <!-- The same ID of the QWeb template -->
+        <field name="binding_model_id" ref="model_production_bordereau"/> <!-- Binding the action to the model -->
+        <field name="binding_type">report</field>
+    </record>
 </odoo>

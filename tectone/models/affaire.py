@@ -26,7 +26,7 @@ class production_affaire(models.Model):
     year = fields.Char('Année', size=4, default=datetime.today().year, required=True)
     directeur_travaux = fields.Char('Référent client')
     type = fields.Selection([('contract', 'Contrat'),('marche', 'Marché'), ('bc', 'Bon de commande')], 'Type')
-    partner_id = fields.Many2one('res.partner', 'Client', domain=[('is_company', '=', True)])
+    partner_id = fields.Many2one('res.partner', 'Client', domain=[('is_company','=', True)])
     no_contract = fields.Char('N° Contrat')
     amount_contract = fields.Float('Montant Affaire', currency_field='currency_id')
     amount_avenant = fields.Float('Montant Avenant', currency_field='currency_id')
