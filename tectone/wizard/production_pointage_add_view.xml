@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<!-- Wizard -->
+        <record id="production_pointage_create_view_form" model="ir.ui.view">
+            <field name="name">production.pointage.add.create</field>
+            <field name="model">production.pointage.add</field>
+            <field name="arch" type="xml">
+                <form string="Pointages">
+                    <sheet>
+                        <h3>Voulez-vous ajouter un nouveau pointage?</h3>
+                        <group col="4">
+                            <field name="pointage_id" invisible="1"/>
+                            <field name="affaire_id" options="{'no_open': True, 'no_create': True}" colspan="4"/>
+                            <field name="type" colspan="4" attrs="{'invisible': [('affaire_id', '==', False)]}"/>
+                            <field name="task"
+                                 attrs="{'required':[('type', '=', 'other')], 'invisible':[('type','!=','other')]}" colspan="4"/>
+                            <field name="reunion_id" widget="selection"
+                                 attrs="{'required':[('type', '=', 'meeting')], 'invisible':[('type','!=','meeting')]}" colspan="4"/>
+                            <field name="document_ids" domain="[('affaire_id','=', affaire_id)]"
+                                attrs="{'required':[('type', '=', 'document')], 'invisible':[('type','!=','document')]}" colspan="4" widget="many2many_tags" options="{'no_create':True}"/>
+                            <field name="nb_hour" attrs="{'required':[('type', '!=', 'document')], 'invisible':['|', ('type','==', False), ('type','=','document')]}" colspan="4"/>
+                            <field name="hour" invisible="1"/>
+                        </group>
+                        <footer>
+                            <button name="action_done" string="Valider" type="object" class="oe_highlight"/>
+                            or
+                            <button string="Annuler" class="oe_link" special="cancel" />
+                       </footer>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+	</data>
+</odoo>
