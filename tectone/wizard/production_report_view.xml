@@ -5,42 +5,46 @@
         <!--Données financières-->
         <record id="production_report_fin_view" model="ir.ui.view">
             <field name="name">Générer le rapport financier</field>
-            <field name="model">production.report</field>
+            <field name="model">production.report.print</field>
             <field name="arch" type="xml">
                 <form string="Documents">
-                    <p><span class="o_form_label">Cliquer sur le bouton "Imprimer" pour générer le rapport.</span></p>
-                    <group><field name="affaire_id" options='{"no_create": True,"no_open": True}'/></group>
-                    <footer>
-                        <button string="Imprimer" name="action_print_report_fin" type="object" default_focus="1" class="btn-primary"/>
-                        <button string="Annuler" class="btn-secondary" special="cancel"/>
-                    </footer>
+                    <sheet>
+                        <p><span class="o_form_label">Cliquer sur le bouton "Imprimer" pour générer le rapport.</span></p>
+                        <group><field name="affaire_id" options='{"no_create": True,"no_open": True}'/></group>
+                        <footer>
+                            <button string="Imprimer" name="action_print_report_fin" type="object" default_focus="1" class="btn-primary"/>
+                            <button string="Annuler" class="btn-secondary" special="cancel"/>
+                        </footer>
+                    </sheet>
                 </form>
             </field>
         </record>
         <record id="production_report_prod_view" model="ir.ui.view">
             <field name="name">Générer le rapport production</field>
-            <field name="model">production.report</field>
+            <field name="model">production.report.print</field>
             <field name="arch" type="xml">
                 <form string="Documents">
-                    <p><span class="o_form_label">Cliquer sur le bouton "Imprimer" pour générer le rapport.</span></p>
-                    <group><field name="affaire_id" options='{"no_create": True,"no_open": True}'/></group>
-                    <footer>
-                        <button string="Imprimer" name="action_print_report_prod" type="object" default_focus="1" class="btn-primary"/>
-                        <button string="Annuler" class="btn-secondary" special="cancel"/>
-                    </footer>
+                    <sheet>
+                        <p><span class="o_form_label">Cliquer sur le bouton "Imprimer" pour générer le rapport.</span></p>
+                        <group><field name="affaire_id" options='{"no_create": True,"no_open": True}'/></group>
+                        <footer>
+                            <button string="Imprimer" name="action_print_report_prod" type="object" default_focus="1" class="btn-primary"/>
+                            <button string="Annuler" class="btn-secondary" special="cancel"/>
+                        </footer>
+                    </sheet>
                 </form>
             </field>
         </record>
 
         <record id="action_production_report_fin" model="ir.actions.act_window">
-            <field name="name">Générer le rapport financier</field>
+            <field name="name">Rapport financier</field>
             <field name="type">ir.actions.act_window</field>
-            <field name="res_model">production.report</field>
+            <field name="res_model">production.report.print</field>
             <field name="view_mode">form</field>
             <field name="context">{}</field>
-            <field name="target">new</field>
+            <field name="target">current</field>
             <field name="help"></field>
-            <field name="binding_model_id" ref="tectone.model_production_report" />
+            <field name="binding_model_id" ref="tectone.model_production_report_print" />
             <field name="binding_view_types">list</field>
         </record>
         <record id="action_production_report_fin_form" model="ir.actions.act_window.view">
@@ -50,14 +54,14 @@
             <field name="act_window_id" ref="action_production_report_fin"/>
         </record>
         <record id="action_production_report_prod" model="ir.actions.act_window">
-            <field name="name">Générer le rapport production</field>
+            <field name="name">Rapport production</field>
             <field name="type">ir.actions.act_window</field>
-            <field name="res_model">production.report</field>
+            <field name="res_model">production.report.print</field>
             <field name="view_mode">form</field>
             <field name="context">{}</field>
-            <field name="target">new</field>
+            <field name="target">current</field>
             <field name="help"></field>
-            <field name="binding_model_id" ref="tectone.model_production_report" />
+            <field name="binding_model_id" ref="tectone.model_production_report_print" />
             <field name="binding_view_types">list</field>
         </record>
         <record id="action_production_report_prod_form" model="ir.actions.act_window.view">

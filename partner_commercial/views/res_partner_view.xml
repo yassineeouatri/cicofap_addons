@@ -56,7 +56,7 @@
             <field name="model">product.commercial</field>
             <field name="inherit_id" ref="cicofap.product_commercial_form_view"/>
             <field name="arch" type="xml">
-                <xpath expr="//button[@name='action_view_sale_order']" position="before">
+                <xpath expr="//button[@name='action_view_cash']" position="before">
                     <button type="object"
                             name="action_view_partner"
                             class="oe_stat_button"

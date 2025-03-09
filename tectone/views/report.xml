@@ -23,7 +23,14 @@
                     <div class="col-3 mb4">
                         <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="max-height: 100px;" alt="Logo"/>
                     </div>
-                    <div class="col-9 text-right" style="margin-top:22px;" t-field="company.report_header" name="moto"/>
+                    <div class="col-5"></div>
+                    <div class="col-4" style="margin-top:20px;">
+                        <table class="table">
+                            <tr>
+                                <td style="border: 1px solid;text-align: center;background: darkgray;">BORDEREAU D'ENVOI</td>
+                                <td style="border: 1px solid;text-align: center;background: darkgray;"><span class="m-0" t-field="o.name"/></td></tr>
+                        </table>
+                    </div>
                 </div>
             </div>
         </xpath>
@@ -34,25 +41,116 @@
                     <li><strong>TECTONE S.A.R.L</strong></li>
                     <li>Siège social : Lotissement Attaoufik Zénith II Sidi Mâarouf - 20 001 CASABLANCA</li>
                     <li>Tél : +212(0) 5 22 32 15 51/52 – Fax : +212(0) 5 22 32 10 44 – E-Mail : contact@tectonegroup.com</li>
-                    <li>R.C. Casa 55793 – C.N.S.S. 2026492 – ICE – 001617533000083 - I.F. N°01020675 –– Patente : 36102629</li>
-                    <li>Site : <a>http://www.tectonegroup.com</a></li>
+                    <li>R.C. Casa 55793 – C.N.S.S. 2026492 – ICE – 001617533000083 - I.F. N°01020675 –– Patente : 36102629</li>s
                 </ul>
             </div>
         </xpath>
     </template>
-    <template id="report_production_bordereau_document">
-         <t t-call="web.external_layout_standard">
+    <!-- CRT Report -->
+    <template id="report_production_bordereau_document_crt">
+         <t t-call="tectone.external_layout_standard_tectone">
                 <t t-set="o" t-value="o.with_context(lang=lang)" />
                 <div class="page" t-attf-style="font-size:14px;">
 
                     <div id="informations" class="row mt16 mb8" style="font-size:14px;">
                         <div class="mb-3 col-6" name="Objet">
+                            <strong>N° Affaire : </strong><span class="m-0" t-field="o.affaire_id.number"/><br/>
                             <strong>Objet : </strong><span class="m-0" t-field="o.affaire_id.name"/>
                         </div>
                         <div class="mb-3 col-6" name="info">
                             <table class="table">
                                 <tr><td style="border: 1px solid">Destionation :</td><td style="border: 1px solid"><strong><span t-field="o.affaire_id.partner_id.name"/></strong></td></tr>
-                                <tr><td style="border: 1px solid">A l'attention de :</td><td style="border: 1px solid"><strong><span t-field="o.affaire_id.directeur_travaux"/></strong></td></tr>
+                                <tr><td style="border: 1px solid">A l'attention de :</td><td style="border: 1px solid"><strong><span t-field="o.directeur_travaux"/></strong></td></tr>
+                                <tr><td style="border: 1px solid">Date :</td><td style="border: 1px solid"><strong><span t-esc="datetime.datetime.now().strftime('%d/%m/%Y')"/></strong></td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    <p>Nous vous prions de trouver ci-joint les documents énumérés ci-dessous :</p>
+                    <div class="table-responsive">
+                            <table class="o_event_table table">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center" colspan="7" style="border: 1px solid; width: 50%">Codifications Identification document</th>
+                                        <th class="text-center" rowspan="2" style="vertical-align:middle; border: 1px solid">Titre du document</th>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-center" colspan="6" style="border: 1px solid">Numéro Document</th>
+                                        <th class="text-center" style="border: 1px solid">Rev</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="o.line_ids" t-as="line">
+                                        <tr>
+                                            <td class="text-center" style="border: 1px solid"><span t-field="line.document_id.emetteur_id.name"/></td>
+                                            <td class="text-center" style="border: 1px solid"><span t-field="line.document_id.phase_id.name"/></td>
+                                            <td class="text-center" style="border: 1px solid"><span t-field="line.document_id.zone_id.name"/></td>
+                                            <td class="text-center" style="border: 1px solid"><span t-field="line.document_id.ouvrage_id.name"/></td>
+                                            <td class="text-center" style="border: 1px solid"><span t-field="line.document_id.type_id.name"/></td>
+                                            <td class="text-center" style="border: 1px solid"><span t-field="line.document_id.numero"/></td>
+                                            <td class="text-center" style="border: 1px solid"><span t-field="line.document_id.indice"/></td>
+                                            <td style="border: 1px solid"><span t-field="line.document_id.name"/></td>
+                                        </tr>
+                                    </t>
+                                <span t-if="len(o.line_ids)  &lt; 10 ">
+                                    <t t-set="rows" t-value="10-len(o.line_ids)"/>
+                                    <t t-foreach="range(rows)" t-as="row">
+                                     <tr>
+                                        <td style="border: 1px solid"></td>
+                                        <td style="border: 1px solid"></td>
+                                        <td style="border: 1px solid"></td>
+                                        <td style="border: 1px solid"></td>
+                                        <td style="border: 1px solid"></td>
+                                        <td style="border: 1px solid"></td>
+                                         <td style="border: 1px solid"></td>
+                                         <td style="border: 1px solid"></td>
+                                    </tr>
+                                    </t>
+                                </span>
+                                </tbody>
+                        </table>
+                    </div>
+                    <div class="row signature" style="text-align: center;margin-top: 50px;">
+                        <div class="col-6"></div>
+                        <div class="col-2"><p>De la part de Mr: <br/>Signature :</p></div>
+                        <div class="col-4"><img src="/tectone/static/src/img/Signature.png" alt="Signature" style="width: 18s0px; height: auto;" /></div>
+                    </div>
+                </div>
+            </t>
+    </template>
+    <template id="report_production_bordereau_crt">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="tectone.report_production_bordereau_document_crt"/>
+            </t>
+        </t>
+    </template>
+
+    <!-- Report Action for Bordereau -->
+    <record id="action_report_bordereau_crt" model="ir.actions.report">
+        <field name="name">Bordereau CRT</field>
+        <field name="model">production.bordereau</field> <!-- This is the model you are generating the report for -->
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">tectone.report_production_bordereau_crt</field> <!-- The ID of the QWeb template -->
+        <field name="report_file">tectone.report_production_bordereau_crt</field> <!-- The same ID of the QWeb template -->
+        <field name="binding_model_id" ref="model_production_bordereau"/> <!-- Binding the action to the model -->
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Client report -->
+    <template id="report_production_bordereau_document_client">
+         <t t-call="tectone.external_layout_standard_tectone">
+                <t t-set="o" t-value="o.with_context(lang=lang)" />
+                <div class="page" t-attf-style="font-size:14px;">
+
+                    <div id="informations" class="row mt16 mb8" style="font-size:14px;">
+                        <div class="mb-3 col-6" name="Objet">
+                            <strong>N° Affaire : </strong><span class="m-0" t-field="o.affaire_id.number"/><br/>
+                            <strong>Objet : </strong><span class="m-0" t-field="o.affaire_id.name"/>
+                        </div>
+                        <div class="mb-3 col-6" name="info">
+                            <table class="table">
+                                <tr><td style="border: 1px solid">Destionation :</td><td style="border: 1px solid"><strong><span t-field="o.affaire_id.partner_id.name"/></strong></td></tr>
+                                <tr><td style="border: 1px solid">A l'attention de :</td><td style="border: 1px solid"><strong><span t-field="o.directeur_travaux"/></strong></td></tr>
                                 <tr><td style="border: 1px solid">Date :</td><td style="border: 1px solid"><strong><span t-esc="datetime.datetime.now().strftime('%d/%m/%Y')"/></strong></td></tr>
                             </table>
                         </div>
@@ -103,93 +201,224 @@
                                 </tbody>
                         </table>
                     </div>
-                </div>
-            </t>
-    </template>
-    <template id="report_production_bordereau">
-        <t t-call="web.html_container">
-            <t t-foreach="docs" t-as="o">
-                <t t-call="tectone.report_production_bordereau_document"/>
-            </t>
-        </t>
-    </template>
-    <template id="report_affaire_plan_document">
-         <t t-call="web.internal_layout">
-                <t t-set="o" t-value="o.with_context(lang=lang)" />
-                <div class="page" t-attf-style="font-size:14px;">
-                    <div class="table-responsive">
-                            <table class="o_event_table table">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center" colspan="5" rowspan="2" style="border: 1px solid; vertical-align:middle; width: 40%">LISTE DE DIFFUSION DES PLANS</th>
-                                        <th class="text-center" rowspan="2" style="border: 1px solid; vertical-align:middle; width: 30%"></th>
-                                        <th colspan="5" style="border: 1px solid; width: 40%">N° AFFAIRE : <span t-field="o.number"/></th>
-                                    </tr>
-                                    <tr>
-                                        <th colspan="5" style="border: 1px solid">Date édition : <span t-esc="datetime.datetime.now().strftime('%d/%m/%Y')"/></th>
-                                    </tr>
-                                    <tr><th></th></tr>
-                                    <tr><th colspan="5" style="border: 1px solid;">OUVRAGE</th></tr>
-                                    <tr><th></th></tr>
-                                    <tr>
-                                        <th class="text-center" style="border: 1px solid">Prov</th>
-                                        <th class="text-center" style="border: 1px solid">Phase</th>
-                                        <th class="text-center" style="border: 1px solid">Scope</th>
-                                        <th class="text-center" style="border: 1px solid">N° Plan</th>
-                                        <th class="text-center" style="border: 1px solid">Indice</th>
-                                        <th class="text-center" style="border: 1px solid">Titre</th>
-                                        <th class="text-center" style="border: 1px solid">Date Indice</th>
-                                        <th class="text-center" style="border: 1px solid">Date Envoi</th>
-                                        <th class="text-center" style="border: 1px solid">N° Envoi</th>
-                                        <th class="text-center" style="border: 1px solid">Emetteur</th>
-                                        <th class="text-center" style="border: 1px solid">Code</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <t t-foreach="o.plan_ids" t-as="plan">
-                                        <t t-foreach="plan.indice_ids" t-as="indice">
-                                            <tr>
-                                                <td class="text-center" style="border: 1px solid"><span t-field="plan.emetteur_id.name"/></td>
-                                                <td class="text-center" style="border: 1px solid"><span t-field="plan.phase_id.name"/></td>
-                                                <td class="text-center" style="border: 1px solid"><span t-field="plan.presta_id.name"/></td>
-                                                <td class="text-center" style="border: 1px solid"><span t-field="plan.numero"/></td>
-                                                <td class="text-center" style="border: 1px solid"><span t-field="indice.indice"/></td>
-                                                <td style="border: 1px solid"><span t-field="plan.name"/></td>
-                                                <td class="text-center" style="border: 1px solid"><span t-field="indice.date"/></td>
-                                                <td class="text-center" style="border: 1px solid"><span t-field="indice.date_client"/></td>
-                                                <td class="text-center" style="border: 1px solid"></td>
-                                                <td class="text-center" style="border: 1px solid"><span t-field="plan.employee_id.name"/></td>
-                                                <span t-if="indice.actif">
-                                                    <td class="text-center" style="border: 1px solid">1</td>
-                                                </span>
-                                                <span t-if="not indice.actif">
-                                                    <td class="text-center" style="border: 1px solid">0</td>
-                                                </span>
-                                            </tr>
-                                        </t>
-                                    </t>
-                                </tbody>
-                        </table>
+                    <div class="row signature" style="text-align: center;margin-top: 50px;">
+                        <div class="col-6"></div>
+                        <div class="col-2"><p>De la part de Mr: <br/>Signature :</p></div>
+                        <div class="col-4"><img src="/tectone/static/src/img/Signature.png" alt="Signature" style="width: 18s0px; height: auto;" /></div>
                     </div>
                 </div>
             </t>
     </template>
-    <template id="report_affaire_plan">
+    <template id="report_production_bordereau_client">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
-                <t t-call="tectone.report_affaire_plan_document"/>
+                <t t-call="tectone.report_production_bordereau_document_client"/>
             </t>
         </t>
     </template>
 
     <!-- Report Action for Bordereau -->
-    <record id="action_report_bordereau" model="ir.actions.report">
-        <field name="name">Production Bordereau</field>
+    <record id="action_report_bordereau_client" model="ir.actions.report">
+        <field name="name">Borderau Client</field>
         <field name="model">production.bordereau</field> <!-- This is the model you are generating the report for -->
         <field name="report_type">qweb-html</field>
-        <field name="report_name">tectone.report_production_bordereau</field> <!-- The ID of the QWeb template -->
-        <field name="report_file">tectone.report_production_bordereau</field> <!-- The same ID of the QWeb template -->
+        <field name="report_name">tectone.report_production_bordereau_client</field> <!-- The ID of the QWeb template -->
+        <field name="report_file">tectone.report_production_bordereau_client</field> <!-- The same ID of the QWeb template -->
         <field name="binding_model_id" ref="model_production_bordereau"/> <!-- Binding the action to the model -->
+        <field name="binding_type">report</field>
+    </record>
+
+
+    <!-- Production report -->
+    <template id="report_production_html">
+        <t t-call="web.html_container">
+               <div class="page" t-attf-style="font-size:14px;">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <strong>Date :</strong> <span><t t-esc="date"/></span>
+                        </div>
+                        <div class="col-6">
+                            <strong>Affaire :</strong> <span><t t-esc="affaire_name"/></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Première Table: LIVRABLES & TEMPS PASSES -->
+                        <div class="col-8">
+                            <table class="table table-bordered">
+                                <thead>
+                                   <tr>
+                                        <th colspan="5" style="background-color: grey; text-align: center;">LIVRABLES</th>
+                                        <th colspan="2" style="background-color: orange; text-align: center;">TEMPS PASSES</th>
+                                    </tr>
+                                    <tr>
+                                        <th>MODELE</th>
+                                        <th>PREV</th>
+                                        <th>EXE</th>
+                                        <th>IND</th>
+                                        <th>%</th>
+                                        <th>H. ING</th>
+                                        <th>H. PROJ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="documents" t-as="doc">
+                                        <tr t-attf-class="#{
+                                            'bg-success' if doc['prev'] > doc['exe'] else
+                                            'bg-danger' if doc['exe'] > doc['prev'] else
+                                            'bg-warning' }">
+                                            <td><t t-esc="doc['name']"/></td>
+                                            <td><t t-esc="doc['prev']"/></td>
+                                            <td><t t-esc="doc['exe']"/></td>
+                                            <td><t t-esc="doc['indice']"/></td>
+                                            <td><t t-esc="doc['percentage']"/> %</td>
+                                            <td><t t-esc="doc['hours_ing']"/></td>
+                                            <td><t t-esc="doc['hours_proj']"/></td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Deuxième Table: Détails des heures -->
+                        <div class="col-4">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th colspan="1" style="background-color: grey; text-align: center;">LIVRABLES</th>
+                                        <th colspan="2" style="background-color: orange; text-align: center;">TEMPS PASSES</th>
+                                    </tr>
+                                    <tr>
+                                        <th>Nom</th>
+                                        <th>H. ING</th>
+                                        <th>H. PROJ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="times" t-as="doc">
+                                        <tr>
+                                            <td><t t-esc="doc['name']"/></td>
+                                            <td><t t-esc="doc['hours_ing']"/></td>
+                                            <td><t t-esc="doc['hours_proj']"/></td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CSS amélioré -->
+                <style>
+                    /* Style pour les en-têtes de table */
+                    thead {
+                        background-color: #4CAF50; /* Vert */
+                        color: white;
+                    }
+                    thead th {
+                        padding: 12px;
+                        text-align: center;
+                        border: 2px solid #333;
+                    }
+                    tbody td {
+                        text-align: center;
+                        vertical-align: middle;
+                        border: 1px solid;
+                    }
+                    /* Changement de couleur des lignes de la première table */
+                    .bg-success {
+                        background-color: #28a745 !important; /* Vert pour un bon résultat */
+                    }
+                    .bg-danger {
+                        background-color: #dc3545 !important; /* Rouge pour un mauvais résultat */
+                    }
+                    .bg-warning {
+                        background-color: #ffc107 !important; /* Jaune pour un résultat moyen */
+                    }
+                </style>
+        </t>
+    </template>
+    <record id="action_report_production_html" model="ir.actions.report">
+        <field name="name">Rapport production</field>
+        <field name="model">production.report.print</field>
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">tectone.report_production_html</field>
+        <field name="report_file">tectone.report_production_html</field>
+        <field name="print_report_name">Relevé</field>
+        <field name="binding_model_id" ref="model_report_tectone_report_production_print"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Finance report -->
+    <template id="report_finance_html">
+        <t t-call="web.html_container">
+               <div class="page" t-attf-style="font-size:14px;">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <strong>Date :</strong> <span><t t-esc="date"/></span>
+                        </div>
+                        <div class="col-6">
+                            <strong>Affaire :</strong> <span><t t-esc="affaire_name"/></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Première Table: LIVRABLES & TEMPS PASSES -->
+                        <div class="col-8">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Montant CONTRAT</th>
+                                        <th>Montant AVENANT</th>
+                                        <th>Montant FACTURE</th>
+                                        <th>Montant PAYE</th>
+                                        <th>% FACTURE</th>
+                                        <th>% PAYE</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><t t-esc="float(amount_contract)"/> <t t-esc="currency"/></td>
+                                        <td><t t-esc="float(amount_avenant)"/> <t t-esc="currency"/></td>
+                                        <td><t t-esc="float(amount_billed)"/> <t t-esc="currency"/></td>
+                                        <td><t t-esc="float(amount_payed)"/> <t t-esc="currency"/></td>
+                                        <td><t t-esc="percentage_billed"/> %</td>
+                                        <td><t t-esc="percentage_payed"/> %</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CSS amélioré -->
+                <style>
+                    /* Style pour les en-têtes de table */
+                    thead {
+                        background-color: #004285; /* Vert */
+                        color: white;
+                    }
+                    thead th {
+                        padding: 12px;
+                        text-align: center;
+                        border: 2px solid #333;
+                    }
+                    tbody td {
+                        text-align: center;
+                        vertical-align: middle;
+                        border: 1px solid;
+                    }
+                </style>
+        </t>
+    </template>
+    <record id="action_report_finance_html" model="ir.actions.report">
+        <field name="name">Rapport financier</field>
+        <field name="model">production.report.print</field>
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">tectone.report_finance_html</field>
+        <field name="report_file">tectone.report_finance_html</field>
+        <field name="print_report_name">Relevé</field>
+        <field name="binding_model_id" ref="model_report_tectone_report_production_print"/>
         <field name="binding_type">report</field>
     </record>
 </odoo>

@@ -662,6 +662,18 @@
                                     <span class="o_stat_text">Total Facturé</span>
                                 </div>
                             </button>
+                            <button type="object"
+                                name="action_view_invoice_payments"
+                                class="oe_stat_button"
+                                icon="fa-pencil-square-o">
+                                <div class="o_form_field o_stat_info">
+                                    <span class="o_stat_value">
+                                        <field name="currency_id" invisible="1"/>
+                                        <field name="total_invoiced_payed" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                    </span>
+                                    <span class="o_stat_text">Total Payé</span>
+                                </div>
+                            </button>
                         </div>
                         <field name="avatar_128" invisible="1"/>
                         <field name="image_1920" widget='image' class="oe_avatar" options='{"preview_image": "avatar_128"}'/>

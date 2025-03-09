@@ -17,6 +17,7 @@
                     <filter string="Année en cours" name="filter_current_year" domain="[('date', '&gt;=', (context_today().replace(month=1, day=1)).strftime('%Y-%m-%d')), ('date', '&lt;', (context_today().replace(year=context_today().year+1, month=1, day=1)).strftime('%Y-%m-%d'))]"/>
                     <group expand="0" string="Grouper par">
                         <filter string="Client" name="groupby_partner_id" domain="[]" context="{'group_by': 'partner_id'}"/>
+                        <filter string="Type" name="groupby_type" domain="[]" context="{'group_by': 'type'}"/>
                     </group>
                 </search>
             </field>
@@ -27,6 +28,7 @@
             <field name="arch" type="xml">
                 <tree string="Factures" decoration-success="state == 'done'" decoration-muted="state == 'cancel'">
                     <field name="name" string="N° Cash"/>
+                    <field name="type"/>
                     <field name="partner_id" string="Client"/>
                     <field name="date" string="Date"/>
                     <field name="price_untaxed" sum="Montant HT" optional="show"/>
@@ -56,6 +58,7 @@
                        />
                         <button name="button_draft" string="Remettre à l'état brouillon" type="object"  attrs="{'invisible' : [('state', '=', 'draft')]}"/>
                         <button name="button_done" string="Valider" type="object"  attrs="{'invisible' : [('state', '!=', 'draft')]}" class="btn-primary"/>
+                        <button name="create_credit" class="oe_highlight" string="Créer un avoir" type="object" attrs="{'invisible': [('type','=','credit')]}"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
                     </header>
                     <sheet>
@@ -67,6 +70,7 @@
 
                         <!-- Invisible fields -->
                         <field name="id" invisible="1"/>
+                        <field name="type" invisible="1"/>
                         <field name="payment_state" invisible="1"/>
                         <group>
                             <group id="header_left_group">

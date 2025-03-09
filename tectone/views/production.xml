@@ -2,18 +2,18 @@
 <odoo>
     <!-- Customers -->
         <record id="res_partner_action_customer" model="ir.actions.act_window">
-        <field name="name">Clients</field>
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">res.partner</field>
-        <field name="view_mode">kanban,tree,form</field>
-        <field name="context">{'search_default_customer': 1,'default_customer': 1, 'default_is_company': True}</field>
-        <field name="domain">[('is_company', '=', True)]</field>
-        <field name="help" type="html">
-          <p class="o_view_nocontent_smiling_face">
-              Créer des clients
-          </p>
-        </field>
-    </record>
+            <field name="name">Clients</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="context">{'search_default_customer': 1,'default_customer': 1, 'default_is_company': True}</field>
+            <field name="domain">[('is_company', '=', True)]</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                  Créer des clients
+              </p>
+            </field>
+        </record>
      <!-- TBD -->
         <record id="production_tbd_form_view" model="ir.ui.view">
             <field name="name">production.tbd.form</field>
@@ -87,7 +87,10 @@
                                 <tr>
                                     <td style="border: 2px solid;text-align: center;" colspan="6">
                                         <field name="livrable_ids" mode="tree" context="{'default_tbd_id': active_id}">
-                                            <tree limit="10000" editable="bottom" create="false" colspan="8">
+                                            <tree limit="10000" editable="bottom" create="false" colspan="8"
+                                                  decoration-success="prev > exe"
+                                                  decoration-danger="exe > prev"
+                                                  decoration-bf="prev == exe">
                                                 <field name="tbd_id" invisible="1"/>
                                                 <field name="modele"/>
                                                 <field name="prev" sum="PREV"/>
@@ -520,7 +523,7 @@
                             <field name="phase_id_visible" invisible="1"/>
                             <field name="type_id_visible" invisible="1"/>
                             <field name="ouvrage_id_visible" invisible="1"/>
-                            <field name="name" attrs="{'invisible': [('affaire_id', '==', False)]}"/>
+                            <field name="name" attrs="{'invisible': [('affaire_id', '==', False)], 'required': [('affaire_id', '!=', False)]}"/>
                             <field name="filename" string="Nom du fichier" invisible="1"/>
                             <field name="file" filename="filename" attrs="{'invisible': [('filename', '==', False)]}"/>
                         </group>
@@ -529,14 +532,16 @@
                                 <group>
                                     <group>
                                         <field name="employee_id" options="{'no_create': True, 'no_open': True}"/>
-                                        <field name="date"/>
                                         <field name="indice"/>
+                                        <field name="date_indice"/>
+                                        <field name="state_crt"/>
+                                        <field name="state_ing"/>
                                     </group>
                                     <group>
+                                        <field name="bordereau_id"/>
                                         <field name="date_bordereau"/>
                                         <field name="date_crt"/>
                                         <field name="date_client"/>
-                                        <field name="bordereau_id" readonly="1" invisible="1"/>
                                     </group>
                                 </group>
                             </page>
@@ -544,13 +549,14 @@
                                 <group>
                                     <fieldset style="border: 1px solid #ddd !important;padding: 0 0.5em 0em 0.5em !important;margin: 0 0 1em 0 !important;">
                                         <legend style="color: #7c7bad;width:inherit;padding:0 2px; border-bottom:none;font-weight: bold ! important;font-size: 14px ! important;margin-bottom: 0px ! important;" >Liste des indices :</legend>
-                                        <button class="btn btn-primary" string="Ajouter des indices" type="object" name="action_add_indices" attrs="{'invisible': [('state', 'not in', ('draft', 'wait', 'return'))]}"/>
+                                        <button class="btn btn-primary" string="Ajouter un nouveau indice" type="object" name="action_add_indices" attrs="{'invisible': [('state', 'not in', ('draft', 'wait', 'return'))]}"/>
                                         <field name="indice_ids" style="overflow-y: auto;max-height: 200px;" colspan="4" nolabel="1" mode="tree" context="{'default_document_id': active_id}" editable="top">
                                             <tree string="Indices" limit="100" editable="bottom" create="false" delete="false">
                                                 <field name="document_id" invisible="1"/>
                                                 <field name="indice"/>
-                                                <field name="date"/>
+                                                <field name="date" attrs="{'readonly': ['|', '|', ('actif', '==', False), ('is_send', '=', True), ('state', 'in', ('ready', 'sent'))]}"/>
                                                 <field name="nature" attrs="{'readonly': ['|', '|', ('actif', '==', False), ('is_send', '=', True), ('state', 'in', ('ready', 'sent'))]}"/>
+                                                <field name="date_client"/>
                                                 <field name="actif"/>
                                                 <field name="is_send" invisible="1"/>
                                                 <field name="state" invisible="1"/>
@@ -700,6 +706,15 @@
             <field name="view_id" ref="production_document_form_view"/>
             <field name="act_window_id" ref="production_document_crt_action"/>
         </record>
+    <!-- Action send to BE for multi
+        <record id="action_production_document_send_crt" model="ir.actions.server">
+            <field name="name">Ajouter au bordereau</field>
+            <field name="model_id" ref="model_production_document"/>
+            <field name="state">code</field>
+            <field name="code">
+                records.action_send_multi()
+            </field>
+        </record>-->
 
     <!-- Bordereau -->
         <record id="production_bordereau_search_view" model="ir.ui.view">
@@ -737,6 +752,7 @@
                     <field name="employee_id" string="Nom et Prénom"/>
                     <field name="manager_id"/>
                     <field name="affaire_id"/>
+                    <field name="directeur_travaux"/>
                     <field name="zones"/>
                     <field name="state"/>
                 </tree>
@@ -752,7 +768,7 @@
                         <button name="action_sent_client" attrs="{'invisible': [('state', '!=', 'sent_crt')]}" class="oe_highlight" string="Envoyer au client" groups="tectone.group_production_transmission,tectone.group_production_admin" type="object" />
                         <!--button name="action_sent_crt" class="oe_highlight" string="Envoyer à la CRT" type="object" groups="tectone.group_production_ingenieur,tectone.group_production_projeteur,tectone.group_production_admin"/-->
                         <!--button name="action_sent_client" class="oe_highlight" string="Envoyer au client" groups="tectone.group_production_transmission,tectone.group_production_admin" type="object" /-->
-                        <button name="action_print" class="fa fa-print" attrs="{'invisible': [('state', 'not in', ['sent_client'])]}" string=" Imprimer" type="object" groups="tectone.group_production_ingenieur,tectone.group_production_transmission,tectone.group_production_admin"/>
+                        <!--<button name="action_print" class="fa fa-print" attrs="{'invisible': [('state', 'not in', ['sent_client'])]}" string=" Imprimer" type="object" groups="tectone.group_production_ingenieur,tectone.group_production_transmission,tectone.group_production_admin"/>-->
                         <field name="state" widget="statusbar" statusbar_visible="draft,sent_crt,sent_client"/>
                     </header>
                     <sheet>
@@ -760,6 +776,7 @@
                             <group>
                                 <field name="name" string="N° Bordereau"/>
                                 <field name="affaire_id" widget="selection"/>
+                                <field name="directeur_travaux"/>
                             </group>
                             <group>
                                 <field name="date"/>
@@ -779,6 +796,7 @@
                                           decoration-primary="state == 'sent_client'">
                                         <field name="bordereau_id" invisible="1"/>
                                         <field name="document_id" widget="many2one" context="{ 'form_view_ref':'tectone.production_document_form_view'}"/>
+                                        <field name="pointage"/>
                                         <field name="validate_ing"/>
                                         <field name="validate_crt"/>
                                         <field name="state" invisible="1"/>

@@ -37,6 +37,7 @@
         'wizard/invoice_cash_payment_register_views.xml',
         'views/sale.xml',
         'views/report_invoice.xml',
+        'views/report_cash.xml',
         'views/report_deliveryslip.xml',
         'views/product_movement.xml',
         'views/sale_report_template.xml',

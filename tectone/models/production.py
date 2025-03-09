@@ -10,7 +10,7 @@ from datetime import datetime
 
 SERVER_ADRESS = 'http://192.168.0.35'
 SERVER_ADRESS = 'http://localhost:8069'
-SERVER_ADRESS = 'http://vps-3c2995a0.vps.ovh.net:8069'
+SERVER_ADRESS = 'https://erp.tectone.ma'
 EMAIL_FROM = 'tectonegroup@outlook.com'
 LOCAL_DIRECTORY = "C://Program Files//Odoo15//server//odoo//addons//web//static//reports"
 LOCAL_DIRECTORY = "C://Users//Yassine//PycharmProjects//cicofap//Scripts//odoo//addons//web//static//reporting//"
@@ -18,6 +18,7 @@ LOCAL_DIRECTORY = "/opt/odoo/odoo/addons/web/static/report"
 LOCAL_REPORTS_DIRECTORY = "/web/static/reports/"
 LOCAL_REPORTS_DIRECTORY = "web/static/reporting/"
 LOCAL_REPORTS_DIRECTORY = "web/static/report/"
+TODAY_DATE = datetime.today().strftime('%Y-%m-%d')
 
 class production_job(models.Model):
     _name = 'production.job'
@@ -140,8 +141,8 @@ class production_document(models.Model):
     file = fields.Binary('Fichier', readonly=True)
     filename = fields.Char('Nom du fichier')
     numero = fields.Char('N° Document', default='001', required=True,  readonly=True, states={'draft': [('readonly', False)], 'wait': [('readonly', False)]}, size=3)
-    indice = fields.Char('Indice', default='00', required=True, readonly=True, sie=2)
-    date = fields.Date('Date création', default=datetime.today(), required=True, readonly=True)
+    indice = fields.Char('Indice actif', default='00', required=True, readonly=True, size=2)
+    date = fields.Date('Date de création', default=TODAY_DATE, required=True, readonly=True)
     employee_id = fields.Many2one('production.employee', 'Nom et Prénom', default=_default_employee, required=True, readonly=True)
     affaire_id = fields.Many2one('production.affaire', 'Affaire', required=True, readonly=True,
                                  states={'draft': [('readonly', False)], 'wait': [('readonly', False)]})
@@ -159,12 +160,16 @@ class production_document(models.Model):
     emetteur_id = fields.Many2one('production.emetteur', 'Emetteur', required=True, readonly=True,
                                   states={'draft': [('readonly', False)], 'wait': [('readonly', False)]},
                                   default=_default_emetteur_id)
-    bordereau_id = fields.Many2one('production.bordereau', 'Bordereau')
+    bordereau_id = fields.Many2one('production.bordereau', 'N° Bordereau', readonly=True)
+    date_indice = fields.Date('Date Indice', readonly=True, default=TODAY_DATE)
+    date_bordereau = fields.Date('Date bordereau', readonly=True)
+    date_crt = fields.Date('Date envoi validation', readonly=True)
+    date_client = fields.Date('Date envoi Client', readonly=True)
+    state_crt = fields.Selection([('validate', 'Validé'), ('refuse', 'Refusé')], 'Validation CRT', readonly=True)
+    state_ing = fields.Selection([('validate', 'Validé'), ('refuse', 'Refusé')], 'Validation RESP', readonly=True)
+    # fields one2many
     indice_ids = fields.One2many('production.document.indice', 'document_id', 'Indices', ondelete='cascade')
     file_ids = fields.One2many('production.document.file', 'document_id', 'Fichiers', ondelete='cascade')
-    date_bordereau = fields.Date('Date bordereau', readonly=True)
-    date_crt = fields.Date('Date envoi CRT', readonly=True)
-    date_client = fields.Date('Date envoi Client', readonly=True)
     note_ids = fields.One2many('production.document.note', 'document_id', 'Notes', readonly=True)
     # visible and required fields
     zone_id_required = fields.Boolean('Zone required', default=True)
@@ -261,7 +266,7 @@ class production_document(models.Model):
         # create indice
         self.env['production.document.indice'].create({'document_id': document.id,
                                                        'nature': 'Première diffusion',
-                                                       'date': datetime.today(),
+                                                       'date': TODAY_DATE,
                                                        'actif': True,
                                                        'indice': "{:02d}".format(0)})
         return document
@@ -317,9 +322,10 @@ class production_document(models.Model):
 
         if not bordereau_obj:
             bordereau_obj = self.env['production.bordereau'].create({'affaire_id': self.affaire_id.id,
+                                                                     'directeur_travaux': self.affaire_id.directeur_travaux,
                                                                      'employee_id': self.employee_id.id,
                                                                      'manager_id': manager_id,
-                                                                     'date': datetime.today()})
+                                                                     'date': TODAY_DATE})
             if employee_obj:
                 if employee_obj.user_id:
                     # send notification to manager
@@ -330,7 +336,7 @@ class production_document(models.Model):
                                                       'document_id': self.id})
         for indice_obj in self.indice_ids:
             indice_obj.write({'state': 'ready'})
-        return self.write({'state': 'ready', 'bordereau_id': bordereau_obj.id, 'date_bordereau': datetime.today()})
+        return self.write({'state': 'ready', 'bordereau_id': bordereau_obj.id, 'date_bordereau': TODAY_DATE})
 
     def action_wait(self):
         bordereau_line_obj = self.env['production.bordereau.line'].search([('document_id', '=', self.id)], order='id desc', limit=1)
@@ -440,7 +446,7 @@ class production_document(models.Model):
                                                           'document_id': self.id})
             for indice_obj in self.indice_ids:
                 indice_obj.write({'state': 'ready'})
-            return self.write({'state': 'ready', 'bordereau_id': bordereau_obj.id, 'date_bordereau': datetime.today()})
+            return self.write({'state': 'ready', 'bordereau_id': bordereau_obj.id, 'date_bordereau': TODAY_DATE})
         else:
             return {
                 "type": "ir.actions.act_window",
@@ -461,12 +467,12 @@ class production_document_indice(models.Model):
     _name = 'production.document.indice'
 
     document_id = fields.Many2one('production.document', 'Document', required=True, ondelete='cascade')
-    date = fields.Date('Date', default=datetime.today(), required=True, readonly=True)
+    date = fields.Date('Date', default=TODAY_DATE, required=True)
     indice = fields.Char('Indice', required=True, size=2, readonly=True)
     nature = fields.Char('Description', required=True)
     actif = fields.Boolean('Actif', default=False, readonly=True)
     is_send = fields.Boolean('Envoyé à CRT', default=False)
-    date_crt = fields.Date('Date envoi CRT')
+    date_crt = fields.Date('Date envoi validation')
     date_client = fields.Date('Date envoi Client')
     state = fields.Selection(
         [('draft', 'Draft'), ('ready', 'ready'), ('sent', 'Sent')], readonly=True, default='draft', copy=False,
@@ -485,12 +491,17 @@ class production_document_indice(models.Model):
 
     def write(self, values):
         indice = values.get('indice', None)
+        date_indice = values.get('date', None)
         if indice:
             if not indice.isnumeric():
                 raise UserError(f"La valeur {indice} saisie pour le champs indice doit être numérique!")
             elif len(indice) != 2:
                 raise UserError(f"La valeur {indice} saisie pour le champs indice doit contenir 2 chiffres!")
-
+        if date_indice:
+            if date_indice > TODAY_DATE:
+                raise UserError("Vous ne pouvez pas créer un indice avec une date supérieure à la date courante!")
+            else:
+                self.document_id.write({'date_indice': date_indice})
         return super(production_document_indice, self).write(values)
 
     def unlink(self):
@@ -518,12 +529,13 @@ class production_document_indice(models.Model):
             return super(production_document_indice, self).unlink()
         return True
 
+
 class production_document_file(models.Model):
     _name = 'production.document.file'
     _order = 'date desc'
 
     document_id = fields.Many2one('production.document', 'Document', required=True, ondelete='cascade')
-    date = fields.Date('Date', default=datetime.today(), required=True, readonly=True)
+    date = fields.Date('Date', default=TODAY_DATE, required=True, readonly=True)
     file = fields.Binary('Fichier', required=True, attachment=False, readonly=True)
     filename = fields.Char('File Name', required=True, readonly=True)
 
@@ -550,7 +562,7 @@ class production_document_note(models.Model):
     _order = 'date desc'
 
     document_id = fields.Many2one('production.document', 'Document', required=True, ondelete='cascade')
-    date = fields.Date('Date', default=datetime.today())
+    date = fields.Date('Date', default=TODAY_DATE)
     user_id = fields.Many2one('res.users', 'Crée par')
     note = fields.Text('Remarque')
 
@@ -562,8 +574,9 @@ class production_bordereau(models.Model):
     _mail_post_access = 'read'  # Specifies the access level required to post messages
 
     name = fields.Char(string="Bordereau", default="*", readonly=True, help="Nom du bordereau")
-    date = fields.Date('Date de création', default=datetime.today(), required=True, readonly=True)
-    date_crt = fields.Date("Date envoi CRT", readonly=True)
+    directeur_travaux = fields.Char('Référent client')
+    date = fields.Date('Date de création', default=TODAY_DATE, required=True, readonly=True)
+    date_crt = fields.Date("Date envoi validation", readonly=True)
     date_client = fields.Date("Date envoi Client", readonly=True)
     order = fields.Char('Numéro')
     zones = fields.Char('Zones')
@@ -571,7 +584,7 @@ class production_bordereau(models.Model):
     employee_id = fields.Many2one('production.employee', 'Employé', required=True, readonly=True)
     manager_id = fields.Many2one('production.employee', 'Responsable', required=True, readonly=True)
     line_ids = fields.One2many('production.bordereau.line', 'bordereau_id', 'lines', readonly=True)
-    state = fields.Selection([('draft', 'Draft'), ('sent_crt', 'Envoyé CRT'), ('sent_client', 'Envoyé Client')],
+    state = fields.Selection([('draft', 'Draft'), ('sent_crt', 'Envoyé RESP/CRT'), ('sent_client', 'Envoyé Client')],
                              readonly=True, default='draft', copy=False,
                              string="Etat", track_visibility='onchange')
 
@@ -620,31 +633,72 @@ class production_bordereau(models.Model):
         emails = ','.join(emails)
         return  emails
 
+    def generate_pdf_attachment_crt(self, document_number):
+        # Générer le rapport PDF à partir du template
+        report_name = "tectone.action_report_bordereau_crt"
+        report = self.env.ref(report_name)
+
+        # Utilisez render_qweb_pdf qui appartient à l'action de rapport
+        pdf_data, _ = report._render_qweb_pdf([self.id])  # Vous devez passer une liste d'IDs
+
+        filename = f"BE-{str(self.affaire_id.number)}-{str(document_number)}.pdf"
+
+        attachment = self.env['ir.attachment'].create({
+            'name': filename,
+            'type': 'binary',
+            'datas': base64.b64encode(pdf_data),
+            'store_fname': filename,
+            'res_model': 'production.bordereau',
+            'res_id': self.ids[0],
+            'mimetype': 'application/pdf'
+        })
+        return attachment.id
+
     def action_sent_crt(self):
         # Check there is at least one document
         if not self.line_ids:
             raise UserError(_("Vous ne pouvez pas envoyer ce bordereau pour validation CRT/Responsable tant qu'aucun document n'y est attaché"))
-
+        documents_to_point = []
+        for line in self.line_ids:
+            if line.pointage == 0:
+                documents_to_point.append(line.document_id.full_name)
+        if len(documents_to_point) > 0:
+            raise UserError(_(f"Vous devez créer un pointage pour la liste des documents suivants {documents_to_point} avant d'envoyer le bordereau pour être validé!"))
+        return
+        #################################### Compute order and name
+        line_obj = self.env['production.bordereau'].search(
+            [('affaire_id', '=', self.affaire_id.id), ('state', '=', 'sent_client')], order='order desc', limit=1)
+        if line_obj:
+            order = line_obj.order
+            if not order:
+                order = 0
+            else:
+                order = int(order)
+        else:
+            order = 0
+        order = "{:03d}".format(order + 1)
+        name = "BE-{}".format(order)
+        ##################################### Update line ids
         for line in self.line_ids:
             line.write({'state': 'sent_crt'})
             #####################
             line_obj = self.env['production.document'].search([('id', '=', line.document_id.id)])
             if line_obj:
-                line_obj.write({'state': 'sent_crt', 'date_crt': datetime.today()})
+                line_obj.write({'state': 'sent_crt', 'date_crt': TODAY_DATE})
             ####################
-            lines_obj = self.env['production.document.indice'].search([('document_id', '=', line.document_id.id),
-                                                                       ('is_send', '=', False)])
-            if lines_obj:
-                for record in lines_obj:
-                    record.write({'is_send': True, 'date_crt': datetime.today()})
-
+            indice_obj = self.env['production.document.indice'].search([('document_id', '=', line.document_id.id), ('actif', '=', True)])
+            if indice_obj:
+                indice_obj.write({'date_crt': TODAY_DATE})
+        #################################### send email
         mail_pool = self.env['mail.mail']
         values = {}
         emails = self.get_emails_sent_crt() # Récupère les e-mails des destinataires
 
         body1 = "<ul>"
         attachment_ids = []
-        attachment_ids.append(self.generate_bordereau_attachement())
+
+        attachment_ids.append(self.generate_pdf_attachment_crt(order))
+
         # Attach documents files
         for rec in self.line_ids:
             body1 += f"<li>{rec.document_id.full_name}</li>"
@@ -702,12 +756,37 @@ class production_bordereau(models.Model):
         # And then call send function of the mail.mail,
         if msg_id:
             mail_pool.send([msg_id])
-        return self.write({'state': 'sent_crt', 'date_crt': datetime.today()})
+        return self.write({'name': name, 'order': order, 'state': 'sent_crt', 'date_crt': TODAY_DATE})
+
+    def generate_pdf_attachment_client(self):
+        # Générer le rapport PDF à partir du template
+        report_name = "tectone.action_report_bordereau_client"
+        report = self.env.ref(report_name)
+
+        # Utilisez render_qweb_pdf qui appartient à l'action de rapport
+        pdf_data, _ = report._render_qweb_pdf([self.id])  # Vous devez passer une liste d'IDs
+
+        filename = "BE-999-001" + time.strftime("%H%M%S") + ".pdf"
+
+        attachment = self.env['ir.attachment'].create({
+            'name': filename,
+            'type': 'binary',
+            'datas': base64.b64encode(pdf_data),
+            'store_fname': filename,
+            'res_model': 'production.bordereau',
+            'res_id': self.ids[0],
+            'mimetype': 'application/pdf'
+        })
+        return attachment.id
 
     def action_sent_client(self):
         line_ids = self.env['production.bordereau.line'].search([('bordereau_id', '=', self.id), ('state', '=', 'sent_crt')])
         if line_ids:
             raise ValidationError(_("Vous ne pouvez pas envoyer ce bordereau tant qu'il y a un document non encore validé"))
+        #############################################
+        line_ids = self.env['production.bordereau.line'].search([('bordereau_id', '=', self.id)])
+        if not line_ids:
+            raise ValidationError(_("Vous ne pouvez pas envoyer ce bordereau qui ne contient aucun document"))
         #############################################
         line_ids = self.env['production.bordereau.line'].search([('bordereau_id', '=', self.id), ('state', '=', 'draft')])
         if line_ids:
@@ -717,25 +796,12 @@ class production_bordereau(models.Model):
         for line in line_ids:
             document_obj = self.env['production.document'].search([('id', '=', line.document_id.id)])
             if document_obj:
-                document_obj.write({'state': 'sent_client', 'date_client': datetime.today()})
+                document_obj.write({'state': 'sent_client', 'date_client': TODAY_DATE})
             ####################
-            lines_obj = self.env['production.document.indice'].search([('document_id', '=', line.document_id.id), ('actif', '=', False)])
-            if lines_obj:
-                for record in lines_obj:
-                    record.write({'is_send': True, 'date_client': datetime.today()})
-        ###################update order and name fields value######################################
-        line_obj = self.env['production.bordereau'].search([('affaire_id','=', self.affaire_id.id), ('state', '=', 'sent_client')], order='order desc', limit=1)
-        if line_obj:
-            order = line_obj.order
-            if not order:
-                order = 0
-            else:
-                order = int(order)
-        else:
-            order = 0
-        order = "{:03d}".format(order + 1)
-        name = "BE-{}".format(order)
-        # Send email
+            indice_obj = self.env['production.document.indice'].search([('document_id', '=', line.document_id.id), ('actif', '=', True)])
+            if indice_obj:
+                indice_obj.write({'is_send': True, 'date_client': TODAY_DATE})
+        ############################################# Send email
         mail_pool = self.env['mail.mail']
         emails = []
         for rec in self.affaire_id.email_ids:
@@ -748,7 +814,7 @@ class production_bordereau(models.Model):
                 emails_cc.append(rec.name)
 
         attachments = []
-        attachments.append(self.generate_bordereau_attachement(order=order, send_crt=True))
+        attachments.append(self.generate_pdf_attachment_client())
         body1 = "<ul>"
         for rec in self.line_ids:
             if rec.state == 'validate':
@@ -773,7 +839,7 @@ class production_bordereau(models.Model):
         body = """<div style="margin: 0px; padding: 0px; font-size: 13px;">
                             Bonjour,
                             <br /><br />
-                            Veuillez trouver ci-joint le bordereau d'envoi BE TECTONE N°"""+str(order)+""" et les pièces jointes correspondant aux documents suivants:
+                            Veuillez trouver ci-joint le bordereau d'envoi BE TECTONE N°"""+str(self.order)+""" et les pièces jointes correspondant aux documents suivants:
                             <br /><br />
                             """ + body1 + """
                             <br />
@@ -782,7 +848,7 @@ class production_bordereau(models.Model):
                             Cordialement,
                     </div>"""
         values = {
-            'subject': f"{self.affaire_id.full_name} - BE N°{order}",
+            'subject': f"{self.affaire_id.full_name} - BE N°{self.order}",
             'email_from': EMAIL_FROM,
             'email_to': emails,
             'email_cc': emails_cc,
@@ -795,7 +861,7 @@ class production_bordereau(models.Model):
         # And then call send function of the mail.mail,
         if msg_id:
             mail_pool.send([msg_id])
-        return self.write({'name': name, 'order': order, 'state': 'sent_client', 'date_client': datetime.today()})
+        return self.write({'state': 'sent_client', 'date_client': TODAY_DATE})
 
     def get_return(self, fichier):
         url = LOCAL_REPORTS_DIRECTORY + fichier
@@ -895,10 +961,19 @@ class production_bordereau_line(models.Model):
     note_crt = fields.Text('Note CRT')
     validate_ing = fields.Boolean("Validé par l'ingénieur?", default=False)
     validate_crt = fields.Boolean("Validé par la CRT?", default=False)
+    pointage = fields.Float(compute='_compute_nb_hour', string="Pointage(h)")
     state = fields.Selection(
-        [('draft', 'Draft'), ('sent_crt', 'Envoyé CRT'), ('validate', 'Validé'), ('return', 'Retour Prod'),
+        [('draft', 'Draft'), ('sent_crt', 'Envoyé RESP/CRT'), ('validate', 'Validé'), ('return', 'Retour Prod'),
          ('wait', 'En attente'), ('sent_client', 'Envoyé Client')], readonly=True, default='draft', copy=False,
         string="Etat")
+
+    def _compute_nb_hour(self):
+        for record in self:
+            nb_hour = 0
+            pointage_ids = self.env['production.pointage.line'].search([('document_id', '=', record.document_id.id)])
+            for line in pointage_ids:
+                nb_hour += line.hour
+            record.pointage = nb_hour
 
     def action_cancel_ing(self):
         note_ing = self.note_ing if self.note_ing else ''
@@ -906,9 +981,9 @@ class production_bordereau_line(models.Model):
         if document_id:
             self._cr.execute('''Insert into production_document_note(document_id,user_id,date,note) 
                                    values({}, {}, '{}', '{}')'''.format(self.document_id.id, self.env.user.id,
-                                                                        datetime.today(), note_ing))
+                                                                        TODAY_DATE, note_ing))
             self._cr.commit()
-            document_id.write({'state': 'return'})
+            document_id.write({'state': 'return', 'state_ing': 'refuse'})
 
         body_refus = f"Commentaires du refus :</br> {note_ing}"
         self.send_email_validation('Refus Ingénieur', 'refusé', body_refus)
@@ -920,9 +995,9 @@ class production_bordereau_line(models.Model):
         if document_id:
             self._cr.execute('''Insert into production_document_note(document_id,user_id,date,note) 
                                    values({}, {}, '{}', '{}')'''.format(self.document_id.id, self.env.user.id,
-                                                                        datetime.today(), note_crt))
+                                                                        TODAY_DATE, note_crt))
             self._cr.commit()
-            document_id.write({'state': 'wait'})
+            document_id.write({'state': 'wait', 'state_crt': 'refuse'})
         body_refus = f"Commentaires du refus :</br> {note_crt}"
         self.send_email_validation('Refus CRT', 'refusé', body_refus)
         return self.write({'state': 'wait'})
@@ -932,6 +1007,11 @@ class production_bordereau_line(models.Model):
             self.write({'state': 'validate', 'validate_ing': True})
         else:
             self.write({'validate_ing': True})
+        # Update document state_ing field
+        document_id = self.env['production.document'].search([('id', '=', self.document_id.id)])
+        if document_id:
+            document_id.write({'state_ing': 'validate'})
+        # Send Email
         self.send_email_validation('Validation Ingénieur', 'validé')
         return True
 
@@ -940,6 +1020,11 @@ class production_bordereau_line(models.Model):
             self.write({'state': 'validate', 'validate_crt': True})
         else:
             self.write({'validate_crt': True})
+        # Update document state_crt field
+        document_id = self.env['production.document'].search([('id', '=', self.document_id.id)])
+        if document_id:
+            document_id.write({'state_crt': 'validate'})
+        # Send Email
         self.send_email_validation('Validation CRT', 'validé')
         return True
 
@@ -1155,7 +1240,7 @@ class production_pointage(models.Model):
         return False
 
     name = fields.Char(string="N°", default="*", readonly=True, help="Pointage")
-    date = fields.Date('Date', required=True, default=datetime.today(), readonly=True,
+    date = fields.Date('Date', required=True, default=TODAY_DATE, readonly=True,
                        states={'draft': [('readonly', False)]})
     employee_id = fields.Many2one('production.employee', 'Nom et Prénom', default=_default_employee, required=True,
                                   readonly=True)
@@ -1169,6 +1254,9 @@ class production_pointage(models.Model):
     @api.model
     def create(self, values):
         values['name'] = self.env['ir.sequence'].get('production.pointage') or ' '
+        create_date = values.get('date')
+        if create_date > TODAY_DATE:
+            raise UserError("Vous ne pouvez pas créer un pointage avec une date supérieure à la date courante!")
         res = super(production_pointage, self).create(values)
         return res
 

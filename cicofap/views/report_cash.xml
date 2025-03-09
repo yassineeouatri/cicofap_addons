@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="report_cash_document">
+            <t t-call="web.external_layout">
+                <t t-set="o" t-value="o.with_context(lang=lang)"/>
+                <div class="page">
+                    <div id="informations" class="row mt32 mb32 mb-4">
+                    <div class="col-6" name="reference">
+                        <div class="mb-4" style="background:#ECECEC;padding:15px 10px;height: 50px;">
+                          <h5>
+                              <strong>Cash N°: </strong><span t-if="o.name != '/'" t-field="o.name"/>
+                          </h5>
+                        </div>
+                        <table class="table table-sm o_main_table" style="background:#FFF;border:1px solid #495057">
+                          <tr style="background:#ECECEC;border:1px solid #495057">
+                            <td style="background:#ECECEC;border:1px solid #495057"><strong>Date</strong></td>
+                            <td style="background:#FFF;border:1px solid #495057"><span t-field="o.date"/></td>
+                          </tr>
+                          <tr style="background:#ECECEC;border:1px solid #495057">
+                            <td style="background:#ECECEC;color:#495057;border:1px solid #495057"><strong>Bon de commande n°</strong></td>
+                            <td style="background:#FFF;color:#495057;border:1px solid #495057"><span t-field="o.order_id.name"/></td>
+                          </tr>
+                        </table>
+                    </div>
+
+                    <div class="col-6" name="invoice_date">
+                        <div style="background:#ECECEC;padding:15px 10px">
+                            <span>Casablanca le : <t t-esc="time.strftime('%d/%m/%Y')"/></span>
+                        </div>
+                        <div style="background:#ECECEC;padding:15px 10px">
+                            <p t-if="o.partner_id.ref"><strong>Code Client:</strong> <span t-if="o.partner_id.ref" t-field="o.partner_id.ref"/></p>
+                            <span class="m-0" t-field="o.partner_id.name"/><br />
+                            <span class="m-0" t-if="o.partner_id.street" t-field="o.partner_id.street"/><span class="m-0" t-if="o.partner_id.street2" t-field="o.partner_id.street2"/><span class="m-0" t-if="o.partner_id.zip" t-field="o.partner_id.zip"/>
+                            <span t-if="o.partner_id.city"><br /> <span class="m-0" t-if="o.partner_id.city" t-field="o.partner_id.city"/></span>
+                            <span t-if="o.partner_id.phone"><br /> <strong>Tel:</strong> <span t-field="o.partner_id.phone"/></span>
+                            <span t-if="o.partner_id.hrsft_ice"><br /><strong>ICE:</strong>  <span  t-if="o.partner_id.hrsft_ice" t-field="o.partner_id.hrsft_ice"/></span>
+                            <address style="display:none" />
+                        </div>
+                    </div>
+                  </div>
+
+                    <t t-set="display_discount" t-value="any(l.discount for l in o.line_ids)"/>
+
+                    <table class="table table-sm o_main_table mb-2" name="invoice_line_table">
+                    <thead>
+                      <tr>
+                          <td name="th_description" class="text-left" style="background:#FFF;border:1px solid #495057"><span>Référence</span></td>
+                          <td name="th_description" class="text-left" style="background:#FFF;border:1px solid #495057"><span>Désignation</span></td>
+                          <td name="th_quantity" class="text-center" style="background:#FFF;border:1px solid #495057"><span>Qté</span></td>
+                          <td name="th_priceunit" t-attf-class="text-center {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}" style="background:#FFF;border:1px solid #495057"><span>P.U T.T.C</span></td>
+                          <td name="th_price_unit" t-if="display_discount" t-attf-class="text-right {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}" style="background:#FFF;border:1px solid #495057">
+                              <span>Disc.%</span>
+                          </td>
+                          <td name="th_total" class="text-center" style="background:#FFF;border:1px solid #495057">
+                              <span>Total T.T.C</span>
+                          </td>
+                      </tr>
+                    </thead>
+                        <tbody class="invoice_tbody">
+                            <t t-set="current_subtotal" t-value="0"/>
+                            <t t-set="lines" t-value="o.line_ids.sorted(key=lambda l: (l.date, -l.id), reverse=True)"/>
+
+                            <t t-foreach="lines" t-as="line">
+                                <t t-set="current_subtotal" t-value="current_subtotal + line.price_untaxed"/>
+
+                                <tr t-att-class="'bg-200 font-weight-bold'">
+                                   <td name="account_invoice_line_name" style="background:#FFF;border:1px solid #495057;">
+                                      <span t-field="line.product_id.code"/>
+                                    </td>
+                                    <td name="account_invoice_line_name" style="background:#FFF;border:1px solid #495057;">
+                                      <span t-field="line.product_id.name"/>
+                                    </td>
+                                    <td class="text-center" style="background:#FFF;border:1px solid #495057;">
+                                        <span t-field="line.quantity"/>
+                                    </td>
+                                    <td t-attf-class="text-right {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}" style="background:#FFF;border:1px solid #495057;">
+                                        <span t-field="line.price_unit" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}" />
+                                    </td>
+                                    <td t-if="display_discount" t-attf-class="text-right {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}" style="background:#FFF;border:1px solid #495057;">
+                                        <span class="text-nowrap" t-field="line.discount"/>
+                                    </td>
+                                    <td class="text-right o_price_total" style="background:#FFF;border:1px solid #495057;">
+                                        <span t-field="line.price_total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+                                    </td>
+                                </tr>
+
+                                <!--t t-if="current_section and (line_last or lines[line_index+1].display_type == 'line_section')">
+                                    <tr class="is-subtotal text-right">
+                                        <td colspan="99">
+                                            <strong class="mr16">Subtotal</strong>
+                                            <span t-esc="current_subtotal" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+                                        </td>
+                                    </tr>
+                                </t-->
+                            </t>
+                        </tbody>
+                    </table>
+                    <div class="clearfix">
+                          <div id="total" class="row mb-2">
+                            <div class="col-sm-7 col-md-6 ml-auto">
+                              <table class="table table-sm">
+                                  <tr class="border-black">
+                                      <td style="background:#ECECEC;border:1px solid #495057;">Total HT</td>
+                                      <td class="text-right" style="background:#FFF;border:1px solid #495057;"><span t-field="o.price_untaxed" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/></td>
+                                  </tr>
+                                   <tr class="border-black">
+                                      <td style="background:#ECECEC;border:1px solid #495057;">TVA</td>
+                                      <td class="text-right" style="background:#FFF;border:1px solid #495057;"><span t-field="o.price_tax" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/></td>
+                                  </tr>
+                                  <tr class="border-black">
+                                      <td style="background:#ECECEC;border:1px solid #495057;"><strong>TOTAL TTC</strong></td>
+                                      <td class="text-right" style="background:#FFF;border:1px solid #495057;color:#000"><strong><span t-field="o.price_total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/></strong></td>
+                                  </tr>
+                              </table>
+                            </div>
+                          </div>
+                    </div>
+                    <div class="col-6" name="price_text">
+                        <div style="background:#ECECEC;padding:15px 10px">
+                            <span t-field="o.price_text"/>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+        <template id="report_cash">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-set="lang" t-value="o.partner_id.lang"/>
+                    <t t-call="cicofap.report_cash_document" t-lang="lang"/>
+                </t>
+            </t>
+        </template>
+        <!-- QWeb Reports -->
+        <record id="account_invoices1" model="ir.actions.report">
+            <field name="name">Cash</field>
+            <field name="model">invoice.cash</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">cicofap.report_cash</field>
+            <field name="report_file">cicofap.report_cash</field>
+            <field name="print_report_name">(object._get_report_base_filename())</field>
+            <field name="attachment">(object.state == 'posted') and ((object.name or 'INV').replace('/','_')+'.pdf')</field>
+            <field name="binding_model_id" ref="cicofap.model_invoice_cash"/>
+            <field name="binding_type">report</field>
+        </record>
+
+    </data>
+</odoo>

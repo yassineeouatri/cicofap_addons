@@ -55,5 +55,5 @@ access_production_tbd_document_admin,production.tbd.document admin,model_product
 access_production_reunion_admin,production.reunion admin,model_production_reunion,tectone.group_production_admin,1,1,1,1
 access_production_bordereau_admin,production.bordereau admin,model_production_bordereau,tectone.group_production_admin,1,1,1,1
 access_res_partner_admin,res.partner admin,base.model_res_partner,tectone.group_production_admin,1,1,1,1
-access_production_report_admin,production_report admin,model_production_report,tectone.group_production_admin,1,1,1,1
+access_production_report_print_admin,production_report_print admin,model_production_report_print,tectone.group_production_admin,1,1,1,1
 access_res_users_admin,res.users admin,base.model_res_users,tectone.group_production_admin,1,1,1,1

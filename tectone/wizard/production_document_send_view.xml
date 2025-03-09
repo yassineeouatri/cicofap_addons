@@ -2,9 +2,9 @@
 <odoo>
     <data>
 
-        <!--Account Move lines-->
+        <!--Production document add to bordereau-->
         <record id="production_documents_send_view" model="ir.ui.view">
-            <field name="name">Envoyer les documents</field>
+            <field name="name">Ajouter les documents</field>
             <field name="model">production.document.send</field>
             <field name="arch" type="xml">
                 <form string="Documents">
@@ -21,7 +21,7 @@
             </field>
         </record>
         <record id="production_document_send_view" model="ir.ui.view">
-            <field name="name">Envoyer les documents</field>
+            <field name="name">Ajouter le document</field>
             <field name="model">production.document.send</field>
             <field name="arch" type="xml">
                 <form string="Documents">
@@ -50,6 +50,5 @@
             <field name="binding_model_id" ref="tectone.model_production_document" />
             <field name="binding_view_types">list</field>
         </record>
-
     </data>
 </odoo>

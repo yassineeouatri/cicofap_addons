@@ -7,8 +7,8 @@ from datetime import  datetime, date
 import calendar
 
 current_year = datetime.now().year
-start_date = datetime.strptime(f"{current_year}-01-01", "%Y-%m-%d").date()
-end_date = datetime.strptime(f"{current_year}-12-31", "%Y-%m-%d").date()
+year_start_date = datetime.strptime(f"{current_year}-01-01", "%Y-%m-%d").date()
+year_end_date = datetime.strptime(f"{current_year}-12-31", "%Y-%m-%d").date()
 
 import calendar
 
@@ -79,7 +79,6 @@ class SaleOrder(models.Model):
                 ['order_id', 'invoice_status'],
                 ['order_id', 'invoice_status'], lazy=False)]
         for order in confirmed_orders:
-            print(1)
             line_invoice_status = [d[1] for d in line_invoice_status_all if d[0] == order.id]
             if order.state not in ('sale', 'done'):
                 order.invoice_status = 'no'
@@ -163,15 +162,6 @@ class product_commercial(models.Model):
                             ('date_order', '<=', month_end_date_string)]
         return action
 
-    def action_view_payment(self):
-        self.ensure_one()
-        action = self.env["ir.actions.actions"]._for_xml_id("account.action_account_payments")
-        ids = []
-        for partner in self.partner_ids:
-            ids.append((partner.id))
-        action['domain'] = [('partner_id', '=', ids)]
-        return action
-
     @api.depends('sale_order_ids')
     def _compute_sale_order_count(self):
         for partner in self:
@@ -211,6 +201,7 @@ class product_commercial(models.Model):
             for _invoice in _invoices:
                 for _invoice_line in _invoice.invoice_line_ids:
                     total_invoiced += _invoice_line.price_total
+
             # compute total invoiced monthly
             _invoices = []
             for order in record.sale_order_ids:
@@ -225,7 +216,7 @@ class product_commercial(models.Model):
             # compute total invoiced year
             _invoices = []
             for order in record.sale_order_ids:
-                if order.date_order and start_date <= order.date_order.date() <= end_date:
+                if order.date_order and year_start_date <= order.date_order.date() <= year_end_date:
                     invoices = order.order_line.invoice_lines.move_id.filtered(
                         lambda r: r.move_type in ('out_invoice', 'out_refund'))
                     _invoices.extend(invoices)
@@ -237,7 +228,7 @@ class product_commercial(models.Model):
                 for payment in self.env['account.payment'].search([('partner_id', '=', partner.id), ('state', '=', 'posted')]):
                     if payment.invoice_date and month_start_date <= payment.invoice_date <= month_end_date:
                         month_total_invoiced_payed += payment.amount
-                    if payment.invoice_date and start_date <= payment.invoice_date <= end_date:
+                    if payment.invoice_date and year_start_date <= payment.invoice_date <= year_end_date:
                         year_total_invoiced_payed += payment.amount
                     total_invoiced_payed += payment.amount
 
@@ -256,7 +247,7 @@ class product_commercial(models.Model):
                     if _cash.date and month_start_date <= _cash.date <= month_end_date:
                         month_total_cashed += _cash.price_total
                         month_total_cash_payed += _cash.price_payed
-                    if _cash.date and start_date <= _cash.date <= end_date:
+                    if _cash.date and year_start_date <= _cash.date <= year_end_date:
                         year_total_cashed += _cash.price_total
                         year_total_cash_payed += _cash.price_payed
                     total_cashed += _cash.price_total
@@ -288,14 +279,26 @@ class product_commercial(models.Model):
         }
         return result
 
+    def action_view_invoice_payments(self):
+        self.ensure_one()
+        action = self.env["ir.actions.actions"]._for_xml_id("account.action_account_payments")
+        _invoices = []
+        for order in self.sale_order_ids:
+            if order.date_order and month_start_date <= order.date_order.date() <= month_end_date:
+                invoices = order.order_line.invoice_lines.move_id.filtered(
+                    lambda r: r.move_type in ('out_invoice', 'out_refund'))
+                _invoices.extend(invoices)
+        invoice_ids = [_invoice.id for _invoice in _invoices]
+        action['domain'] = [('move_id', '=', invoice_ids)]
+        return action
+
     def action_view_cash(self):
         self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id("cicofap.action_invoice_cash")
         _cashs = []
         for order in self.sale_order_ids:
             for cash in order.cash_ids:
-                if cash.date and month_start_date <= cash.date <= month_end_date:
-                    _cashs.append(cash)
+                _cashs.append(cash)
         cash_ids = [_cash.id for _cash in _cashs]
         action['domain'] = [('id', 'in', cash_ids)]
         action['context'] = {'search_default_filter_current_month': True, 'search_default_filter_done': True}
@@ -307,8 +310,7 @@ class product_commercial(models.Model):
         _cashs = []
         for order in self.sale_order_ids:
             for cash in order.cash_ids:
-                if cash.date and month_start_date <= cash.date <= month_end_date:
-                    _cashs.append(cash)
+                _cashs.append(cash)
         cash_ids = [_cash.id for _cash in _cashs]
         action['domain'] = [('cash_id', 'in', cash_ids)]
         action['context'] = {'search_default_filter_current_month': True, 'search_default_filter_posted': True}
