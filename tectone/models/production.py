@@ -1394,12 +1394,12 @@ class production_tbd(models.Model):
     percentage_billed = fields.Float('% Facturé', readonly=False)
     percentage_payed = fields.Float('% Payé', readonly=False)
     currency_id = fields.Many2one('res.currency', readonly=False, string='Devise')
-    livrable_ids = fields.One2many('production.tbd.livrable', 'tbd_id', 'Livrables', readonly=True)
-    livrable_time_ids = fields.One2many('production.tbd.livrable.time', 'tbd_id', 'Livrables', readonly=True)
-    other_ids = fields.One2many('production.tbd.other', 'tbd_id', 'Autres', readonly=True)
-    other_time_ids = fields.One2many('production.tbd.other.time', 'tbd_id', 'Autres', readonly=True)
-    ratio_ids = fields.One2many('production.tbd.ratio', 'tbd_id', 'ratios', readonly=True)
-    document_ids = fields.One2many('production.tbd.document', 'tbd_id', 'Documents', readonly=True)
+    livrable_ids = fields.One2many('production.tbd.livrable', 'tbd_id', 'Livrables', readonly=False)
+    livrable_time_ids = fields.One2many('production.tbd.livrable.time', 'tbd_id', 'Livrables', readonly=False)
+    other_ids = fields.One2many('production.tbd.other', 'tbd_id', 'Autres', readonly=False)
+    other_time_ids = fields.One2many('production.tbd.other.time', 'tbd_id', 'Autres', readonly=False)
+    ratio_ids = fields.One2many('production.tbd.ratio', 'tbd_id', 'ratios', readonly=False)
+    document_ids = fields.One2many('production.tbd.document', 'tbd_id', 'Documents', readonly=False)
 
     # -------------------------------------------------------------------------
     # ONCHANGE METHODS
@@ -1549,6 +1549,20 @@ class production_tbd(models.Model):
             self.other_time_ids = other_time_ids
             self.ratio_ids = ratio_ids
             self.document_ids = document_ids
+
+    def _get_report_base_filename(self):
+        self.ensure_one()
+        return 'TBD - %s' % (self.affaire_id.full_name)
+
+    def action_print_report_tbd(self):
+        # Vérifier si l'affaire est définie
+        if not self.affaire_id:
+            raise UserError('Veuillez sélectionner une affaire pour générer le rapport.')
+
+        docs = self.env['res.company'].browse(self.env.company.id)
+
+        return self.env.ref('tectone.action_report_tbd_html').report_action(self)
+
 
 class production_tbd_livrable(models.Model):
     _name = 'production.tbd.livrable'

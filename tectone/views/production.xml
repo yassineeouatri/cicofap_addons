@@ -25,7 +25,7 @@
                             <field name="affaire_id" options="{'no_open': True, 'no_create': True}"></field>
                             <field name="currency_id" invisible="1"/>
                         </group>
-                        <table style="width:100%;table-layout: fixed;">
+                        <table style="width:100%;table-layout: fixed;display: none">
                             <tbody>
                                 <tr><td style="border: 2px solid;text-align: center;background-color: beige;" colspan="8"><strong>DONNEES DIRECTION FINANCIERE</strong></td></tr>
                                 <tr><td style="border: 2px solid;text-align: center;" colspan="8"></td></tr>
@@ -156,6 +156,10 @@
 
                             </tbody>
                         </table>
+                        <footer>
+                            <button string="Imprimer" name="action_print_report_tbd" type="object" default_focus="1" class="btn-primary"/>
+                            <button string="Annuler" class="btn-secondary" special="cancel"/>
+                        </footer>
                     </sheet>
                 </form>
             </field>

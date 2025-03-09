@@ -490,8 +490,6 @@ class ProductionPrintReport(models.AbstractModel):
 
     @api.model
     def _get_report_values(self, docids, data=None):
-        print('data')
-        print(data)
 
         return {
             'doc_ids': docids,

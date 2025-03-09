@@ -46,6 +46,44 @@
             </div>
         </xpath>
     </template>
+    <template id="external_layout_standard_simple_tectone" inherit_id="web.external_layout_standard">
+        <!-- Custom Header-->
+        <xpath expr="//div[1]" position="replace">
+            <t t-if="not o" t-set="o" t-value="doc"/>
+
+            <t t-if="not company">
+                <!-- Multicompany -->
+                <t t-if="company_id">
+                    <t t-set="company" t-value="company_id"/>
+                </t>
+                <t t-elif="o and 'company_id' in o and o.company_id.sudo()">
+                    <t t-set="company" t-value="o.company_id.sudo()"/>
+                </t>
+                <t t-else="else">
+                    <t t-set="company" t-value="res_company"/>
+                </t>
+            </t>
+            <div t-attf-class="header o_company_#{company.id}_layout" t-att-style="report_header_style">
+                <div class="row">
+                    <div class="col-3 mb4">
+                        <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="max-height: 100px;" alt="Logo"/>
+                    </div>
+                    <div class="col-9"></div>
+                </div>
+            </div>
+        </xpath>
+        <!-- Custom footer -->
+        <xpath expr="//div/div[hasclass('text-center')]" position="replace">
+            <div class="text-center" style="border-top: 1px solid black;font-size:12px;margin-top: -30px;">
+                <ul class="list-inline mb4 text-nowrap">
+                    <li><strong>TECTONE S.A.R.L</strong></li>
+                    <li>Siège social : Lotissement Attaoufik Zénith II Sidi Mâarouf - 20 001 CASABLANCA</li>
+                    <li>Tél : +212(0) 5 22 32 15 51/52 – Fax : +212(0) 5 22 32 10 44 – E-Mail : contact@tectonegroup.com</li>
+                    <li>R.C. Casa 55793 – C.N.S.S. 2026492 – ICE – 001617533000083 - I.F. N°01020675 –– Patente : 36102629</li>s
+                </ul>
+            </div>
+        </xpath>
+    </template>
     <!-- CRT Report -->
     <template id="report_production_bordereau_document_crt">
          <t t-call="tectone.external_layout_standard_tectone">
@@ -419,6 +457,203 @@
         <field name="report_file">tectone.report_finance_html</field>
         <field name="print_report_name">Relevé</field>
         <field name="binding_model_id" ref="model_report_tectone_report_production_print"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- TBD report -->
+    <template id="report_production_tbd_document">
+        <t t-call="tectone.external_layout_standard_simple_tectone">
+            <t t-set="o" t-value="o.with_context(lang=lang)" />
+            <div class="page" t-attf-style="font-size:14px;">
+                <table style="width:100%;table-layout: fixed">
+                    <tbody>
+                        <tr><td style="border: 2px solid;text-align: center;background-color: beige;" colspan="8"><strong>DONNEES DIRECTION FINANCIERE</strong></td></tr>
+                        <tr><td style="border: 2px solid;text-align: center;" colspan="8"></td></tr>
+                        <tr>
+                            <td style="border: 2px solid;text-align: center;" colspan="4"><strong>CONTRAT</strong></td>
+                            <td style="border: 2px solid;text-align: center;" colspan="4"><strong>FACTURATION</strong></td>
+                        </tr>
+                        <tr>
+                            <td style="border: 2px solid;text-align: center;" colspan="2"><strong>MONTANT CONTRAT</strong></td>
+                            <td style="border: 2px solid;text-align: center;" colspan="2"><strong>MONTANT AVENANT</strong></td>
+                            <td style="border: 2px solid;text-align: center;" colspan="2"><strong>MONTANT FACTURE</strong></td>
+                            <td style="border: 2px solid;text-align: center;" colspan="2"><strong>MONTANT PAYE</strong></td>
+                        </tr>
+                        <tr>
+                            <t t-if="o.affaire_id.currency_id">
+                                <td style="border: 2px solid;text-align: center;" colspan="2"><span t-field="o.amount_contract" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.affaire_id.currency_id}"/></td>
+                                <td style="border: 2px solid;text-align: center;" colspan="2"><span t-field="o.amount_avenant" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.affaire_id.currency_id}"/></td>
+                                <td style="border: 2px solid;text-align: center;" colspan="2"><span t-field="o.amount_billed" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.affaire_id.currency_id}"/></td>
+                                <td style="border: 2px solid;text-align: center;" colspan="2"><span t-field="o.amount_payed" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.affaire_id.currency_id}"/></td>
+                            </t>
+                            <t t-else="else">
+                                <td style="border: 2px solid;text-align: center;" colspan="2"><span t-field="o.amount_contract"/></td>
+                                <td style="border: 2px solid;text-align: center;" colspan="2"><span t-field="o.amount_avenant"/></td>
+                                <td style="border: 2px solid;text-align: center;" colspan="2"><span t-field="o.amount_billed"/></td>
+                                <td style="border: 2px solid;text-align: center;" colspan="2"><span t-field="o.amount_payed"/></td>
+                            </t>
+                        </tr>
+                        <tr><td style="border: 2px solid;text-align: center;" colspan="8"></td></tr>
+                        <tr>
+                            <td style="border: 2px solid;text-align: center;" colspan="8"><strong>RECAPITULATIF</strong></td>
+                        </tr>
+                        <tr>
+                            <td style="border: 2px solid;text-align: center;" colspan="2"><strong>% MF / (MC + AV)</strong></td>
+                            <td style="border: 2px solid;text-align: center;" colspan="2"><strong>% MP/MF</strong></td>
+                            <td style="border: 2px solid;text-align: center;" colspan="4"><strong>DOCUMENTS</strong></td>
+                        </tr>
+                        <tr>
+                            <td style="border: 2px solid;text-align: center;" colspan="2"><span t-field="o.percentage_billed" t-options="{&quot;widget&quot;: &quot;percentage&quot;}"/></td>
+                            <td style="border: 2px solid;text-align: center;" colspan="2"><span t-field="o.percentage_payed" t-options="{&quot;widget&quot;: &quot;percentage&quot;}"/></td>
+                            <td style="border: 2px solid;text-align: center;" colspan="4">
+                                <table style="width:100%;table-layout: fixed">
+                                    <tbody>
+                                        <t t-foreach="o.document_ids" t-as="document">
+                                            <tr>
+                                                <td><span t-field="document.filename"/></td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr><td style="border: 2px solid;text-align: center;" colspan="8"></td></tr>
+                        <tr>
+                            <td style="border: 2px solid;text-align: center;background-color: grey;" colspan="6"><strong>DONNEES COMPTAGE CRT</strong></td>
+                            <td style="border: 2px solid;text-align: center;background-color: orange;" colspan="2"><strong>DONNEES PRODUCTION</strong></td>
+                        </tr>
+                        <tr><td style="border: 2px solid;text-align: center;" colspan="8"></td></tr>
+                        <tr>
+                            <td style="border: 2px solid;text-align: center;" colspan="6"><strong>LIVRABLES</strong></td>
+                            <td style="border: 2px solid;text-align: center;" colspan="2"><strong>TEMPS PASSES</strong></td>
+                        </tr>
+                        <tr>
+                            <td style="border: 2px solid;text-align: center;" colspan="6">
+                                <table style="width:100%;table-layout: fixed">
+                                    <thead>
+                                        <tr>
+                                            <td style="text-align: center;"><strong>MODELE</strong></td>
+                                            <td style="text-align: center;"><strong>PREV</strong></td>
+                                            <td style="text-align: center;"><strong>EXE</strong></td>
+                                            <td style="text-align: center;"><strong>INDICE</strong></td>
+                                            <td style="text-align: center;"><strong>%</strong></td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="o.livrable_ids" t-as="livrable">
+                                            <tr t-att-class="'table-success' if livrable.prev > livrable.exe else 'table-danger' if livrable.exe > livrable.prev else 'table-light'">
+                                                <td><span t-field="livrable.modele"/></td>
+                                                <td><span t-field="livrable.prev"/></td>
+                                                <td><span t-field="livrable.exe"/></td>
+                                                <td><span t-field="livrable.indice"/></td>
+                                                <td><span t-field="livrable.percentage"/></td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </td>
+                            <td style="border: 2px solid;text-align: center;" colspan="2">
+                                <table style="width:100%;table-layout: fixed">
+                                    <thead>
+                                        <tr>
+                                            <td style="text-align: center;"><strong>H.ING</strong></td>
+                                            <td style="text-align: center;"><strong>H.PROJ</strong></td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="o.livrable_time_ids" t-as="livr_time">
+                                            <tr>
+                                                <td><span t-field="livr_time.h_ing"/></td>
+                                                <td><span t-field="livr_time.h_proj"/></td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr><td style="border: 2px solid;text-align: center;" colspan="8"></td></tr>
+                        <tr>
+                            <td style="border: 2px solid;text-align: center;" colspan="6"><strong>AUTRES</strong></td>
+                            <td style="border: 2px solid;text-align: center;" colspan="2"><strong>TEMPS PASSES</strong></td>
+                        </tr>
+                        <tr>
+                            <td style="border: 2px solid;text-align: center;" colspan="6">
+                                <table style="width:100%;table-layout: fixed">
+                                    <thead>
+                                        <tr>
+                                            <td style="text-align: center;"><strong>MODELE</strong></td>
+                                            <td style="text-align: center;"><strong>PREV</strong></td>
+                                            <td style="text-align: center;"><strong>EXE</strong></td>
+                                            <td style="text-align: center;"><strong>INDICE</strong></td>
+                                            <td style="text-align: center;"><strong>%</strong></td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="o.other_ids" t-as="livrable">
+                                            <tr>
+                                                <td><span t-field="livrable.modele"/></td>
+                                                <td><span t-field="livrable.prev"/></td>
+                                                <td><span t-field="livrable.exe"/></td>
+                                                <td><span t-field="livrable.indice"/></td>
+                                                <td><span t-field="livrable.percentage"/></td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </td>
+                            <td style="border: 2px solid;text-align: center;" colspan="2">
+                                <table style="width:100%;table-layout: fixed">
+                                    <thead>
+                                        <tr>
+                                            <td style="text-align: center;"><strong>H.ING</strong></td>
+                                            <td style="text-align: center;"><strong>H.PROJ</strong></td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="o.other_time_ids" t-as="livr_time">
+                                            <tr>
+                                                <td><span t-field="livr_time.h_ing"/></td>
+                                                <td><span t-field="livr_time.h_proj"/></td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr><td style="border: 2px solid;text-align: center;" colspan="8"></td></tr>
+                        <tr><td style="border: 2px solid;text-align: center;background-color: green;" colspan="8"><strong>RATIOS PRODUCTION</strong></td></tr>
+                        <tr><td style="border: 2px solid;text-align: center;" colspan="8"></td></tr>
+                        <tr><td style="border: 2px solid;text-align: center;" colspan="8"><strong>RATIOS PAR TRAITANT</strong></td></tr>
+                        <tr>
+                            <td style="border: 2px solid;text-align: center;" colspan="4"><strong>Nom et Prénom</strong></td>
+                            <td style="border: 2px solid;text-align: center;" colspan="4"><strong>H.PROD</strong></td>
+                        </tr>
+                        <t t-foreach="o.ratio_ids" t-as="ratio">
+                            <tr>
+                                <td style="border: 2px solid;text-align: center;" colspan="4"><span t-field="ratio.employee_id.name"/></td>
+                                <td style="border: 2px solid;text-align: center;" colspan="4"><span t-field="ratio.h_prod"/></td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+    </template>
+    <template id="report_tbd_html">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="tectone.report_production_tbd_document"/>
+            </t>
+        </t>
+    </template>
+    <record id="action_report_tbd_html" model="ir.actions.report">
+        <field name="name">TBD</field>
+        <field name="model">production.tbd</field>
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">tectone.report_tbd_html</field>
+        <field name="report_file">tectone.report_tbd_html</field>
+        <field name="print_report_name">(object._get_report_base_filename())</field>
+        <field name="binding_model_id" ref="model_production_tbd"/>
         <field name="binding_type">report</field>
     </record>
 </odoo>
