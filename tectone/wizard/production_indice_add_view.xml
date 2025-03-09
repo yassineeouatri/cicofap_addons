@@ -9,9 +9,10 @@
                 <form string="Pointages">
                     <sheet>
                         <group>
-                            <field name="document_id" invisible="1"/>
-                            <field name="no_indice" invisible="1"/>
                             <h3>Voulez-vous ajouter un nouveau indice?</h3>
+                            <field name="document_id" invisible="1"/>
+                            <field name="date_indice"/>
+                            <field name="no_indice" invisible="1"/>
                         </group>
                         <footer>
                             <button name="action_done" string="Valider" type="object" class="oe_highlight"/>
